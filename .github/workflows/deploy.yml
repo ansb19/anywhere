@@ -17,16 +17,16 @@ jobs:
       uses: docker/setup-buildx-action@v1
 
     - name: Login to Docker Hub  # 3단계: Docker Hub에 로그인
-      uses: docker/login-action@v1
+      uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push Docker image  # 4단계: Docker 이미지 빌드 및 푸시
       run: |
-        docker build -t my-app:${{ github.sha }} .  # 로컬에서 Docker 이미지 빌드
-        docker tag my-app:${{ github.sha }} my-dockerhub-username/my-app:${{ github.sha }}  # Docker Hub에 태그 추가
-        docker push my-dockerhub-username/my-app:${{ github.sha }}  # Docker Hub에 푸시
+        # Docker Hub의 사용자 이름과 이미지 이름으로 설정
+        docker build -t my-dockerhub-username/my-app:${{ github.sha }} .  # Docker 이미지 빌드
+        docker push my-dockerhub-username/my-app:${{ github.sha }}  # Docker Hub에 이미지 푸시
 
     - name: Deploy to EC2  # 5단계: EC2에 배포
       uses: appleboy/ssh-action@v0.1.7
