@@ -28,15 +28,20 @@ jobs:
         docker build -t ansb19/anywhere:${{ github.sha }} .  # Docker 이미지 빌드
         docker push ansb19/anywhere:${{ github.sha }}  # Docker Hub에 이미지 푸시
 
+    - name: Set up SSH key  # SSH 키 설정
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+    - name: Add known hosts  # EC2 서버의 호스트 키를 추가하여 신뢰할 수 있도록 설정
+      run: ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
     - name: Deploy to EC2  # 5단계: EC2에 배포
-      uses: appleboy/ssh-action@v0.1.7
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        port: 22
-        script: |
-          docker pull ansb19/anywhere:${{ github.sha }}  # Docker Hub에서 최신 이미지 풀
-          docker stop anywhere || true  # 기존 컨테이너 중지
-          docker rm anywhere || true  # 기존 컨테이너 삭제
-          docker run -d --name anywhere -p 3000:80 ansb19/anywhere:${{ github.sha }}  # 새 컨테이너 실행
+      run: |
+        ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -p 22 ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+        docker pull ansb19/anywhere:${{ github.sha }}  # Docker Hub에서 최신 이미지 풀
+        docker stop anywhere || true  # 기존 컨테이너 중지
+        docker rm anywhere || true  # 기존 컨테이너 삭제
+        docker run -d --name anywhere -p 3000:80 ansb19/anywhere:${{ github.sha }}  # 새 컨테이너 실행
+        EOF
