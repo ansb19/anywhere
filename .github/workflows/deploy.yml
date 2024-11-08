@@ -25,8 +25,8 @@ jobs:
     - name: Build and push Docker image  # 4단계: Docker 이미지 빌드 및 푸시
       run: |
         # Docker Hub의 사용자 이름과 이미지 이름으로 설정
-        docker build -t my-dockerhub-username/my-app:${{ github.sha }} .  # Docker 이미지 빌드
-        docker push my-dockerhub-username/my-app:${{ github.sha }}  # Docker Hub에 이미지 푸시
+        docker build -t ansb19/anywhere:${{ github.sha }} .  # Docker 이미지 빌드
+        docker push ansb19/anywhere:${{ github.sha }}  # Docker Hub에 이미지 푸시
 
     - name: Deploy to EC2  # 5단계: EC2에 배포
       uses: appleboy/ssh-action@v0.1.7
@@ -36,7 +36,7 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
         script: |
-          docker pull my-dockerhub-username/my-app:${{ github.sha }}  # Docker Hub에서 최신 이미지 풀
-          docker stop my-app || true  # 기존 컨테이너 중지
-          docker rm my-app || true  # 기존 컨테이너 삭제
-          docker run -d --name my-app -p 80:80 my-dockerhub-username/my-app:${{ github.sha }}  # 새 컨테이너 실행
+          docker pull ansb19/anywhere:${{ github.sha }}  # Docker Hub에서 최신 이미지 풀
+          docker stop anywhere || true  # 기존 컨테이너 중지
+          docker rm anywhere || true  # 기존 컨테이너 삭제
+          docker run -d --name anywhere -p 3000:80 ansb19/anywhere:${{ github.sha }}  # 새 컨테이너 실행
