@@ -14,7 +14,8 @@ const cors_option = {
     // 통신형식 default 값 사용( 전부 허용)
     credentials: true // 외부 통신 허용
 };
-app.use((0, cors_1.default)(cors_option)); // 외부 통신 cors 허용
+//app.use(cors(cors_option)); // 외부 통신 cors 허용
+app.use((0, cors_1.default)());
 app.use(express_1.default.json()); // json 요청 본문을 파싱
 //app.use('/router,' mapRouter); rest api 라우터 설정
 app.listen(port, () => {
