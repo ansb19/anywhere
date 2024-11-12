@@ -43,4 +43,4 @@ jobs:
             docker pull ansb19/anywhere:latest
 
             # 새로운 컨테이너 실행
-            docker run -d -p 3000:3000 --name anywhere ansb19/anywhere:latest
+            docker run -d -p 3000:80 --name anywhere ansb19/anywhere:latest
