@@ -22,7 +22,7 @@ export const AppDataSource = new DataSource({
     database: db_DATABASE,
     synchronize: true, // 개발 환경에서 true 사용 환경에서는 false
     logging: false,
-    entities: [User,], //db 테이블 추가 개념
+    entities: ["src/entity/*.ts"], //db 테이블 추가 개념
     migrations: [],
     subscribers: [],
 });

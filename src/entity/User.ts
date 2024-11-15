@@ -1,4 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, PrimaryColumn, OneOrMore, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, BeforeInsert, } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, PrimaryColumn, OneOrMore, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, BeforeInsert, OneToMany, } from "typeorm";
+import { Place } from './Place';
+import { Favorite } from "./Favorite";
+import { Review } from "./Review";
 
 @Entity('USER')
 export class User {
@@ -18,15 +21,27 @@ export class User {
     created_at!: Date;
 
     @UpdateDateColumn({ type: 'timestamp without time zone', default: () => 'CURRENT_TIMESTAMP' })
+    //db에 없음
     updated_at!: Date;
 
     @DeleteDateColumn({ type: 'timestamp without time zone', nullable: true })
+    //db에 없음
     deleted_at?: Date;
 
-    @Column({ type:'smallint'})
-    penalty_count: number =0;
+    @Column({ type: 'smallint' })
+    penalty_count: number = 0;
 
-    @Column({ type: 'boolean'})
-    penalty_state: boolean =false;
+    @Column({ type: 'boolean' })
+    penalty_state: boolean = false;
 
+    //user (1) -> place(N)
+    @OneToMany(() => Place, (place) => place.user)
+    places!: Place[];
+
+    //user (1) -> favoite(N)
+    @OneToMany(() => Favorite, (favorite) => favorite.user)
+    favorites!: Favorite[];
+
+    @OneToMany(() => Review, (review) => review.user)
+    reviews!: Review[];
 }

@@ -10,6 +10,7 @@ COPY package*.json ./
 # Step 4: Install dependencies
 RUN npm install
 
+
 # Step 5: Copy the rest of the application code
 COPY . .
 
@@ -20,4 +21,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Step 8: Start the server
-CMD ["node", "dist/server.js"]
+CMD ["npm", "run", "start"]

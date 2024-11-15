@@ -11,6 +11,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const typeorm_1 = require("typeorm");
+const Place_1 = require("./Place");
+const Favorite_1 = require("./Favorite");
+const Review_1 = require("./Review");
 let User = class User {
     constructor() {
         this.account_email = '';
@@ -43,11 +46,15 @@ __decorate([
     __metadata("design:type", Date)
 ], User.prototype, "created_at", void 0);
 __decorate([
-    (0, typeorm_1.UpdateDateColumn)({ type: 'timestamp without time zone', default: () => 'CURRENT_TIMESTAMP' }),
+    (0, typeorm_1.UpdateDateColumn)({ type: 'timestamp without time zone', default: () => 'CURRENT_TIMESTAMP' })
+    //db에 없음
+    ,
     __metadata("design:type", Date)
 ], User.prototype, "updated_at", void 0);
 __decorate([
-    (0, typeorm_1.DeleteDateColumn)({ type: 'timestamp without time zone', nullable: true }),
+    (0, typeorm_1.DeleteDateColumn)({ type: 'timestamp without time zone', nullable: true })
+    //db에 없음
+    ,
     __metadata("design:type", Date)
 ], User.prototype, "deleted_at", void 0);
 __decorate([
@@ -58,6 +65,18 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'boolean' }),
     __metadata("design:type", Boolean)
 ], User.prototype, "penalty_state", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => Place_1.Place, (place) => place.user),
+    __metadata("design:type", Array)
+], User.prototype, "places", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => Favorite_1.Favorite, (favorite) => favorite.user),
+    __metadata("design:type", Array)
+], User.prototype, "favorites", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => Review_1.Review, (review) => review.user),
+    __metadata("design:type", Array)
+], User.prototype, "reviews", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)('USER')
 ], User);

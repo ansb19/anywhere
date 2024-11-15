@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { Place } from "./Place";
 
 @Entity('CATEGORY')
 export class Category {
@@ -7,4 +8,7 @@ export class Category {
 
     @Column({ type: 'varchar', length: 20, nullable: false })
     name : string = '';
+    
+    @OneToMany(() => Place, (place) => place.category)
+    places!: Place[];
 }
