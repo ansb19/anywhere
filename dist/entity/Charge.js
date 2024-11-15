@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Charge = void 0;
 const typeorm_1 = require("typeorm");
+const Place_1 = require("./Place");
 let Charge = class Charge {
     constructor() {
         this.id = 0;
@@ -27,7 +28,7 @@ __decorate([
     __metadata("design:type", String)
 ], Charge.prototype, "name", void 0);
 __decorate([
-    OneToMany(() => Place, (place) => place.charge),
+    (0, typeorm_1.OneToMany)(() => Place_1.Place, (place) => place.charge),
     __metadata("design:type", Array)
 ], Charge.prototype, "places", void 0);
 exports.Charge = Charge = __decorate([

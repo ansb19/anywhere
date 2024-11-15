@@ -1,5 +1,4 @@
 import { DataSource } from "typeorm";
-import { User } from "./src/entity/User";
 import dotenv from "dotenv";
 import { Migration } from "typeorm/browser";
 
