@@ -4,7 +4,7 @@ import { Category } from "./Category";
 import { Charge } from "./Charge";
 import { Favorite } from "./Favorite";
 import { Review } from "./Review";
-@Entity('FAVORITE')
+@Entity('PLACE')
 export class Place {
     @PrimaryGeneratedColumn()
     place_id: number = 0;

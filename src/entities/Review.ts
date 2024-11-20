@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGenerat
 import { User } from "./User";
 import { Place } from "./Place";
 
-@Entity('FAVORITE')
+@Entity('REVIEW')
 export class Review {
     @PrimaryGeneratedColumn()
     review_id: number = 0;

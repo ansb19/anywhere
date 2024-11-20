@@ -10,7 +10,6 @@ COPY package*.json ./
 # Step 4: Install dependencies
 RUN npm install
 
-
 # Step 5: Copy the rest of the application code
 COPY . .
 
