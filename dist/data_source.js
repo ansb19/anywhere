@@ -7,17 +7,14 @@ exports.AppDataSource = void 0;
 const typeorm_1 = require("typeorm");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const db_type = process.env.DB_TYPE;
-//const db_type: string = process.env.DB_TYPE || "mysql"; string 타입이 아닌 다른 것을 받음
 const db_host = process.env.DB_HOST_NAME || "localhost";
-const db_port = parseInt(process.env.DB_PORT || "5432");
 const db_user_name = process.env.DB_USER_NAME || "my_username";
 const db_password = process.env.DB_PASSWORD || "my_password";
 const db_database = process.env.DB_DATABASE || "my_database";
 exports.AppDataSource = new typeorm_1.DataSource({
-    type: db_type,
+    type: "postgres",
     host: db_host,
-    port: db_port,
+    port: 5432,
     username: db_user_name,
     password: db_password,
     database: db_database,

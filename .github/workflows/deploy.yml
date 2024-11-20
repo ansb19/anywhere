@@ -26,6 +26,12 @@ jobs:
         run: |
           docker build -t ansb19/anywhere:latest .
           docker push ansb19/anywhere:latest
+          env:
+            DB_HOST_NAME: ${{ secrets.DB_HOST_NAME }}
+            DB_USER_NAME: ${{ secrets.DB_USER_NAME }}
+            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+            DB_DATABASE: ${{ secrets.DB_DATABASE }}
+
 
       # 4. AWS 서버에 배포
       - name: Deploy to AWS EC2
