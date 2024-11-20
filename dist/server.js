@@ -18,7 +18,7 @@ const cors_option = {
     credentials: true // 외부 통신 허용
 };
 // 미들웨어 설정
-app.use((0, cors_1.default)(cors_option)); // 외부 통신 cors 허용
+app.use((0, cors_1.default)()); // 외부 통신 cors 허용
 app.use(express_1.default.json()); // json 요청 본문을 파싱
 // 데이터베이스 초기화 및 서버 시작 함수 정의
 async function startServer() {
