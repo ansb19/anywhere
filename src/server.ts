@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { AppDataSource } from './data_source';
-import userRoutes from './routes/userRoutes';
+import userRoutes from './routes/UserRoutes';
 
 dotenv.config(); // dotenv 설정값 불러오는 함수
 

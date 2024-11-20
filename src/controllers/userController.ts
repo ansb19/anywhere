@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import Controller from './Controller';
-import UserService from '../services/userService';
+import UserService from '../services/UserService';
 
 class UserController extends Controller {
     //유저 생성(회원가입)
