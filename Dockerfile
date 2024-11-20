@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Step 7: Expose the port that the app runs on (예: 3000)
-EXPOSE 3000
+EXPOSE 80
 
 # Step 8: Start the server
 CMD ["npm", "run", "start"]
