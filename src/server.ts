@@ -13,11 +13,11 @@ const port: number = parseInt(process.env.PORT || '3000', 10); // env 포트 설
 const cors_option = {
     origin: process.env.FRONT_END_API, 
     // 통신할 default 값 사용 (CORS 허용)
-    credentials: true // 외부 통신 허용
+    credentials: true // 외부 통신 허용,
 };
 
 // 미들웨어 설정
-app.use(cors(cors_option)); // 외부 통신 cors 허용
+app.use(cors()); // 외부 통신 cors 허용
 app.use(express.json()); // json 요청 본문을 파싱
 
 // 데이터베이스 초기화 및 서버 시작 함수 정의
