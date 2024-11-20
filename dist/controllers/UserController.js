@@ -4,12 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Controller_1 = __importDefault(require("./Controller"));
-const userService_1 = __importDefault(require("../services/userService"));
+const UserService_1 = __importDefault(require("../services/UserService"));
 class UserController extends Controller_1.default {
     //유저 생성(회원가입)
     createUser = async (req, res) => {
         this.execute(req, res, async () => {
-            const newUser = await userService_1.default.createUser(req.body);
+            const newUser = await UserService_1.default.createUser(req.body);
             return {
                 status: 201,
                 data: { message: '유저 회원가입 성공했습니다', data: newUser }
@@ -20,7 +20,7 @@ class UserController extends Controller_1.default {
     getUserByNickname = async (req, res) => {
         this.execute(req, res, async () => {
             const { nickname } = req.params;
-            const user = await userService_1.default.getUserByNickname(nickname);
+            const user = await UserService_1.default.getUserByNickname(nickname);
             if (user) {
                 return {
                     status: 200,
@@ -39,7 +39,7 @@ class UserController extends Controller_1.default {
     updateUser = async (req, res) => {
         this.execute(req, res, async () => {
             const { nickname } = req.params;
-            const updateUser = await userService_1.default.updateUser(nickname, req.body);
+            const updateUser = await UserService_1.default.updateUser(nickname, req.body);
             if (updateUser) {
                 return {
                     status: 200,
@@ -57,7 +57,7 @@ class UserController extends Controller_1.default {
     deleteUser = async (req, res) => {
         this.execute(req, res, async () => {
             const { nickname } = req.params;
-            const deleted = await userService_1.default.deleteUser(nickname);
+            const deleted = await UserService_1.default.deleteUser(nickname);
             if (deleted) {
                 return {
                     status: 200,

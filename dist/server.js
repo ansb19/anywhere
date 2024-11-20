@@ -7,7 +7,7 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const data_source_1 = require("./data_source");
-const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
+const UserRoutes_1 = __importDefault(require("./routes/UserRoutes"));
 dotenv_1.default.config(); // dotenv 설정값 불러오는 함수
 const app = (0, express_1.default)(); // express 프레임워크 설정
 const port = parseInt(process.env.PORT || '3000', 10); // env 포트 설정
@@ -27,7 +27,7 @@ async function startServer() {
         await data_source_1.AppDataSource.initialize();
         console.log('Data Source is initialized!');
         // 라우트 설정 (예: 사용자 라우트 추가)
-        app.use('/user', userRoutes_1.default); // rest api 라우터 설정 (라우트 추가 시 활성화)
+        app.use('/user', UserRoutes_1.default); // rest api 라우터 설정 (라우트 추가 시 활성화)
         // 서버 시작
         const server = app.listen(port, '0.0.0.0', () => {
             console.log(`서버 구동 중... port: ${port}`);
