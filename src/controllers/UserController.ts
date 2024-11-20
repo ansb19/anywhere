@@ -20,6 +20,7 @@ class UserController extends Controller {
             const { nickname } = req.params;
             const user = await UserService.getUserByNickname(nickname);
 
+            
             if (user) {
                 return {
                     status: 200,
