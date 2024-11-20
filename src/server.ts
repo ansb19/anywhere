@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { AppDataSource } from './data_source';
+import userRoutes from './routes/userRoutes';
 
 dotenv.config(); // dotenv 설정값 불러오는 함수
 
@@ -27,7 +28,7 @@ async function startServer() {
         console.log('Data Source is initialized!');
 
         // 라우트 설정 (예: 사용자 라우트 추가)
-        // app.use('/router', mapRouter); // rest api 라우터 설정 (라우트 추가 시 활성화)
+        app.use('/user', userRoutes); // rest api 라우터 설정 (라우트 추가 시 활성화)
 
         // 서버 시작
         const server = app.listen(port, '0.0.0.0', () => {
