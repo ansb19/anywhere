@@ -14,6 +14,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Create .env file
+        run: |
+          echo DB_TYPE=${{ secrets.DB_TYPE }} >> .env
+          echo DB_HOST_NAME=${{ secrets.DB_HOST_NAME }} >> .env
+          echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+          echo DB_USER_NAME=${{ secrets.DB_USER_NAME }} >> .env
+          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
+          echo DB_DATABASE=${{ secrets.DB_DATABASE }} >> .env
+
       # 2. Docker 로그인 (Docker Hub 사용 시)
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -26,12 +35,7 @@ jobs:
         run: |
           docker build -t ansb19/anywhere:latest .
           docker push ansb19/anywhere:latest
-          env:
-            DB_HOST_NAME: ${{ secrets.DB_HOST_NAME }}
-            DB_USER_NAME: ${{ secrets.DB_USER_NAME }}
-            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-            DB_DATABASE: ${{ secrets.DB_DATABASE }}
-
+          
 
       # 4. AWS 서버에 배포
       - name: Deploy to AWS EC2
