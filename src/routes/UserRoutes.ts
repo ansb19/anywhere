@@ -9,9 +9,9 @@ router.get('/sign', UserController.createUser);
 // 닉네임을 변경
 router.put('/update/nickname', UserController.updateUser);
 
-router.get('find/nickname',UserController.getUserByNickname);
+router.get('/find/nickname',UserController.getUserByNickname);
 
-router.delete('delete/nickname',UserController.deleteUser);
+router.delete('/delete/nickname',UserController.deleteUser);
 
 
 
