@@ -9,11 +9,12 @@ router.post('/sign', UserController.createUser);
 // 닉네임을 변경
 router.put('/update/nickname', UserController.updateUser);
 
-router.get('/find/nickname',UserController.getUserByNickname);
+router.get('/find/nickname', UserController.getUserByNickname);
 
-router.delete('/delete/nickname',UserController.deleteUser);
+router.delete('/delete/nickname', UserController.deleteUser);
 
 
+router.get('/test', UserController.test);
 
 // 유저의 등록한 장소 조회
 router.get('/place/find',);

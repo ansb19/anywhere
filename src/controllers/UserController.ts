@@ -20,7 +20,7 @@ class UserController extends Controller {
             const { nickname } = req.params;
             const user = await UserService.getUserByNickname(nickname);
 
-            
+
             if (user) {
                 return {
                     status: 200,
@@ -78,6 +78,16 @@ class UserController extends Controller {
         })
     }
 
+    public test = async (req: Request, res: Response): Promise<void> => {
+        this.execute(req, res, async () => {
+            const test: string = "test용";
+            return {
+                status: 200,
+                data: { message: 'test용으로 보냅니다', data: test }
+            }
+        })
+
+    }
 }
 
 
