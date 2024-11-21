@@ -9,7 +9,8 @@ class UserController extends Controller {
             const newUser = await UserService.createUser(req.body);
             return {
                 status: 201,
-                data: { message: '유저 회원가입 성공했습니다', data: newUser }
+                message: '유저 회원가입 성공했습니다',
+                data: newUser
             }
         })
     }
@@ -83,7 +84,8 @@ class UserController extends Controller {
             const test: string = "test용";
             return {
                 status: 200,
-                data: { message: 'test용으로 보냅니다', data: test }
+                message: 'test용으로 보냅니다',
+                data: test
             }
         })
 
