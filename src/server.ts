@@ -11,8 +11,8 @@ const port: number = parseInt(process.env.PORT || '3000', 10); // env 포트 설
 
 // CORS 옵션 설정
 const cors_option = {
-    origin: process.env.FRONT_END_API, 
-    // 통신할 default 값 사용 (CORS 허용)
+    origin: '*', 
+    //method: default가 전부 허용
     credentials: true // 외부 통신 허용
 };
 
