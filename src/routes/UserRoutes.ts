@@ -3,26 +3,16 @@ import UserController from '../controllers/UserController';
 
 const router = Router();
 
-// 사용자가 처음이면 회원가입 기존에 있으면 로그인
-router.post('/sign', UserController.createUser);
-
-// 닉네임을 변경
-router.put('/update/nickname', UserController.updateUser);
-
-router.get('/find/nickname', UserController.getUserByNickname);
-
-router.delete('/delete/nickname', UserController.deleteUser);
+//user의 신상 정보
+router.post('/sign_up', UserController.createUser); // 사용자 회원가입
+router.post('/sign_in', UserController.createUser); // 사용자 로그인
+//router.post('/sign_out', UserController.createUser); // 사용자 로그아웃
+router.put('/update/nickname', UserController.updateUser); // 사용자 닉네임 변경
+router.get('/find/nickname', UserController.getUserByNickname); // 닉네임을 통한 사용자 전체 정보 조회
+router.delete('/delete/nickname', UserController.deleteUser); // 닉네임을 통한 사용자 탈퇴
 
 
+//test용
 router.get('/test', UserController.test);
-
-// 유저의 등록한 장소 조회
-router.get('/place/find',);
-
-// 유저의 등록한 장소 삭제
-router.delete('/place/delete',);
-
-// 유저의 등록한 장소 수정
-router.put('/place/update',);
 
 export default router;

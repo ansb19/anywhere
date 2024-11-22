@@ -1,6 +1,8 @@
 import { Router } from 'express';
 
+
 const router = Router();
+
 
 // 해당 장소 생성
 router.post('/place/create',)
@@ -55,3 +57,5 @@ router.delete('/place/review/delete',)
 
 // 해당 장소의 리뷰 출력
 router.get('/place/review/find',)
+
+export default router;

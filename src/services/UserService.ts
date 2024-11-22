@@ -12,6 +12,14 @@ export class UserService extends Service<User> implements IUserService {
     public async createUser(userData: Partial<User>): Promise<User> {
         return this.create(userData);
     }
+
+    public async loginUser(id: string): Promise<boolean> {
+        return await this.findById({id})
+            ? true
+            : false
+            ;
+    }
+
     public async getUserByNickname(nickname: string): Promise<User | undefined | null> { //인터페이스에 의한 새로운 강제 구현
         return await this.repository.findOneBy({ nickname });
     }

@@ -5,10 +5,3 @@ export interface IUserService {
     deleteUser(nickname: string): Promise<boolean>;
 }
 
-// // src/services/interfaces/IUserService.ts
-// export interface IUserService {
-//     createUser(userData: any): Promise<any>;
-//     getUserByNickname(nickname: string): Promise<any | undefined>;
-//     updateUser(nickname: string, userData: any): Promise<any | null>;
-//     deleteUser(nickname: string): Promise<boolean>;
-// }

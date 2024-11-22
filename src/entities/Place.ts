@@ -15,10 +15,10 @@ export class Place {
     @Column({ type: 'varchar', length: 20 })
     nickname: string = '';
 
-    @Column({ type: 'double' })
+    @Column({ type: 'double precision' })
     lat: number = 0.0;
 
-    @Column({ type: 'double' })
+    @Column({ type: 'double precision' })
     lon: number = 0.0;
 
     @Column({ type: 'smallint' })
