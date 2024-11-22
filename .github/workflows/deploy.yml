@@ -24,6 +24,7 @@ jobs:
           echo DB_DATABASE=${{ secrets.DB_DATABASE }} >> .env
           echo PORT=${{ secrets.PORT }} >> .env
           echo FRONT_END_API=${{ secrets.FRONT_END_API }} >> .env
+          echo NODE_ENV=${{ secrets.NODE_ENV }} >> .env
 
       # 2. Docker 로그인 (Docker Hub 사용 시)
       - name: Log in to Docker Hub
