@@ -20,4 +20,4 @@ RUN npm run build
 EXPOSE 80
 
 # Step 8: Start the server
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "dev-ts"]
