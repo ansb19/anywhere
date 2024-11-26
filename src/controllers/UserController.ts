@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import Controller from './Controller';
-import UserService from '../services/UserService';
+import UserService from '../services/user/UserService';
 
 class UserController extends Controller {
+
+
     //유저 생성(회원가입)
     public createUser = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
@@ -15,6 +17,29 @@ class UserController extends Controller {
             }
         })
     }
+    //사용자 전부 조회(정보 조회)
+    public findAllUser = async (req: Request, res: Response): Promise<void> => {
+        this.execute(req, res, async () => {
+            const user = await UserService.findAllUser();
+
+            if (user) {
+                return {
+                    status: 200,
+                    message: "유저들 정보 조회 완료",
+                    data: user
+                }
+            }
+            else {
+                return {
+                    status: 404,
+                    message: "유저를 찾을 수 없습니다",
+                    data: null
+                }
+            }
+        })
+    }
+
+
 
     //유저 로그인
     public loginUser = async (req: Request, res: Response): Promise<void> => {
@@ -39,11 +64,31 @@ class UserController extends Controller {
 
         })
     }
-    //유저 조회
-    public getUserByNickname = async (req: Request, res: Response): Promise<void> => {
+
+    //미완성 사용자 로그아웃
+    public logoutUser = async (req: Request, res: Response): Promise<void> => {
+        this.execute(req, res, async () => {
+
+        })
+    }
+    //특정 유저의 닉네임 생성
+    public createNicknamebyUserID = async (req: Request, res: Response): Promise<void> => {
+        this.execute(req, res, async () => {
+            const { id, nickname } = req.body;
+            const newNickname = await UserService.createNicknamebyUserID(id, nickname);
+            return {
+                status: 201,
+                message: "닉네임 생성 완료",
+                data: newNickname
+            }
+        })
+    }
+
+    //특정 닉네임의 사용자 정보 조회
+    public findUserByNickname = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
             const { nickname } = req.params;
-            const user = await UserService.getUserByNickname(nickname);
+            const user = await UserService.findUserbyNickname(nickname);
 
             if (user) {
                 return {
@@ -64,11 +109,11 @@ class UserController extends Controller {
         })
     }
 
-    //유저 업데이트
-    public updateUser = async (req: Request, res: Response): Promise<void> => {
+    // 닉네임을 이용한 특정 사용자 수정
+    public updateUserbyNickname = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
             const { nickname } = req.params;
-            const updateUser = await UserService.updateUser(nickname, req.body);
+            const updateUser = await UserService.updateUserbyNickname(nickname, req.body);
 
             if (updateUser) {
                 return {
@@ -87,11 +132,11 @@ class UserController extends Controller {
         })
     }
 
-    //유저 삭제
-    public deleteUser = async (req: Request, res: Response): Promise<void> => {
+    //닉네임을 이용한 특정 사용자 삭제
+    public deleteUserbyNickname = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
             const { nickname } = req.params;
-            const deleted = await UserService.deleteUser(nickname);
+            const deleted = await UserService.deleteUserbyNickname(nickname);
 
             if (deleted) {
                 return {
@@ -106,18 +151,6 @@ class UserController extends Controller {
                 }
             }
         })
-    }
-
-    public test = async (req: Request, res: Response): Promise<void> => {
-        this.execute(req, res, async () => {
-            const test: string = "test용";
-            return {
-                status: 200,
-                message: 'test용으로 보냅니다',
-                data: test
-            }
-        })
-
     }
 }
 

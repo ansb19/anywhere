@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn, OneToMany } from "typeorm";
+import { Column, Entity, PrimaryColumn, OneToMany, ManyToMany } from "typeorm";
 import { Place } from "./Place";
 
 
@@ -10,6 +10,6 @@ export class Charge {
     @Column({ type: 'varchar', length: 20, nullable: false })
     name : string = '';
     
-    @OneToMany(() => Place, (place) => place.charge)
+    @ManyToMany(() => Place, (place) => place.charges)
     places!: Place[];
 }

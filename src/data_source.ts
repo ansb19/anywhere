@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+
 const db_host: string = process.env.DB_HOST_NAME || "localhost";
 const db_user_name: string = process.env.DB_USER_NAME || "my_username";
 const db_password: string = process.env.DB_PASSWORD || "my_password";

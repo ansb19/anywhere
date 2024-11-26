@@ -1,9 +1,10 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Double, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Double, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from './User';
 import { Category } from "./Category";
 import { Charge } from "./Charge";
 import { Favorite } from "./Favorite";
 import { Review } from "./Review";
+@Index(['tag'],)
 @Entity('PLACE')
 export class Place {
     @PrimaryGeneratedColumn()
@@ -44,8 +45,8 @@ export class Place {
     @Column({ type: 'varchar', length: 500, array: true })
     photo_s3_url: string = '';
 
-    @Column({ type: 'smallint' })
-    charge_id: number = 0;
+    // @Column({ type: 'smallint', array: true })
+    // charge_id: number = 0; 다대다 
 
     @Column({ type: 'varchar', length: 1000 })
     comment: string = '';
@@ -70,9 +71,9 @@ export class Place {
     @JoinColumn({ name: 'category_id' })
     category!: Category;
 
-    @ManyToOne(() => Charge, (charge) => charge.places)
-    @JoinColumn({ name: 'charge_id' })
-    charge!: Charge;
+    @ManyToMany(() => Charge, (charge) => charge.places)
+    @JoinTable({ name: 'place_charge' })
+    charges!: Charge[];
 
     @OneToMany(() => Favorite, (favorite) => favorite.place)
     favorites!: Favorite[];
