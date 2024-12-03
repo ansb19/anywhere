@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="kr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Kakao REST-API Node.js example</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+
+  <body>
+    <h1>1. 카카오 로그인 및 프로필 조회 예제</h1>
+    <pre>
+- [KOE101, KOE004] 내 애플리케이션>제품 설정>카카오 로그인 > 활성화 설정 : ON
+- [KOE006] 내 애플리케이션>제품 설정>카카오 로그인 > Redirect URI : http://localhost:4000/redirect
+</pre
+    >
+    <div class="text-center">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script>
+        function REST_Call(path) {
+          axios
+            .get("http://localhost:4000" + path, {
+              params: {},
+              withCredentials: true,
+            })
+            .then(({ data }) => {
+              console.log(data);
+              $("#contents").html(JSON.stringify(data));
+            })
+            .catch((err) => {
+              console.log(err);
+              $("#contents").html(JSON.stringify(err));
+            });
+        }
+      </script>
+
+      <a href="http://localhost:4000/authorize">
+        <img
+          src="//k.kakaocdn.net/14/dn/btqCn0WEmI3/nijroPfbpCa4at5EIsjyf0/o.jpg"
+          width="222"
+        /> </a
+      ><br />
+
+      <button onclick="REST_Call('/profile')">프로필 조회</button><br />
+
+      <textarea id="contents" rows="20" cols="100"></textarea><br />
+
+      <a href="http://localhost:4000/authorize?scope=friends,talk_message">
+        <h2>친구목록 조회와 메세지 발송 권한 획득</h2> </a
+      ><br />
+      <button onclick="REST_Call('/friends')">친구목 조회</button>
+      <button onclick="REST_Call('/message')">나에게 메시지 발송</button><br />
+      <input type="text" id="uuids" />
+      <button onclick="REST_Call('/friends_message?uuids='+$('#uuids').val())">
+        친구에게 메시지 발송
+      </button>
+      ex) "AAA","BBB"<br />
+      <button onclick="REST_Call('/logout')">로그아웃</button><br />
+    </div>
+  </body>
+</html>

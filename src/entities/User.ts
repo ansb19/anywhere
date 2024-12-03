@@ -7,17 +7,17 @@ import { Review } from "./Review";
 @Entity('USER')
 export class User {
     @PrimaryColumn({ type: 'varchar', length: 50, nullable: false })
-    account_email: string = '';
+    account_email?: string;
 
     
     @Column({ type: 'varchar', length: 20, unique: true })
-    nickname: string = '';
+    nickname?: string;
 
     @Column({ type: 'varchar', length: 50 })
-    phone_number: string = '';
+    phone_number?: string;
 
     @Column({ type: 'smallint' })
-    register_place_count: number = 0;
+    register_place_count?: number;
 
     @CreateDateColumn({ type: 'timestamp without time zone', default: () => 'CURRENT_TIMESTAMP' })
     created_at!: Date;
@@ -31,7 +31,7 @@ export class User {
     deleted_at?: Date;
 
     @Column({ type: 'smallint' })
-    penalty_count: number = 0;
+    penalty_count?: number;
 
     @Column({ type: 'boolean' })
     penalty_state: boolean = false;

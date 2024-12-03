@@ -25,6 +25,7 @@ async function startServer() {
     try {
         // 데이터베이스 연결 초기화
         await AppDataSource.initialize();
+        await AppDataSource.runMigrations(); // 프로덕션 시 비활성화
         console.log('Data Source is initialized!');
 
 

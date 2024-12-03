@@ -6,23 +6,24 @@ export class CategoryService extends Service<Category> {
         super(Category);
     }
 
-    // 새로운 결제 방식 추가
-    public async createCategory(chargeData: any): Promise<any> {
+    // 새로운 카테고리 추가
+    public async createCategory(chargeData: Partial<Category>): Promise<Category> {
         return await this.create(chargeData);
     }
 
-    // 결제 방식 한 개를 아이디, 이름 조회
-    public async findCategorybyCategoryID(id: number): Promise<any | undefined | null> {
+    // 카테고리 한 개를 아이디, 이름 조회
+    public async findCategorybyCategoryID(id: number): Promise<Category | undefined | null> {
         return await this.findOnebyId(id);
     }
 
-    //결제 방식 이름 변경
-    public async updateCategorybyCategoryID(id: number, chargeData: any): Promise<Category | null> {
+    //카테고리 이름 변경
+    public async updateCategorybyCategoryID(id: number, chargeData: Category): Promise<Category | null> {
         return await this.update(id, chargeData);
     }
 
-    //결제 방식 삭제
+    //카테고리 삭제
     public async deleteCategorybyCategoryID(id: number): Promise<boolean> {
         return await this.delete(id);
     }
 }
+export default new CategoryService();

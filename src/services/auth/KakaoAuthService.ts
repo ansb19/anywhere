@@ -1,31 +1,54 @@
-import axios from "axios";
 import { ISocialAuthService, SoicalUser } from "./ISocialAuthService";
-import dotenv from 'dotenv';
 import { axiosKakaoToken, axiosKakaoInfo } from "../../api/axios";
 
 
-dotenv.config();
 
-
-export class KaKaoAuthService implements ISocialAuthService {
+export class KakaoAuthService implements ISocialAuthService {
     private readonly clientID: string = process.env.KAKAO_REST_API_KEY as string;
-    private readonly redirectUri: string = process.env.KAKAO_REDIRECT_URI_DEV as string;
+    private readonly redirectUri: string = process.env.KAKAO_REDIRECT_URI_PRO as string;
+    private readonly clientSecret: string = process.env.KAKAO_CLIENT_SECRET as string;
 
 
-    getAccessToken(code: string): Promise<string> {
-        const response = await axiosKakaoToken.post('', null{
+
+    public async getAccessToken(code: string): Promise<string> {
+        console.log('Redirect URI being used:', this.redirectUri);
+        const response = await axiosKakaoToken.post('', null, {
             params: {
+                grant_type: 'authorization_code',
                 client_id: this.clientID,
                 redirect_uri: this.redirectUri,
-                code,
+                code: code,
+                client_secret: this.clientSecret
+            },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+            },
+        });
+        console.log('Requesting access token with params:', {
+            grant_type: 'authorization_code',
+            client_id: this.clientID,
+            redirect_uri: this.redirectUri,
+            code: code,
+            client_secret: this.clientSecret,
+        });
+        return response.data.access_token;
+    }
+    public async getUserInfo(accesssToken: string): Promise<SoicalUser> {
+        console.log("액세스 토큰: ", accesssToken);
+        const response = await axiosKakaoInfo.get('', {
+            headers: {
+                "Authorization": `Bearer ${accesssToken}`,
+                "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
             }
         })
-        return response.data.accesssToken;
+        const kakaoAccount = response.data.kakao_account;
+        return {
+            id: response.data.id,
+            email: kakaoAccount.email,
+            nickname: kakaoAccount.profile.nickname,
+            profileImage: kakaoAccount.profile.profile_image_url
+        }
     }
-    getUserInfo(accesssToken: string): Promise<SoicalUser> {
-        throw new Error("Method not implemented.");
-    }
-
 
 
 }

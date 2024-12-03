@@ -1,7 +1,10 @@
+import { Place } from "../../entities/Place";
+
+
 export interface IPlaceService{
-    createPlace(placeData: any): Promise<any>;
-    findPlacebyPlaceID(id: number): Promise<any | undefined | null>;
-    updatePlacebyPlaceID(id: number, placeData: any): Promise<any | null>;
+    createPlace(placeData: Place): Promise<Place>;
+    findPlacebyPlaceID(id: number): Promise<Place | undefined | null>;
+    updatePlacebyPlaceID(id: number, placeData: Place): Promise<Place | null>;
     deletePlacebyPlaceID(id: number): Promise<boolean>;
-    findAllPlace(): Promise<any[]>;
+    findAllPlace(): Promise<Place[]>;
 }

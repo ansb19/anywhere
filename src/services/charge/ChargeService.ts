@@ -9,25 +9,27 @@ export class ChargeService extends Service<Charge> {
     }
 
     // 새로운 결제 방식 추가
-    public async createCharge(chargeData: any): Promise<any> {
+    public async createCharge(chargeData: Partial<Charge>): Promise<Charge> {
         return await this.create(chargeData);
     }
 
     // 결제 방식 한 개를 아이디, 이름 조회
-    public async findChargebyChargeID(id: number): Promise<any | undefined | null> {
+    public async findChargebyChargeID(id: number): Promise<Charge | undefined | null> {
         return await this.findOnebyId(id);
     }
 
     //결제 방식 이름 변경
-    public async updateChargebyChargeID(id: number, chargeData: any): Promise<Charge | null> {
+    public async updateChargebyChargeID(id: number, chargeData: Charge): Promise<Charge | null> {
         return await this.update(id, chargeData);
     }
 
     //결제 방식 삭제
-    public async deleteChargebyChargeID(id:number): Promise<boolean>{
+    public async deleteChargebyChargeID(id: number): Promise<boolean> {
         return await this.delete(id);
     }
-        
-    
+
+
 }
+
+export default new ChargeService();
 

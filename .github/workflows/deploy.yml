@@ -25,6 +25,12 @@ jobs:
           echo PORT=${{ secrets.PORT }} >> .env
           echo FRONT_END_API=${{ secrets.FRONT_END_API }} >> .env
           echo NODE_ENV=${{ secrets.NODE_ENV }} >> .env
+          echo KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }} >> .env
+          echo KAKAO_JAVASCRIPT_KEY=${{ secrets.KAKAO_JAVASCRIPT_KEY }} >> .env
+          echo KAKAO_REDIRECT_URI_DEV=${{ secrets.KAKAO_REDIRECT_URI_DEV }} >> .env
+          echo KAKAO_REDIRECT_URI_PRO=${{ secrets.KAKAO_REDIRECT_URI_PRO }} >> .env
+          echo KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }} >> .env
+
 
       # 2. Docker 로그인 (Docker Hub 사용 시)
       - name: Log in to Docker Hub

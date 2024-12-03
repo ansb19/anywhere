@@ -2,7 +2,7 @@ import { Place } from "../../entities/Place";
 import { IPlaceService } from "./IPlaceService";
 import Service from "../Service";
 import { IPlaceSearchService } from "./IPlaceSearchService";
-import { Like } from "typeorm";
+import { ILike } from "typeorm";
 import { CategoryService } from "../category/CategoryService";
 
 
@@ -12,10 +12,41 @@ export class PlaceService extends Service<Place> implements IPlaceService, IPlac
         super(Place);
     }
 
-    public async findPlacebyScroll(page: number): Promise<any[]> {
-        throw new Error("Method not implemented.");
+    //장소 생성
+    public async createPlace(placeData: Partial<Place>): Promise<Place> {
+        return await this.create(placeData);
     }
-    public async findPlacebyTag(tag: string): Promise<any[]> {
+
+    //모든 장소들 조회
+    public async findAllPlace(): Promise<Place[]> {
+        return await this.repository.find();
+    }
+
+    //장소 id를 이용한 장소 1개 조회
+    public async findPlacebyPlaceID(id: number): Promise<Place | undefined | null> {
+        return await this.findOnebyId(id);
+    }
+    //장소 id를 이용한 장소 수정
+    public async updatePlacebyPlaceID(id: number, placeData: Place): Promise<Place | null> {
+        return await this.update(id, placeData);
+    }
+    //장소 id를 이용한 장소 삭제
+    public async deletePlacebyPlaceID(id: number): Promise<boolean> {
+        return await this.delete(id);
+    }
+
+
+
+    //해당 페이지의 장소들 출력
+    public async findPlacebyScroll(page: number): Promise<Place[]> {
+        return await this.repository
+            .find({
+                cache: true,
+            })
+    }
+
+    //해당 태그의 장소들 출력
+    public async findPlacebyTag(tag: string): Promise<Place[]> {
         return await this.repository
             .createQueryBuilder('place')
             .where(':tag = ANY(place.tag)', { tag })
@@ -23,55 +54,27 @@ export class PlaceService extends Service<Place> implements IPlaceService, IPlac
 
     }
 
-    // 아직 미완성
-    public async findPlacebyKeyword(keword: string): Promise<any[]> {
+    //해당 키워드의 장소들 출력
+    public async findPlacebyKeyword(keyword: string): Promise<Place[]> {
         return await this.repository.find({
             where: {
-                place_name: Like(`%${keword}%`)
+                place_name: ILike(`%${keyword}%`)
             }
         });
     }
 
+    //아직 미완성
+    //해당 카테고리의 장소들 출력
     public async findPlacebyCategory(category_id: number): Promise<Place[]> {
-        
-        //추후 부 데이터베이스를 통해 성능 최적화 필요
         return await this.repository.findBy({ category_id })
     }
 
-
-    public async createPlace(placeData: any): Promise<any> {
-        return await this.create(placeData);
+    //해당 닉네임의 장소들 출력
+    public async findPlacebyNickname(nickname: string): Promise<Place[]> {
+        //추후 부 데이터베이스를 통해 성능 최적화 필요
+        return await this.repository.findBy({ nickname })
     }
-    public async findPlacebyPlaceID(id: number): Promise<any | undefined | null> {
-        return await this.findOnebyId(id);
-    }
-    public async updatePlacebyPlaceID(id: number, placeData: any): Promise<any | null> {
-        return await this.update(id, placeData);
-    }
-    public async deletePlacebyPlaceID(id: number): Promise<boolean> {
-        return await this.delete(id);
-    }
-
-
-    // public async findPlaceByNickname(nickname: string): Promise<any | undefined | null> {
-    //     return await this.repository.findOneBy({ nickname });
-    // }
-    // public async updatePlacebyNickname(nickname: string, placeData: any): Promise<any | null> {
-    //     const place = await this.findPlaceByNickname(nickname);
-
-    //     if (place) {
-    //         this.repository.merge(place,)
-    //     }
-    // }
-    // public async deletePlacebyNickname(nickname: string): Promise<boolean> {
-    //     throw new Error("Method not implemented.");
-    // }
-    public async findAllPlace(): Promise<any[]> {
-        return await this.repository.find();
-    }
-
-
-    // 모든 장소 출력
-
 
 }
+
+export default new PlaceService();

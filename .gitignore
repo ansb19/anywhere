@@ -4,3 +4,4 @@
 /tsconfig.tsbuildinfo
 /backend-server.pem
 /ormconfig.json
+/test

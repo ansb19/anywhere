@@ -9,6 +9,11 @@ import authRouters from './auth';
 
  const router = Router();
 
+ router.get('/', (req, res) => {
+    console.log("백엔드 접속");
+    res.send("Welcome to the backend!");
+  });
+
 router.use('/user', userRoutes);
 router.use('/place', placeRoutes);
 router.use('/favorite', favoriteRoutes);
