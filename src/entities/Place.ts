@@ -13,7 +13,7 @@ export class Place {
     @Column({ type: 'varchar', length: 40 })
     place_name: string = '';
 
-    @Column({ type: 'long'})
+    @Column({ type: 'bigint'})
     user_id!: number;
 
     @Column({ type: 'double precision' })

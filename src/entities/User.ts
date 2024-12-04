@@ -6,7 +6,7 @@ import { Review } from "./Review";
 @Index(['id', 'nickname', 'email'])
 @Entity('USER')
 export class User {
-    @PrimaryColumn({ type: 'long', nullable: false })
+    @PrimaryColumn({ type: 'bigint', nullable: false })
     id!: number;
 
     @Column({ type: 'varchar', length: 50, unique: true })

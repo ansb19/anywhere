@@ -7,7 +7,7 @@ export class Favorite {
     @PrimaryGeneratedColumn()
     favorite_id: number = 0;
 
-    @Column({ type: 'long' })
+    @Column({ type: 'bigint' })
     user_id!: number;
 
     @Column({ type: 'int' })
