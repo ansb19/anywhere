@@ -31,8 +31,8 @@ router.get('/keyword/:keyword', PlaceController.findPlacebyKeyword)
 //해당 카테고리의 장소들 출력
 router.get('/category/:category', PlaceController.findPlacebyCategory)
 
-//해당 닉네임의 장소들 출력
-router.get('/nickname/:nickname', PlaceController.findPlacebyNickname)
+//해당 유저의 장소들 출력
+router.get('/user/:user_id', PlaceController.findPlacebyUserID)
 
 
 

@@ -19,10 +19,10 @@ router.put('/:favorite_id',FavoriteController.updateFavoritebyFavoriteID);
 router.delete('/:favorite_id',FavoriteController.deleteFavoritebyFavoriteID);
 
 //특정 장소 id를 통한 즐겨찾기들 조회
-router.get('/place/:place_id', FavoriteController.findReviewbyPlaceID);
+router.get('/place/:place_id', FavoriteController.findFavoritebyPlaceID);
 
 //닉네임을 통한 즐겨찾기들 조회
-router.get('/nickname/:nickname',FavoriteController.findReviewbyNickname);
+router.get('/user/:user_id',FavoriteController.findFavoritebyUserID);
 
 
 export default router;

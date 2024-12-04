@@ -27,13 +27,13 @@ export class FavoriteService extends Service<Favorite> {
     }
 
     //특정 장소 id를 통한 즐겨찾기들 조회
-    public async findReviewbyPlaceID(place_id: number): Promise<Favorite[]> {
+    public async findFavoritebyPlaceID(place_id: number): Promise<Favorite[]> {
         return await this.repository.findBy({ place_id });
     }
 
     //닉네임을 통한 즐겨찾기들 조회
-    public async findReviewbyNickname(nickname: string): Promise<Favorite[]> {
-        return await this.repository.findBy({ nickname });
+    public async findFavoritebyUserID(user_id: number): Promise<Favorite[]> {
+        return await this.repository.findBy({ user_id });
     }
 }
 export default new FavoriteService();

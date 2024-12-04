@@ -197,10 +197,10 @@ class PlaceController extends Controller {
     }
 
     //해당 닉네임의 장소들 출력
-    public findPlacebyNickname = async (req: Request, res: Response): Promise<void> => {
+    public findPlacebyUserID = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
-            const { nickname } = req.params;
-            const places = await PlaceService.findPlacebyNickname(nickname);
+            const { user_id } = req.params;
+            const places = await PlaceService.findPlacebyUserID(parseInt(user_id));
 
             if (places) {
                 return {

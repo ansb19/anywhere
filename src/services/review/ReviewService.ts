@@ -32,8 +32,8 @@ export class ReviewService extends Service<Review> {
     }
 
     //닉네임을 통한 리뷰들 조회
-    public async findReviewbyNickname(nickname: string): Promise<Review[] | undefined | null> {
-        return await this.repository.findBy({ nickname });
+    public async findReviewbyUserID(user_id: number): Promise<Review[] | undefined | null> {
+        return await this.repository.findBy({ user_id });
     }
 
 }

@@ -112,11 +112,11 @@ class ReviewController extends Controller {
         })
     }
 
-    //닉네임을 통한 리뷰들 조회
-    public findReviewbyNickname = async (req: Request, res: Response): Promise<void> => {
+    //유저id을 통한 리뷰들 조회
+    public findReviewbyUserID = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
-            const { nickname } = req.params;
-            const reviews = await ReviewService.findReviewbyNickname(nickname);
+            const { user_id } = req.params;
+            const reviews = await ReviewService.findReviewbyUserID(parseInt(user_id));
 
             if (reviews) {
                 return {

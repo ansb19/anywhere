@@ -7,8 +7,8 @@ export class Review {
     @PrimaryGeneratedColumn()
     review_id: number = 0;
 
-    @Column({ type: 'varchar', length: 20 })
-    nickname: string = '';
+    @Column({ type: 'long'})
+    user_id!: number;
 
     @Column({ type: 'int' })
     place_id: number = 0;

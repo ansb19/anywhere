@@ -13,8 +13,8 @@ export class Place {
     @Column({ type: 'varchar', length: 40 })
     place_name: string = '';
 
-    @Column({ type: 'varchar', length: 20 })
-    nickname: string = '';
+    @Column({ type: 'long'})
+    user_id!: number;
 
     @Column({ type: 'double precision' })
     lat: number = 0.0;
@@ -64,7 +64,7 @@ export class Place {
     owner: boolean = false; // 제보자 false 작성자 true
 
     @ManyToOne(() => User, (user) => user.places)
-    @JoinColumn(({ name: 'user_place_nickname' }))
+    @JoinColumn(({ name: 'user_place_id' }))
     user!: User;
 
     @ManyToOne(() => Category, (category) => category.places)

@@ -14,8 +14,8 @@ router.delete('/:review_id',ReviewController.deleteReviewbyReviewID); //리뷰 i
 //특정 장소 id를 통한 리뷰들 조회
 router.get('/place/:place_id',ReviewController.findReviewbyPlaceID)   
 
-//닉네임을 통한 리뷰들 조회
-router.get('/nickname/:nickname',ReviewController.findReviewbyNickname) 
+//유저id을 통한 리뷰들 조회
+router.get('/user/:user_id',ReviewController.findReviewbyUserID) 
 
 
 

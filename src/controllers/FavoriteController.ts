@@ -83,10 +83,10 @@ class FavoriteController extends Controller {
 
 
     //특정 장소 id를 통한 즐겨찾기들 조회
-    public findReviewbyPlaceID = async (req: Request, res: Response): Promise<void> => {
+    public findFavoritebyPlaceID = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
             const { place_id } = req.params;
-            const favorites = await FavoriteService.findReviewbyPlaceID(parseInt(place_id));
+            const favorites = await FavoriteService.findFavoritebyPlaceID(parseInt(place_id));
             if (favorites) {
                 return {
                     status: 200,
@@ -106,10 +106,10 @@ class FavoriteController extends Controller {
 
 
     //닉네임을 통한 즐겨찾기들 조회
-    public findReviewbyNickname = async (req: Request, res: Response): Promise<void> => {
+    public findFavoritebyUserID = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
-            const { nickname } = req.params;
-            const favorites = await FavoriteService.findReviewbyNickname(nickname);
+            const { user_id } = req.params;
+            const favorites = await FavoriteService.findFavoritebyUserID(parseInt(user_id));
             if (favorites) {
                 return {
                     status: 200,

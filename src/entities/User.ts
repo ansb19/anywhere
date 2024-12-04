@@ -1,17 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column, PrimaryColumn, OneOrMore, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, BeforeInsert, OneToMany, Index, } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, PrimaryColumn, OneOrMore, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, BeforeInsert, OneToMany, Index, Long, } from "typeorm";
 import { Place } from './Place';
 import { Favorite } from "./Favorite";
 import { Review } from "./Review";
 
-@Index(['nickname',])
+@Index(['id', 'nickname', 'email'])
 @Entity('USER')
 export class User {
-    @PrimaryColumn({ type: 'varchar', length: 50, nullable: false })
-    account_email?: string;
+    @PrimaryColumn({ type: 'long', nullable: false })
+    id!: number;
 
-    
-    @Column({ type: 'varchar', length: 20, unique: true })
+    @Column({ type: 'varchar', length: 50, unique: true })
+    email?: string;
+
+    @Column({ type: 'varchar', length: 30 })
     nickname?: string;
+
+    @Column({ type: 'varchar', length: 300 })
+    profileImage?: string;
 
     @Column({ type: 'varchar', length: 50 })
     phone_number?: string;

@@ -42,7 +42,7 @@ class UserController extends Controller {
     public findOneUser = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
             const { user_id } = req.params;
-            const user = await UserService.findOneUser(user_id);
+            const user = await UserService.findOneUser(parseInt(user_id));
 
             if (user) {
                 return {
@@ -67,7 +67,7 @@ class UserController extends Controller {
     public updateUserbyUserID = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
             const { user_id } = req.params;
-            const updateUser = await UserService.updateUserbyUserID(user_id, req.body);
+            const updateUser = await UserService.updateUserbyUserID(parseInt(user_id), req.body);
 
             if (updateUser) {
                 return {
@@ -90,7 +90,7 @@ class UserController extends Controller {
     public deleteUserbyUserID = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
             const { user_id } = req.params;
-            const deletedUser = await UserService.deleteUserbyUserID(user_id);
+            const deletedUser = await UserService.deleteUserbyUserID(parseInt(user_id));
 
             if (deletedUser) {
                 return {
@@ -113,8 +113,8 @@ class UserController extends Controller {
     //유저 로그인
     public loginUser = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
-            const { account_email } = req.body;
-            const LoginUser = await UserService.loginUser(account_email);
+            const { user_id } = req.body;
+            const LoginUser = await UserService.loginUser(parseInt(user_id));
 
             if (LoginUser) {
                 return {

@@ -70,9 +70,9 @@ export class PlaceService extends Service<Place> implements IPlaceService, IPlac
     }
 
     //해당 닉네임의 장소들 출력
-    public async findPlacebyNickname(nickname: string): Promise<Place[]> {
+    public async findPlacebyUserID(user_id: number): Promise<Place[]> {
         //추후 부 데이터베이스를 통해 성능 최적화 필요
-        return await this.repository.findBy({ nickname })
+        return await this.repository.findBy({user_id})
     }
 
 }
