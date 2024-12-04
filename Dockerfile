@@ -34,4 +34,4 @@ RUN npm install --only=production
 EXPOSE 80
 
 # Step 8: Start the server
-CMD ["npm", "run", "dev-ts"]
+CMD ["npm", "run", "dev-js"]
