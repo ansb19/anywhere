@@ -16,7 +16,7 @@ export const AppDataSource = new DataSource({
   username: db_user_name,
   password: db_password,
   database: db_database,
-  synchronize: false, // 개발 환경에서 true 사용 환경에서는 false
+  synchronize: true, // 개발 환경에서 true 사용 환경에서는 false
   logging: true,
   entities: [
     process.env.NODE_ENV === "production"
