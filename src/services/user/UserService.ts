@@ -31,6 +31,11 @@ export class UserService extends Service<User> implements IUserAuthService {
         return await this.delete(id);
     }
 
+    //임의 특정 조건의 사용자 한 명 조회 ( 중복확인, )
+    public async checkDuplicate(condition: Partial<User>): Promise<User | undefined | null> {
+        return await this.findSimple(condition);
+    }
+
     //유저 로그인
     public async loginUser(id: number): Promise<boolean> {
         return await this.findOnebyId(id)
@@ -43,9 +48,6 @@ export class UserService extends Service<User> implements IUserAuthService {
     public async logoutUser(id: number): Promise<boolean> {
         return true;
     }
-
-
-
 
 }
 

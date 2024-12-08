@@ -110,7 +110,7 @@ class UserController extends Controller {
     }
 
 
-    //유저 로그인
+    //유저 로그인/ 회원가입
     public loginUser = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
             const { user_id } = req.body;

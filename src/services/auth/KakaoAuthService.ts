@@ -4,9 +4,9 @@ import { axiosKakaoToken, axiosKakaoInfo } from "../../api/axios";
 
 
 export class KakaoAuthService implements ISocialAuthService {
-    private readonly clientID: string = process.env.KAKAO_REST_API_KEY as string;
+    private readonly clientID: string = process.env.KAKAO_DEV_REST_API_KEY as string;
     private readonly redirectUri: string = process.env.KAKAO_REDIRECT_URI_PRO as string;
-    private readonly clientSecret: string = process.env.KAKAO_CLIENT_SECRET as string;
+    private readonly clientSecret: string = process.env.KAKAO_DEV_CLIENT_SECRET as string;
 
 
 
@@ -46,7 +46,8 @@ export class KakaoAuthService implements ISocialAuthService {
             id: response.data.id,
             email: kakaoAccount.email,
             nickname: kakaoAccount.profile.nickname,
-            profileImage: kakaoAccount.profile.profile_image_url
+            profileImage: kakaoAccount.profile.profile_image_url,
+            phone: kakaoAccount.phone_number
         }
     }
 

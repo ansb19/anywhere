@@ -8,4 +8,5 @@ export interface SoicalUser {
     email?: string; // 이메일 (선택 제공)
     nickname: string; // 닉네임 또는 이름
     profileImage?: string; //url s3
+    phone: string;
 }
