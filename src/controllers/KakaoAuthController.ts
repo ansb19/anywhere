@@ -13,8 +13,8 @@ class KakaoAuthController extends Controller {
 
     public getKakaoAuthURL = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
-            const clientID = process.env.KAKAO_REST_API_KEY;
-            const redirecturi = process.env.KAKAO_REDIRECT_URI_PRO;
+            const clientID = process.env.KAKAO_DEV_REST_API_KEY;
+            const redirecturi = process.env.KAKAO_DEV_REDIRECT_URI_PRO;
             const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?client_id=${clientID}&redirect_uri=${redirecturi}&response_type=code`;
             return {
                 status: 200,
