@@ -5,7 +5,7 @@ import UserService from '../services/user/UserService';
 class UserController extends Controller {
 
 
-    //유저 생성(회원가입)
+    //유저 생성( 자체 회원가입)
     public createUser = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
             console.log(req.body);
@@ -17,6 +17,8 @@ class UserController extends Controller {
             }
         })
     }
+
+    
     //모든 사용자 조회
     public findAllUser = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
@@ -42,7 +44,7 @@ class UserController extends Controller {
     public findOneUser = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
             const { user_id } = req.params;
-            const user = await UserService.findOneUser(parseInt(user_id));
+            const user = await UserService.findOneUserbyID(parseInt(user_id));
 
             if (user) {
                 return {
@@ -67,7 +69,7 @@ class UserController extends Controller {
     public updateUserbyUserID = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
             const { user_id } = req.params;
-            const updateUser = await UserService.updateUserbyUserID(parseInt(user_id), req.body);
+            const updateUser = await UserService.updateUserbyID(parseInt(user_id), req.body);
 
             if (updateUser) {
                 return {
@@ -90,7 +92,7 @@ class UserController extends Controller {
     public deleteUserbyUserID = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
             const { user_id } = req.params;
-            const deletedUser = await UserService.deleteUserbyUserID(parseInt(user_id));
+            const deletedUser = await UserService.deleteUserbyID(parseInt(user_id));
 
             if (deletedUser) {
                 return {

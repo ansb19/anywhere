@@ -38,5 +38,6 @@ class KakaoAuthController extends Controller {
             }
         })
     }
+
 }
 export default KakaoAuthController;

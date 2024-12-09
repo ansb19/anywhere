@@ -9,7 +9,8 @@ export class UserService extends Service<User> implements IUserAuthService {
     }
     //유저 생성(회원가입)
     public async createUser(userData: Partial<User>): Promise<User> {
-        return await this.create(userData);
+        const newUser = await this.create(userData);
+        return newUser;
     }
     //사용자 전부 조회(정보 조회)
     public async findAllUser(): Promise<User[]> {
@@ -17,17 +18,17 @@ export class UserService extends Service<User> implements IUserAuthService {
     }
 
     // id를 통한 사용자 한명 조회
-    public async findOneUser(id: number): Promise<User | undefined | null> {
+    public async findOneUserbyID(id: number): Promise<User | undefined | null> {
         return await this.findOnebyId(id);
     }
 
     // id를 통한 사용자 수정
-    public async updateUserbyUserID(id: number, userData: User): Promise<User | null> { //상속 하지 않음
+    public async updateUserbyID(id: number, userData: User): Promise<User | null> { //상속 하지 않음
         return await this.update(id, userData);
     }
 
     //id를 이용한 사용자 삭제
-    public async deleteUserbyUserID(id: number): Promise<boolean> {
+    public async deleteUserbyID(id: number): Promise<boolean> {
         return await this.delete(id);
     }
 

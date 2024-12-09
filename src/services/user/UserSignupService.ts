@@ -1,21 +1,23 @@
+import { SocialUser } from "../../entities/SocialUser";
 import { User } from "../../entities/User";
+import { formatPhoneNumber } from "../../utils/formatter";
 import { verifyResult } from "../auth/AuthService";
 import { EmailAuthService } from "../auth/EmailAuthService";
-import { KakaoAuthService } from "../auth/KakaoAuthService";
+import { KakaoService } from "../auth/KakaoService";
 import { PasswordService } from "../auth/PasswordService";
 import RedisService from "../auth/RedisService";
 import { SMSAuthService } from "../auth/SMSAuthService";
+import { SocialUserService } from "./SocialUserService";
 import { UserService } from "./UserService";
 
 export class UserSignupService {
-
-
     constructor(
         private userService: UserService,
+        private socialuserService: SocialUserService,
         private emailAuthService: EmailAuthService,
         private smsAuthService: SMSAuthService,
         private passwordService: PasswordService,
-        private kakaoService: KakaoAuthService
+        private kakaoService: KakaoService
     ) {
 
     }
@@ -28,7 +30,8 @@ export class UserSignupService {
         //4. 휴대폰 인증번호가 맞는지 확인(프론트)
         //5. 
 
-        userData.password_hash = await this.hash_password(userData.password_hash || '');
+
+        userData.password_hash = await this.passwordService.hashPassword(userData.password_hash || '');
         await this.userService.createUser(userData);
 
         return true;
@@ -64,18 +67,32 @@ export class UserSignupService {
             return verifyResult.INVALID;
         }
     }
-    // 비밀번호 해시화
-    public async hash_password(password: string): Promise<string | undefined> {
-        return await this.passwordService.hashPassword(password);
-    }
 
-    public async signupKakaoUser(code: string): Promise<void> {
+
+    //카카오 가입
+    public async signupKakaoUser(code: string): Promise<SocialUser> {
         const accesssToken = await this.kakaoService.getAccessToken(code);
-        const userinfo = await this.kakaoService.getUserInfo(accesssToken);
-        
-        userinfo.id;
+        const kakaoUserInfo = await this.kakaoService.getUserInfo(accesssToken);
 
+
+        const newUser = await this.userService.createUser({ // 유저 생성
+            phone: formatPhoneNumber(kakaoUserInfo.phone),
+            email: kakaoUserInfo.email,
+            nickname: kakaoUserInfo.nickname,
+            profileImage: kakaoUserInfo.profileImage
+        });
+
+
+
+        const newKakaoUser = await this.socialuserService.createSocialUser({ // 소셜 유저도 생성
+            user: newUser,
+            provider_name: "kakao",
+            provider_user_id: kakaoUserInfo.id
+        });
+
+        return newKakaoUser;
     }
+
 }
 
 export default UserSignupService;

@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, PrimaryColumn, OneOrMore, Creat
 import { Place } from './Place';
 import { Favorite } from "./Favorite";
 import { Review } from "./Review";
-import { SocialAccount } from "./SocialAccount";
+import { SocialUser } from "./SocialUser";
 
 @Index(['id', 'nickname', 'email', 'profileImage'])
 @Entity('USER')
@@ -53,18 +53,18 @@ export class User {
     deleted_at?: Date;
 
     //user (1) -> place(N)
-    @OneToMany(() => Place, (place) => place.user)
+    @OneToMany(() => Place, (place) => place.user, { cascade: true })
     places!: Place[];
 
     //user (1) -> favoite(N)
-    @OneToMany(() => Favorite, (favorite) => favorite.user)
+    @OneToMany(() => Favorite, (favorite) => favorite.user, { cascade: true })
     favorites!: Favorite[];
 
     //user (1) -> review(N)
-    @OneToMany(() => Review, (review) => review.user)
+    @OneToMany(() => Review, (review) => review.user, { cascade: true })
     reviews!: Review[];
 
     //user (1) -> socialAccount(N)
-    @OneToMany(() => SocialAccount, (socialAccount) => socialAccount.user)
-    socialAccounts!: SocialAccount[];
+    @OneToMany(() => SocialUser, (socialUser) => socialUser.user, { cascade: true })
+    socialUsers!: SocialUser[];
 }

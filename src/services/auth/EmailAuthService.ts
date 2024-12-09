@@ -1,6 +1,7 @@
 import nodemailer, { Transporter } from 'nodemailer';
 import RedisService from './RedisService';
 import AuthService, { verifyResult } from './AuthService';
+import { generateVerificationCode } from '../../utils/verification_code';
 
 //작은 규모의 애플리케이션이나 단일 서버로 충분한 경우 createClient를 사용합니다.
 //데이터가 많고 고가용성이 필요하며 수평적 확장이 필요한 경우 createCluster를 사용합니다
@@ -44,7 +45,7 @@ export class EmailAuthService extends AuthService {
 
     public async sendVerification(email_address: string): Promise<void> {
         const subject: string = 'anywhere 인증번호가 도착하였습니다.';
-        let cert_code: string = this.generateVerificationCode();
+        let cert_code: string = generateVerificationCode();
         const text: string =
             `anywhere 인증 번호가 도착하였습니다
         ${cert_code}

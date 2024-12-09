@@ -2,6 +2,7 @@ import CoolsmsMessageService from "coolsms-node-sdk";
 import AuthService, { verifyResult } from "./AuthService";
 import { createClient, RedisClientType } from "redis";
 import RedisService from "./RedisService";
+import { generateVerificationCode } from "../../utils/verification_code";
 
 
 export class SMSAuthService extends AuthService {
@@ -31,7 +32,7 @@ export class SMSAuthService extends AuthService {
 
     //sms 인증 번호 전송
     public async sendVerification(phone_number: string): Promise<void> {
-        let cert_code: string = this.generateVerificationCode(); // 인증 번호 생성
+        let cert_code: string = generateVerificationCode(); // 인증 번호 생성
         const text: string =
             `anywhere 인증 번호가 도착하였습니다
         ${cert_code}

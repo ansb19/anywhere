@@ -1,12 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn, } from "typeorm";
 import { User } from "./User";
 
-@Entity("SOCIAL_ACCOUNT")
-export class SocialAccount {
+@Entity("SOCIAL_USER")
+export class SocialUser {
     @PrimaryGeneratedColumn({ type: "bigint" })
     id!: number;
 
-    @ManyToOne(() => User, (user) => user.socialAccounts, { onDelete: "CASCADE" })
+    @ManyToOne(() => User, (user) => user.socialUsers, )
     @JoinColumn({ name: "user_id" })
     user!: User;
 
@@ -19,5 +19,4 @@ export class SocialAccount {
     @CreateDateColumn({ type: "timestamp without time zone", default: () => "CURRENT_TIMESTAMP" })
     created_at!: Date;
 
-    
 }
