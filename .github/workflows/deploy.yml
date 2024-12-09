@@ -14,6 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # 2. .env 파일 생성
       - name: Create .env file
         run: |
           echo DB_TYPE=${{ secrets.DB_TYPE }} >> .env
@@ -38,21 +39,30 @@ jobs:
           echo KAKAO_DEV_CLIENT_SECRET=${{ secrets.KAKAO_DEV_CLIENT_SECRET }} >> .env
 
 
-      # 2. Docker 로그인 (Docker Hub 사용 시)
+      # 3. Docker 로그인 (Docker Hub 사용 시)
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 3. Docker 이미지 빌드 및 푸시
+      # 4. Docker 이미지 빌드 및 푸시
       - name: Build and Push Docker Image
         run: |
           docker build -t ansb19/anywhere:latest .
           docker push ansb19/anywhere:latest
           
+      # 5. docker-compose.yml 파일 전송
+      - name: Upload docker-compose.yml to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: ./docker-compose.yml
+          target: /home/ec2-user/docker-compose.yml
 
-      # 4. AWS 서버에 배포
+      # 5. AWS EC2에서 Docker Compose 실행
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@master
         with:
@@ -60,12 +70,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 기존 컨테이너 중지 및 삭제
-            docker stop anywhere || true
-            docker rm anywhere || true
-
-            # 최신 이미지 Pull
-            docker pull ansb19/anywhere:latest
-
-            # 새로운 컨테이너 실행
-            docker run -d -p 80:80 --name anywhere ansb19/anywhere:latest
+            cd /home/ec2-user
+            docker-compose down || true
+            docker-compose pull
+            docker-compose up -d

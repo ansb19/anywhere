@@ -7,6 +7,8 @@ import signupRoutes from './signup';
 
 
 
+//상위 라우터로써  라우터인 '/user/'
+
 const router = Router();
 
 router.use('/manage', manageRoutes);

@@ -5,6 +5,6 @@ import kakaoRoutes from './kakao';
 const router = Router();
 
 router.use('/kakao', kakaoRoutes);
-router.use('/google',);
+//router.use('/google',);
 
 export default router;

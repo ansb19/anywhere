@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    image: ansb19/anywhere:latest
+    container_name: node_app
+    ports:
+      - "80:80" # EC2의 80번 포트를 컨테이너 내부 포트에 매핑
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DB_TYPE: ${DB_TYPE}
+      DB_HOST_NAME: ${DB_HOST_NAME}
+      DB_PORT: ${DB_PORT}
+      DB_USER_NAME: ${DB_USER_NAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      PORT: ${PORT}
+      FRONT_END_API: ${FRONT_END_API}
+      NODE_ENV: ${NODE_ENV}
+      KAKAO_REST_API_KEY: ${KAKAO_REST_API_KEY}
+      KAKAO_JAVASCRIPT_KEY: ${KAKAO_JAVASCRIPT_KEY}
+      KAKAO_REDIRECT_URI_DEV: ${KAKAO_REDIRECT_URI_DEV}
+      KAKAO_REDIRECT_URI_PRO: ${KAKAO_REDIRECT_URI_PRO}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
+      KAKAO_DEV_REST_API_KEY: ${KAKAO_DEV_REST_API_KEY}
+      KAKAO_DEV_JAVASCRIPT_KEY: ${KAKAO_DEV_JAVASCRIPT_KEY}
+      KAKAO_DEV_REDIRECT_URI_DEV: ${KAKAO_DEV_REDIRECT_URI_DEV}
+      KAKAO_DEV_REDIRECT_URI_PRO: ${KAKAO_DEV_REDIRECT_URI_PRO}
+      KAKAO_DEV_CLIENT_SECRET: ${KAKAO_DEV_CLIENT_SECRET}
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
