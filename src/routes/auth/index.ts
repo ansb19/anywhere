@@ -6,4 +6,5 @@ const router = Router();
 
 router.use('/kakao', kakaoRoutes);
 router.use('/google',);
+
 export default router;

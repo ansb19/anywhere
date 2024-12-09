@@ -1,4 +1,4 @@
-export interface ISocialAuthService {
+export interface ISocialService {
     getAccessToken(code: string): Promise<string>; // Authorization Code로 액세스 토큰 가져오기
     getUserInfo(accesssToken: string): Promise<SoicalUser>; // 액세스 토큰으로 사용자 정보 가져오기
 }

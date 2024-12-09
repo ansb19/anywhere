@@ -1,14 +1,14 @@
-import { ISocialAuthService } from "../services/auth/ISocialAuthService";
+import { ISocialService } from "../services/auth/ISocialAuthService";
 import Controller from "./Controller";
 import { Request, Response } from "express";
 
 
 
-class KakaoAuthController extends Controller {
-    private kakaoAuthService: ISocialAuthService; // DIP 의존성 역전 원칙
-    constructor(kakaoAuthService: ISocialAuthService) {
+class KakaoController extends Controller {
+    private kakaoService: ISocialService; // DIP 의존성 역전 원칙
+    constructor(kakaoService: ISocialService) {
         super();
-        this.kakaoAuthService = kakaoAuthService;
+        this.kakaoService = kakaoService;
     }
 
     public getKakaoAuthURL = async (req: Request, res: Response): Promise<void> => {
@@ -28,8 +28,8 @@ class KakaoAuthController extends Controller {
         this.execute(req, res, async () => {
             const code = req.query.code as string;
             console.log('Received code:', code);
-            const accessToken = await this.kakaoAuthService.getAccessToken(code);
-            const userInfo = await this.kakaoAuthService.getUserInfo(accessToken);
+            const accessToken = await this.kakaoService.getAccessToken(code);
+            const userInfo = await this.kakaoService.getUserInfo(accessToken);
 
             return {
                 status: 200,
@@ -40,4 +40,4 @@ class KakaoAuthController extends Controller {
     }
 
 }
-export default KakaoAuthController;
+export default KakaoController;
