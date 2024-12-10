@@ -41,7 +41,7 @@ jobs:
           source: ./docker-compose.yml
           target: /home/ec2-user/docker-compose.yml
 
-      # 5. AWS EC2에서 Docker Compose docker-compose.yml로 디렉토리도 생성됨..
+      # 5. AWS EC2에서 Docker Compose  docker-compose.yml로 디렉토리도 생성됨..
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@master
         with:
@@ -50,6 +50,13 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ec2-user/docker-compose.yml/
+
+            
+            docker ps -q --filter "name=anywhere" | grep -q . && docker stop anywhere && \
+            docker rm anywhere || true
+
+            docker network prune -f || true
+
             docker-compose down || true
             docker-compose pull
             docker-compose up -d
