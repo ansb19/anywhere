@@ -14,8 +14,40 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # 2. .env 파일 생성 // docker- compose.yml에 등록해서 필요 없어짐
-      
+      # 2. .env 파일 생성
+      - name: Create .env file
+        run: |
+          echo REDIS_URL=${{ secrets.REDIS_URL }} >> .env        
+          echo DB_TYPE=${{ secrets.DB_TYPE }} >> .env
+          echo DB_HOST_NAME=${{ secrets.DB_HOST_NAME }} >> .env
+          echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+          echo DB_USER_NAME=${{ secrets.DB_USER_NAME }} >> .env
+          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
+          echo DB_DATABASE=${{ secrets.DB_DATABASE }} >> .env
+          echo PORT=${{ secrets.PORT }} >> .env
+          echo FRONT_END_API=${{ secrets.FRONT_END_API }} >> .env
+          echo NODE_ENV=${{ secrets.NODE_ENV }} >> .env
+          echo KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }} >> .env
+          echo KAKAO_JAVASCRIPT_KEY=${{ secrets.KAKAO_JAVASCRIPT_KEY }} >> .env
+          echo KAKAO_REDIRECT_URI_DEV=${{ secrets.KAKAO_REDIRECT_URI_DEV }} >> .env
+          echo KAKAO_REDIRECT_URI_PRO=${{ secrets.KAKAO_REDIRECT_URI_PRO }} >> .env
+          echo KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }} >> .env
+          
+          echo KAKAO_DEV_REST_API_KEY=${{ secrets.KAKAO_DEV_REST_API_KEY }} >> .env
+          echo KAKAO_DEV_JAVASCRIPT_KEY=${{ secrets.KAKAO_DEV_JAVASCRIPT_KEY }} >> .env
+          echo KAKAO_DEV_REDIRECT_URI_DEV=${{ secrets.KAKAO_DEV_REDIRECT_URI_DEV }} >> .env
+          echo KAKAO_DEV_REDIRECT_URI_PRO=${{ secrets.KAKAO_DEV_REDIRECT_URI_PRO }} >> .env
+          echo KAKAO_DEV_CLIENT_SECRET=${{ secrets.KAKAO_DEV_CLIENT_SECRET }} >> .env
+
+      # 2.2 .env 파일 전송
+      - name: Upload .env to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: .env
+          target: /home/ec2-user/.env
 
 
       # 3. Docker 로그인 (Docker Hub 사용 시)
@@ -51,11 +83,6 @@ jobs:
           script: |
             cd /home/ec2-user/docker-compose.yml/
 
-            
-            docker ps -q --filter "name=anywhere" | grep -q . && docker stop anywhere && \
-            docker rm anywhere || true
-
-            docker network prune -f || true
 
             docker-compose down || true
             docker-compose pull
