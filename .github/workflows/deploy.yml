@@ -48,7 +48,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: .env
           target: /home/ec2-user/.env
-
+          
 
       # 3. Docker 로그인 (Docker Hub 사용 시)
       - name: Log in to Docker Hub
@@ -83,6 +83,11 @@ jobs:
           script: |
             cd /home/ec2-user/docker-compose.yml/
 
+            docker ps -q --filter "name=anywhere" | grep -q . && docker stop anywhere && \
+            docker rm anywhere || true
+
+            docker network prune -f || true
+            docker volume prune -f || true
 
             docker-compose down || true
             docker-compose pull
