@@ -76,7 +76,7 @@ export class UserSignupService {
 
         const provider: string = "kakao";
 
-        const kakaoUser: SocialUser | null = await this.socialuserService.findOneSocialUserbyProviderID(provider, kakaoUserInfo.id);
+        const kakaoUser: SocialUser | null = await this.socialuserService.findOneSocialUserbyProviderID(kakaoUserInfo.id, provider);
 
         if (kakaoUser) {
             // 로그인 서비스로 이동
