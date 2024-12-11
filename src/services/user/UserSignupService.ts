@@ -74,23 +74,31 @@ export class UserSignupService {
         const accesssToken = await this.kakaoService.getAccessToken(code);
         const kakaoUserInfo = await this.kakaoService.getUserInfo(accesssToken);
 
+        const provider: string = "kakao";
 
-        const newUser = await this.userService.createUser({ // 유저 생성
-            phone: formatPhoneNumber(kakaoUserInfo.phone),
-            email: kakaoUserInfo.email,
-            nickname: kakaoUserInfo.nickname,
-            profileImage: kakaoUserInfo.profileImage
-        });
+        const kakaoUser: SocialUser | null = await this.socialuserService.findOneSocialUserbyProviderID(provider, kakaoUserInfo.id);
 
+        if (kakaoUser) {
+            // 로그인 서비스로 이동
+            return kakaoUser;
+        }
 
+        else {
+            const newUser = await this.userService.createUser({ // 유저 생성
+                phone: formatPhoneNumber(kakaoUserInfo.phone),
+                email: kakaoUserInfo.email,
+                nickname: kakaoUserInfo.nickname,
+                profileImage: kakaoUserInfo.profileImage
+            });
 
-        const newKakaoUser = await this.socialuserService.createSocialUser({ // 소셜 유저도 생성
-            user: newUser,
-            provider_name: "kakao",
-            provider_user_id: kakaoUserInfo.id
-        });
+            const newKakaoUser = await this.socialuserService.createSocialUser({ // 소셜 유저도 생성
+                user: newUser,
+                provider_name: provider,
+                provider_user_id: kakaoUserInfo.id
+            });
 
-        return newKakaoUser;
+            return newKakaoUser;
+        }
     }
 
 }
