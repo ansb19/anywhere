@@ -71,7 +71,7 @@ export class Place {
     user!: User;
 
     @ManyToOne(() => Category, (category) => category.places)
-    @JoinColumn({ name: 'place_category_id' })
+    @JoinColumn({ name: 'category_id' })
     category!: Category;
 
     @ManyToOne(() => SubCategory, (subcategory) => subcategory.places)
