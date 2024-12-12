@@ -47,7 +47,7 @@ export class Place {
     photo_s3_url: string = '';
 
     @Column({ type: 'varchar', length: 5, array: true })
-    week: string = '';
+    week!: string;
     // @Column({ type: 'smallint', array: true })
     // charge_id: number = 0; 다대다 
 
