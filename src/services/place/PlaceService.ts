@@ -65,14 +65,16 @@ export class PlaceService extends Service<Place> implements IPlaceService, IPlac
 
     //아직 미완성
     //해당 카테고리의 장소들 출력
-    public async findPlacebyCategory(category_id: number): Promise<Place[]> {
-        return await this.repository.findBy({ category_id })
-    }
+    public async findPlacebyCategory(subcategory_id: number): Promise<Place[]> {
+        return await this.repository.find({
+            where: { subcategory: { id: subcategory_id } }
+        })
+    };
 
     //해당 닉네임의 장소들 출력
     public async findPlacebyUserID(user_id: number): Promise<Place[]> {
         //추후 부 데이터베이스를 통해 성능 최적화 필요
-        return await this.repository.findBy({user_id})
+        return await this.repository.findBy({ user_id })
     }
 
 }
