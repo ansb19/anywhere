@@ -11,7 +11,7 @@ export class SubCategory {
     name : string = '';
     
     @ManyToOne(() => Category, (category) => category.subcategories)
-    @JoinColumn({ name: 'category_id' })
+    @JoinColumn({ name: 'subcategory_category_id' })
     category!: Category;
 
     @OneToMany(() => Place, (place) => place.subcategory)
