@@ -37,7 +37,7 @@ export class UserSignupController extends Controller {
             const newKakaoUser = await this.userSignupService.signupKakaoUser(code);
             return {
                 status: 201,
-                message: '유저 카카오 회원가입 성공',
+                message: '유저 카카오 회원가입/로그인 성공',
                 data: newKakaoUser
             }
         })

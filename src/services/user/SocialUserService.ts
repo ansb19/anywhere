@@ -16,7 +16,7 @@ export class SocialUserService extends Service<SocialUser> {
         return await this.findOnebyId(id);
     }
 
-    public async updateSocialUserbyID(id: number, socialuserData: SocialUser): Promise<SocialUser | null> {
+    public async updateSocialUserbyID(id: number, socialuserData:  Partial<SocialUser>): Promise<SocialUser | null> {
         return await this.update(id, socialuserData);
     }
 

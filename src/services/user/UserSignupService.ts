@@ -22,6 +22,7 @@ export class UserSignupService {
 
     }
 
+    //자체 회원 가입 
     public async signup(userData: Partial<User>): Promise<boolean> {
         //1. 아이디 중복확인이 되었는지 체크 (프론트)
         //2. 닉네임이 중복확인이 되었는지 체크 (프론트)
@@ -69,18 +70,19 @@ export class UserSignupService {
     }
 
 
-    //카카오 가입
+    //카카오 소셜 가입
     public async signupKakaoUser(code: string): Promise<SocialUser> {
         const accesssToken = await this.kakaoService.getAccessToken(code);
         const kakaoUserInfo = await this.kakaoService.getUserInfo(accesssToken);
 
         const provider: string = "kakao";
 
-        const kakaoUser: SocialUser | null = await this.socialuserService.findOneSocialUserbyProviderID(kakaoUserInfo.id, provider);
+        const existkakaoUser: SocialUser | null =
+            await this.socialuserService.findOneSocialUserbyProviderID(kakaoUserInfo.id, provider);
 
-        if (kakaoUser) {
-            // 로그인 서비스로 이동
-            return kakaoUser;
+        if (existkakaoUser) {
+            // 로그인 
+            return existkakaoUser;
         }
 
         else {

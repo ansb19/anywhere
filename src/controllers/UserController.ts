@@ -112,36 +112,36 @@ class UserController extends Controller {
     }
 
 
-    //유저 로그인/ 회원가입
-    public loginUser = async (req: Request, res: Response): Promise<void> => {
-        this.execute(req, res, async () => {
-            const { user_id } = req.body;
-            const LoginUser = await UserService.loginUser(parseInt(user_id));
+    // //유저 로그인/ 회원가입
+    // public loginUser = async (req: Request, res: Response): Promise<void> => {
+    //     this.execute(req, res, async () => {
+    //         const { user_id } = req.body;
+    //         const LoginUser = await UserService.loginUser(parseInt(user_id));
 
-            if (LoginUser) {
-                return {
-                    status: 200,
-                    message: "유저 로그인 완료",
-                    data: LoginUser
-                }
-            }
-            else {
-                return {
-                    status: 404,
-                    message: "유저 로그인 실패",
-                    data: LoginUser
-                }
-            }
+    //         if (LoginUser) {
+    //             return {
+    //                 status: 200,
+    //                 message: "유저 로그인 완료",
+    //                 data: LoginUser
+    //             }
+    //         }
+    //         else {
+    //             return {
+    //                 status: 404,
+    //                 message: "유저 로그인 실패",
+    //                 data: LoginUser
+    //             }
+    //         }
 
-        })
-    }
+    //     })
+    // }
 
-    //미완성 사용자 로그아웃
-    public logoutUser = async (req: Request, res: Response): Promise<void> => {
-        this.execute(req, res, async () => {
+    // //미완성 사용자 로그아웃
+    // public logoutUser = async (req: Request, res: Response): Promise<void> => {
+    //     this.execute(req, res, async () => {
 
-        })
-    }
+    //     })
+    // }
 
 
 }

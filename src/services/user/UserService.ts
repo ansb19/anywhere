@@ -1,9 +1,9 @@
 import { User } from '../../entities/User';
 import Service from '../Service';
-import { IUserAuthService } from './IUserAuthService';
 
 
-export class UserService extends Service<User> implements IUserAuthService {
+
+export class UserService extends Service<User> {
     constructor() {
         super(User);
     }
@@ -23,7 +23,7 @@ export class UserService extends Service<User> implements IUserAuthService {
     }
 
     // id를 통한 사용자 수정
-    public async updateUserbyID(id: number, userData: User): Promise<User | null> { //상속 하지 않음
+    public async updateUserbyID(id: number, userData: Partial<User>): Promise<User | null> { //상속 하지 않음
         return await this.update(id, userData);
     }
 
@@ -32,24 +32,12 @@ export class UserService extends Service<User> implements IUserAuthService {
         return await this.delete(id);
     }
 
-    //임의 특정 조건의 사용자 한 명 조회 ( 중복확인, )
+    //임의 특정 조건의 사용자 한 명 조회 ( 중복확인, 로그인 )
     public async checkDuplicate(condition: Partial<User>): Promise<User | undefined | null> {
         return await this.findSimple(condition);
     }
 
-    //유저 로그인
-    public async loginUser(id: number): Promise<boolean> {
-        return await this.findOnebyId(id)
-            ? true
-            : false
-            ;
-    }
-
-    //미완성//사용자 로그아웃
-    public async logoutUser(id: number): Promise<boolean> {
-        return true;
-    }
-
+    
 }
 
 export default new UserService();
