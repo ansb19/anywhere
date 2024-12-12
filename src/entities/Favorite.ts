@@ -17,10 +17,10 @@ export class Favorite {
     created_at!: Date;
 
     @ManyToOne(() => User, (user) => user.favorites)
-    @JoinColumn({ name: 'user_favorite_user_id' })
+    @JoinColumn({ name: 'user_id' })
     user!: User;
 
     @ManyToOne(() => Place, (place) => place.favorites)
-    @JoinColumn({ name: 'place_favorite_place_id' })
+    @JoinColumn({ name: 'place_id' })
     place!: Place;
 }

@@ -20,10 +20,10 @@ export class Review {
     created_at!: Date;
 
     @ManyToOne(() => User, (user) => user.reviews)
-    @JoinColumn({name: 'user_review_review_id'})
+    @JoinColumn({name: 'user_id'})
     user!: User;
 
     @ManyToOne(() => Place, (place) => place.reviews)
-    @JoinColumn({name: 'place_review_review_id'})
+    @JoinColumn({name: 'place_id'})
     place!: Place;
 }

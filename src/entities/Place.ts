@@ -4,6 +4,7 @@ import { Category } from "./Category";
 import { Charge } from "./Charge";
 import { Favorite } from "./Favorite";
 import { Review } from "./Review";
+import { SubCategory } from "./SubCategory";
 @Index(['tag'],)
 @Entity('PLACE')
 export class Place {
@@ -13,7 +14,7 @@ export class Place {
     @Column({ type: 'varchar', length: 40 })
     place_name: string = '';
 
-    @Column({ type: 'bigint'})
+    @Column({ type: 'bigint' })
     user_id!: number;
 
     @Column({ type: 'double precision' })
@@ -22,8 +23,8 @@ export class Place {
     @Column({ type: 'double precision' })
     lon: number = 0.0;
 
-    @Column({ type: 'smallint' })
-    category_id: number = 0;
+    // @Column({ type: 'smallint' })
+    // category_id: number = 0;
 
     @CreateDateColumn({ type: 'timestamp without time zone', default: () => 'CURRENT_TIMESTAMP' })
     created_at!: Date;
@@ -45,6 +46,8 @@ export class Place {
     @Column({ type: 'varchar', length: 500, array: true })
     photo_s3_url: string = '';
 
+    @Column({ type: 'varchar', length: 5, array: true })
+    week: string = '';
     // @Column({ type: 'smallint', array: true })
     // charge_id: number = 0; 다대다 
 
@@ -64,15 +67,19 @@ export class Place {
     owner: boolean = false; // 제보자 false 작성자 true
 
     @ManyToOne(() => User, (user) => user.places)
-    @JoinColumn(({ name: 'user_place_id' }))
+    @JoinColumn(({ name: 'user_id' }))
     user!: User;
 
     @ManyToOne(() => Category, (category) => category.places)
     @JoinColumn({ name: 'category_id' })
     category!: Category;
 
+    @ManyToOne(() => SubCategory, (subcategory) => subcategory.places)
+    @JoinColumn({ name: 'subcategory_id' })
+    subcategory!: SubCategory;
+
     @ManyToMany(() => Charge, (charge) => charge.places)
-    @JoinTable({ name: 'place_charge' })
+    @JoinColumn({ name: 'charge_id' })
     charges!: Charge[];
 
     @OneToMany(() => Favorite, (favorite) => favorite.place)
