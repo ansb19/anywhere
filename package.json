@@ -37,7 +37,7 @@
     "clean": "npx tsc --build --clean",
     "start": "node dist/server.js",
     "dev-js": "concurrently \"npx tsc --watch\" \"nodemon -q dist/server.js\"",
-    "dev-ts": "concurrently \"npm run migration-run\" \"npx nodemon --exec \\\"ts-node\\\" src/server.ts\"",
+    "dev-ts": "npx nodemon --exec \"ts-node\" src/server.ts",
     "migration-run": "npx typeorm migration:run",
     "migration-revert": "npx typeorm migration:revert",
     "migration-show": "npx typeorm migration:show"
