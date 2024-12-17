@@ -10,15 +10,15 @@ export class UserLoginService {
         private redisService: RedisService
     ) { }
 
-    public async login(user_id: string, password: string, loginType: string): Promise<boolean | undefined> {
+    public async login(anywhere_id: string, password: string, loginType: string): Promise<boolean | undefined> {
 
-        const user: Partial<User | null | undefined> = await this.userService.findSimple({ user_id });
+        const user: Partial<User | null | undefined> = await this.userService.findSimple({ anywhere_id });
         if (user) { //유저가 존재하면
             const isPassword: boolean | undefined = await this.passwordService.verifyPassword(password, user.password_hash as string)
 
             // 웹이라면 세션 추가
             if (isPassword || loginType === "web") {
-                
+
             }
 
             // 앱이라면
