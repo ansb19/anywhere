@@ -6,7 +6,7 @@ export class SocialUser {
     @PrimaryGeneratedColumn({ type: "bigint" })
     id!: number;
 
-    @ManyToOne(() => User, (user) => user.socialUsers, )
+    @ManyToOne(() => User, (user) => user.socialUsers, { onDelete: "CASCADE" })
     @JoinColumn({ name: "user_id" })
     user!: User;
 

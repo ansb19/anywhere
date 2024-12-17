@@ -20,6 +20,9 @@ export class UserLoginService {
             if (isPassword || loginType === "web") {
                 
             }
+
+            // 앱이라면
+
             return isPassword; //패스워드가 맞으면 true 패스워드가 틀리면 false
         }
         else { // 유저가 존재하지 않으면

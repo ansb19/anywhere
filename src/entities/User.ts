@@ -29,10 +29,10 @@ export class User {
 
 
     @Column({ type: "varchar", length: 40, unique: true, nullable: true })
-    user_id?: string; //자체 회원가입 사용자의 고유 ID
+    anywhere_id?: string | null; //자체 회원가입 사용자의 고유 ID
 
     @Column({ type: "varchar", length: 255, nullable: true })
-    password_hash?: string; //자체 회원가입 사용자의 비밀번호해시
+    password_hash?: string | null; //자체 회원가입 사용자의 비밀번호해시
 
 
     @Column({ type: 'smallint', default: 0 })
@@ -50,7 +50,7 @@ export class User {
 
     @DeleteDateColumn({ type: 'timestamp without time zone', nullable: true })
     //db에 없음
-    deleted_at?: Date;
+    deleted_at?: Date | null;
 
     //user (1) -> place(N)
     @OneToMany(() => Place, (place) => place.user, { cascade: true })
@@ -65,6 +65,6 @@ export class User {
     reviews!: Review[];
 
     //user (1) -> socialAccount(N)
-    @OneToMany(() => SocialUser, (socialUser) => socialUser.user, { cascade: true })
+    @OneToMany(() => SocialUser, (socialUser) => socialUser.user, { cascade: true, onDelete: "CASCADE" })
     socialUsers!: SocialUser[];
 }
