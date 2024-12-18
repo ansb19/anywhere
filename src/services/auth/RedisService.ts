@@ -10,13 +10,28 @@ export class RedisService {
         this.client.connect();
     }
 
-    async set(key: string, value: string, expiredAfterSec: number): Promise<void> {
-        await this.client.set(key, value, { EX: expiredAfterSec });
+    //세션 만들기
+    public async setSession(key: string, value: string, expireTime?: number): Promise<void> {
+        if (expireTime)
+            await this.client.set(key, value, { EX: expireTime }); //sec 단위
+        else
+            await this.client.set(key, value);
     }
 
-    async get(key: string): Promise<string | null> {
+    //세션 갱신
+    public async refreshSession(key: string, expireTime: number): Promise<void> {
+        await this.client.expire(key, expireTime);
+    }
+
+    //세션 조회
+    public async getSession(key: string): Promise<string | null> {
         return await this.client.get(key);
     }
+    //세션 삭제
+    public async deleteSession(key: string): Promise<void> {
+        await this.client.del(key);
+    }
+
 }
 
 export default new RedisService();

@@ -1,8 +1,4 @@
-export enum verifyResult {
-    VERIFIED = "verified",
-    EXPIRED = "expired",
-    INVALID = "invalid"
-};
+
 
 abstract class AuthService { //인증 서비스
     abstract sendVerification(identifier: string): Promise<void>;

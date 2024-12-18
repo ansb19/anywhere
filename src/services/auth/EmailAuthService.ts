@@ -1,7 +1,8 @@
 import nodemailer, { Transporter } from 'nodemailer';
 import RedisService from './RedisService';
-import AuthService, { verifyResult } from './AuthService';
+
 import { generateVerificationCode } from '../../utils/verification_code';
+import AuthService from './AuthService';
 
 //작은 규모의 애플리케이션이나 단일 서버로 충분한 경우 createClient를 사용합니다.
 //데이터가 많고 고가용성이 필요하며 수평적 확장이 필요한 경우 createCluster를 사용합니다
@@ -52,7 +53,7 @@ export class EmailAuthService extends AuthService {
         를 입력해주세요.`;
         const html: string = '';
 
-        await RedisService.set(email_address, cert_code, 10 * 60) //10분
+        await RedisService.setSession(email_address, cert_code, 10 * 60) //10분
         console.log(`이메일 전송: ${email_address} 인증번호: ${cert_code}`);
         return await this.sendMail(email_address, subject, text, html);
     }
