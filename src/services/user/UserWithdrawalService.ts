@@ -38,6 +38,8 @@ export class UserWithdrawalService {
 
             else if (delete_type === userType.KAKAO) { //카카오 회원 탈퇴
                 return await this.witdrawlSocial(user, userType.KAKAO);
+                //카카오 연결 끊기 추가해야함
+
             }
 
             else if (delete_type === userType.GOOGLE) {

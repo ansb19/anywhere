@@ -1,3 +1,4 @@
+import { error } from "console";
 import { SocialUser } from "../../entities/SocialUser";
 import { User } from "../../entities/User";
 import { formatPhoneNumber } from "../../utils/formatter";
@@ -56,7 +57,7 @@ export class UserSignupService {
 
     // 인증확인 (이메일, sms)
     public async checkCert(userFactor: string, submitted_code: string): Promise<verifyResult> {
-        const save_code: string | null = await RedisService.get(userFactor);
+        const save_code: string | null = await RedisService.getSession(userFactor);
 
         if (save_code == submitted_code) {
             return verifyResult.VERIFIED;
@@ -82,7 +83,7 @@ export class UserSignupService {
 
         if (existkakaoUser) {
             // 로그인 
-            return existkakaoUser;
+            throw error("이미 아이디가 존재합니다");
         }
 
         else {

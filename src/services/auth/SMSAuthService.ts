@@ -38,7 +38,7 @@ export class SMSAuthService extends AuthService {
         ${cert_code}
         를 입력해주세요.`;
 
-        await RedisService.set(phone_number, cert_code, 5 * 60) // 5분
+        await RedisService.setSession(phone_number, cert_code, 5 * 60) // 5분
         console.log(`SMS 전송: ${phone_number} 인증번호: ${cert_code}`);
         return await this.send_sms(phone_number, text);
     }

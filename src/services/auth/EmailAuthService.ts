@@ -52,7 +52,7 @@ export class EmailAuthService extends AuthService {
         를 입력해주세요.`;
         const html: string = '';
 
-        await RedisService.set(email_address, cert_code, 10 * 60) //10분
+        await RedisService.setSession(email_address, cert_code, 10 * 60) //10분
         console.log(`이메일 전송: ${email_address} 인증번호: ${cert_code}`);
         return await this.sendMail(email_address, subject, text, html);
     }
