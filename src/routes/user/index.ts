@@ -20,7 +20,7 @@ const router = Router();
 
 router.use('/manage', manageRoutes);
 router.use('/signup', signupRoutes);
-router.delete('/withdraw', userController.withdraw_user);
+router.delete('/withdraw/user_id/:user_id/type/:user_type', userController.withdraw_user);
 
 
 //router.post('/login', UserController.loginUser); // 사용자 로그인 //서버를 변경하는 작업이므로 post 사용
