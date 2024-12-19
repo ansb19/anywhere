@@ -75,16 +75,17 @@ export class UserSignupService {
     //카카오 소셜 가입
     public async signupKakaoUser(code: string): Promise<SocialUser> {
         const data = await this.kakaoService.request_token(code);
+        console.log(data)
         const kakaoUserInfo = await this.kakaoService.request_user_info(data.access_token);
-
-
 
         const existkakaoUser: SocialUser | null =
             await this.socialuserService.findOneSocialUserbyProviderID(kakaoUserInfo.id, userType.KAKAO);
 
         if (existkakaoUser) {
             // 로그인 
-            throw error("이미 아이디가 존재합니다");
+            console.log(existkakaoUser);
+            return existkakaoUser;
+            
         }
 
         else {
