@@ -1,17 +1,17 @@
 import { Router } from 'express';
 import manageRoutes from './manage';
 import signupRoutes from './signup';
-import UserController from '../../controllers/UserController';
 import UserService from '../../services/user/UserService';
 import UserWithdrawalService from '../../services/user/UserWithdrawalService';
 import SocialUserService from '../../services/user/SocialUserService';
 import KakaoService from '../../services/auth/KakaoService';
+import UserWithdrawaController from '../../controllers/UserWithdrawController';
 
 //상위 라우터로써  라우터인 '/user/'
 
 const userWithdrawService = new UserWithdrawalService(UserService, SocialUserService, KakaoService);
 
-const userController = new UserController(userWithdrawService, UserService);
+const userController = new UserWithdrawaController(userWithdrawService);
 
 
 //상위 라우터로써  라우터인 '/user/'
