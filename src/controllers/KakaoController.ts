@@ -1,25 +1,23 @@
-import { ISocialService } from "../services/auth/ISocialAuthService";
+import { KakaoService } from "../services/auth/KakaoService";
 import Controller from "./Controller";
 import { Request, Response } from "express";
 
 
 
 class KakaoController extends Controller {
-    private kakaoService: ISocialService; // DIP 의존성 역전 원칙
-    constructor(kakaoService: ISocialService) {
+    private kakaoService: KakaoService; // DIP 의존성 역전 원칙
+    constructor(kakaoService: KakaoService) {
         super();
         this.kakaoService = kakaoService;
     }
 
     public getKakaoAuthURL = async (req: Request, res: Response): Promise<void> => {
         this.execute(req, res, async () => {
-            const clientID = process.env.KAKAO_DEV_REST_API_KEY;
-            const redirecturi = process.env.KAKAO_DEV_REDIRECT_URI_PRO;
-            const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?client_id=${clientID}&redirect_uri=${redirecturi}&response_type=code`;
+
             return {
                 status: 200,
                 message: '카카오 로그인 URL 생성 성공',
-                data: kakaoAuthURL,
+                data: this.kakaoService.get_url()
             }
         })
     }
@@ -28,8 +26,9 @@ class KakaoController extends Controller {
         this.execute(req, res, async () => {
             const code = req.query.code as string;
             console.log('Received code:', code);
-            const accessToken = await this.kakaoService.getAccessToken(code);
-            const userInfo = await this.kakaoService.getUserInfo(accessToken);
+            const data = await this.kakaoService.request_token(code);
+
+            const userInfo = await this.kakaoService.request_user_info(data.access_token);
 
             return {
                 status: 200,

@@ -4,12 +4,15 @@ import { UserService } from "./UserService"
 import { error } from "console";
 import { User } from "../../entities/User";
 import { userType } from "../../utils/definetype";
-
+import { KakaoService } from "../auth/KakaoService";
+import RedisService from "../auth/RedisService";
+import { SocialUser } from "../../entities/SocialUser";
 
 export class UserWithdrawalService {
     constructor(
         private useService: UserService,
-        private socialuserService: SocialUserService
+        private socialuserService: SocialUserService,
+        private kakaoService: KakaoService,
     ) { }
 
     //자체 회원 탈퇴
@@ -18,7 +21,7 @@ export class UserWithdrawalService {
     // • 통합 회원 탈퇴 시 user 테이블을 없앰
     // • 자체 회원 탈퇴 시 user_id password를 null로 바꾸고 deleted at을 시간 저장함
 
-    public async withdrawal(delete_type: string, id: number): Promise<boolean> {
+    public async withdrawal(delete_type: userType, id: number): Promise<boolean> {
         const user = await this.useService.findOneUserbyID(id);
 
         if (!!(user)) { //유저가 존재하면
@@ -33,7 +36,6 @@ export class UserWithdrawalService {
 
             else if (delete_type === userType.KAKAO) { //카카오 회원 탈퇴
                 return await this.witdrawlSocial(user, userType.KAKAO);
-                //카카오 연결 끊기 추가해야함
 
             }
 
@@ -72,6 +74,14 @@ export class UserWithdrawalService {
         if (social_user) {
             //소셜 계정 탈퇴
             const deleted = await this.socialuserService.deleteSocialUserbyID(social_user.id);
+            const access_token = await this.get_access_token(social_user.id);
+
+            if (social_user.provider_name === userType.KAKAO) {
+                await this.kakaoService.unlink(access_token);
+            }
+            else if (social_user.provider_name === userType.GOOGLE) {
+                // 구글 연결 끊기 추가해야함
+            }
 
             if (!deleted)
                 throw error("소셜 탈퇴 실패", error);
@@ -92,7 +102,16 @@ export class UserWithdrawalService {
         }
     }
 
+    public async get_access_token(social_user_id: number): Promise<string> {
 
+        const refresh_token = await RedisService.getSession(`refresh_token:${social_user_id}`);
+        const data = await this.kakaoService.refresh_token(refresh_token as string);
+
+        // const refresh_token_key = `refresh_token:${social_user_id}:${user_type}`;
+        // await RedisService.setSession(refresh_token_key, data.refresh_token, data.refresh_token_expires_in);
+
+        return data.access_token;
+    }
 }
 
 export default UserWithdrawalService;

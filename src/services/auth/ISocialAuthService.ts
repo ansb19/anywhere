@@ -1,6 +1,6 @@
 export interface ISocialService {
-    getAccessToken(code: string): Promise<string>; // Authorization Code로 액세스 토큰 가져오기
-    getUserInfo(accesssToken: string): Promise<SoicalUser>; // 액세스 토큰으로 사용자 정보 가져오기
+    request_token(code: string): Promise<Token>; // Authorization Code로 액세스 토큰 가져오기
+    request_user_info(access_token: string): Promise<SoicalUser>; // 액세스 토큰으로 사용자 정보 가져오기
 }
 
 export interface SoicalUser {
@@ -9,4 +9,11 @@ export interface SoicalUser {
     nickname: string; // 닉네임 또는 이름
     profileImage?: string; //url s3
     phone: string;
+}
+
+export interface Token {
+    access_token: string,
+    refresh_token: string,
+    expires_in: number,
+    refresh_token_expires_in: number,
 }

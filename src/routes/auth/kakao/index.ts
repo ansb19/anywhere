@@ -12,6 +12,7 @@ const kakaoController = new KakaoController(kakaoService);
 // 프론트 로그인 버튼 클릭->  API를 호출하여 로그인 URL 호출
 router.get('/url', kakaoController.getKakaoAuthURL)
 router.get('/callback', kakaoController.kakaoCallback)
-
+router.get('/logout', )
+router.get('/home',)
 
 export default router;

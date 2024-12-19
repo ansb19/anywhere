@@ -1,6 +1,7 @@
 /.env
 /node_modules
 /package-lock.json
+/tsconfig.tsbuildinfo
 /backend-server.pem
 /ormconfig.json
 /test

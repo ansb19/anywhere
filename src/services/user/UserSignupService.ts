@@ -10,7 +10,7 @@ import RedisService from "../auth/RedisService";
 import { SMSAuthService } from "../auth/SMSAuthService";
 import { SocialUserService } from "./SocialUserService";
 import { UserService } from "./UserService";
-import { verifyResult } from "../../utils/definetype";
+import { userType, verifyResult } from "../../utils/definetype";
 
 export class UserSignupService {
     constructor(
@@ -19,7 +19,7 @@ export class UserSignupService {
         private emailAuthService: EmailAuthService,
         private smsAuthService: SMSAuthService,
         private passwordService: PasswordService,
-        private kakaoService: KakaoService
+        private kakaoService: KakaoService,
     ) {
 
     }
@@ -74,13 +74,13 @@ export class UserSignupService {
 
     //카카오 소셜 가입
     public async signupKakaoUser(code: string): Promise<SocialUser> {
-        const accesssToken = await this.kakaoService.getAccessToken(code);
-        const kakaoUserInfo = await this.kakaoService.getUserInfo(accesssToken);
+        const data = await this.kakaoService.request_token(code);
+        const kakaoUserInfo = await this.kakaoService.request_user_info(data.access_token);
 
-        const provider: string = "kakao";
+
 
         const existkakaoUser: SocialUser | null =
-            await this.socialuserService.findOneSocialUserbyProviderID(kakaoUserInfo.id, provider);
+            await this.socialuserService.findOneSocialUserbyProviderID(kakaoUserInfo.id, userType.KAKAO);
 
         if (existkakaoUser) {
             // 로그인 
@@ -97,9 +97,12 @@ export class UserSignupService {
 
             const newKakaoUser = await this.socialuserService.createSocialUser({ // 소셜 유저도 생성
                 user: newUser,
-                provider_name: provider,
+                provider_name: userType.KAKAO,
                 provider_user_id: kakaoUserInfo.id
             });
+
+            const refresh_token_key = `refresh_token:${newKakaoUser.id}`;
+            await RedisService.setSession(refresh_token_key, data.refresh_token, data.refresh_token_expires_in);
 
             return newKakaoUser;
         }
