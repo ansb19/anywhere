@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import PlaceController from '../../controllers/PlaceController';
+import PlaceController from '../../controllers/place.controller';
 
 //상위 라우터로써  라우터인 '/place/'
 const router = Router();

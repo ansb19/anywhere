@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import FavoriteController from '../../controllers/FavoriteController';
+import FavoriteController from '../../controllers/favorite.controller';
 
 //상위 라우터로써  라우터인 '/favorite/'
 

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import UserController from '../../../controllers/UserController';
+import UserController from '../../../controllers/user.controller';
 
 
 //하위 라우터로써  라우터인 '/user/manage/.'

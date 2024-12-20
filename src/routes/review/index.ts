@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import ReviewController from '../../controllers/ReviewController';
+import ReviewController from '../../controllers/review.controller';
 
 
 //상위 라우터로써  라우터인 '/review/'

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { KakaoService } from '../../../services/auth/KakaoService';
-import KakaoController from '../../../controllers/KakaoController';
+import { KakaoService } from '../../../services/auth/kakao-auth.service';
+import KakaoController from '../../../controllers/kakao.controller';
 
 //하위 라우터로써  라우터인 '/auth/kakao/.'
 

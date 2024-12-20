@@ -1,8 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import { AppDataSource } from './data_source';
+import { AppDataSource } from './data-source';
 import router from './routes';
+import 'reflect-metadata';
 
 dotenv.config(); // dotenv 설정값 불러오는 함수
 

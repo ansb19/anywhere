@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import UserSignupController from '../../../controllers/UserSignupController';
-import UserSignupService from '../../../services/user/UserSignupService';
-import { UserService } from '../../../services/user/UserService';
-import { SocialUserService } from '../../../services/user/SocialUserService';
-import { EmailAuthService } from '../../../services/auth/EmailAuthService';
-import { SMSAuthService } from '../../../services/auth/SMSAuthService';
-import { PasswordService } from '../../../services/auth/PasswordService';
-import { KakaoService } from '../../../services/auth/KakaoService';
+import UserSignupController from '../../../controllers/user-signup.controller';
+import UserSignupService from '../../../services/user/user-signup.service';
+import { UserService } from '../../../services/user/user.service';
+import { SocialUserService } from '../../../services/user/social-user.service';
+import { EmailAuthService } from '../../../services/auth/email-auth.service';
+import { SMSAuthService } from '../../../services/auth/sms-auth.service';
+import { PasswordService } from '../../../services/auth/password.service';
+import { KakaoService } from '../../../services/auth/kakao-auth.service';
 
 
 //하위 라우터로써  라우터인 '/user/signup'

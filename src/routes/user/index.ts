@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import manageRoutes from './manage';
 import signupRoutes from './signup';
-import UserService from '../../services/user/UserService';
-import UserWithdrawalService from '../../services/user/UserWithdrawalService';
-import SocialUserService from '../../services/user/SocialUserService';
-import KakaoService from '../../services/auth/KakaoService';
-import UserWithdrawaController from '../../controllers/UserWithdrawController';
+import UserService from '../../services/user/user.service';
+import UserWithdrawalService from '../../services/user/user-withdraw.service';
+import SocialUserService from '../../services/user/social-user.service';
+import KakaoService from '../../services/auth/kakao-auth.service';
+import UserWithdrawaController from '../../controllers/user-withdraw.controller';
 
 //상위 라우터로써  라우터인 '/user/'
 
