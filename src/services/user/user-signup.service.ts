@@ -11,6 +11,7 @@ import { SMSAuthService } from "../auth/sms-auth.service";
 import { SocialUserService } from "./social-user.service";
 import { UserService } from "./user.service";
 import { userType, verifyResult } from "../../utils/define-type";
+import { Token } from "../auth/i-social-auth.service";
 
 export class UserSignupService {
     constructor(

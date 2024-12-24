@@ -36,15 +36,25 @@ export class KakaoService implements ISocialService {
     //토큰 요청
     public async request_token(code: string): Promise<Token> {
 
-        const response = await axiosKauth.post('/oauth/token', {
-            params: {
-                grant_type: 'authorization_code',
-                client_id: this.clientID,
-                redirect_uri: this.redirectUri,
-                code: code,
-                client_secret: this.clientSecret
-            },
+        // const response = await axiosKauth.post('/oauth/token', {
+        //     params: {
+        //         grant_type: 'authorization_code',
+        //         client_id: this.clientID,
+        //         redirect_uri: this.redirectUri,
+        //         code: code,
+        //         client_secret: this.clientSecret
+        //     },
+        // });
+
+        const data = new URLSearchParams({
+            grant_type: 'authorization_code',
+            client_id: this.clientID,
+            redirect_uri: this.redirectUri,
+            code: code,
+            client_secret: this.clientSecret,
         });
+
+        const response = await axiosKauth.post('/oauth/token', data.toString());
         console.log(response.data);
         return {
             access_token : response.data.access_token,
