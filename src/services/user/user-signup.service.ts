@@ -74,9 +74,9 @@ export class UserSignupService {
 
     //카카오 소셜 가입
     public async signupKakaoUser(code: string): Promise<SocialUser> {
-        const data = await this.kakaoService.request_token(code);
-        console.log(data);
-        const kakaoUserInfo = await this.kakaoService.request_user_info(data.access_token);
+        const token = await this.kakaoService.request_token(code);
+        
+        const kakaoUserInfo = await this.kakaoService.request_user_info(token.access_token);
 
         const existkakaoUser: SocialUser | null =
             await this.socialuserService.findOneSocialUserbyProviderID(kakaoUserInfo.id, userType.KAKAO);
@@ -103,7 +103,7 @@ export class UserSignupService {
             });
 
             const refresh_token_key = `refresh_token:${newKakaoUser.id}`;
-            await RedisService.setSession(refresh_token_key, data.refresh_token, data.refresh_token_expires_in);
+            await RedisService.setSession(refresh_token_key, token.refresh_token, token.refresh_token_expires_in);
 
             return newKakaoUser;
         }
