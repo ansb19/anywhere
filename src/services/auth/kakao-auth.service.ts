@@ -5,9 +5,25 @@ import { axiosKapi, axiosKauth } from "../../api/axios-client";
 // https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#kakaologin
 
 export class KakaoService implements ISocialService {
-    private readonly clientID: string = process.env.KAKAO_DEV_REST_API_KEY as string;
-    private readonly redirectUri: string = process.env.KAKAO_DEV_REDIRECT_URI_PRO as string;
-    private readonly clientSecret: string = process.env.KAKAO_DEV_CLIENT_SECRET as string;
+
+    //나중에 바꿔야함
+    private readonly clientID: string = process.env.NODE_ENV === "prdouction"
+        ? process.env.KAKAO_REST_API_KEY as string
+        : process.env.KAKAO_TEST_REST_API_KEY as string;
+
+    private readonly redirectUri: string = process.env.NODE_ENV === "prdouction"
+        ? process.env.NODE_NETWORK === "remote"
+            ? process.env.KAKAO_REDIRECT_URI_REMOTE as string
+            : process.env.KAKAO_REDIRECT_URI_LOCAL as string
+        : process.env.NODE_NETWORK === "remote"
+            ? process.env.KAKAO_TEST_REDIRECT_URI_REMOTE as string
+            : process.env.KAKAO_TEST_REDIRECT_URI_LOCAL as string;
+
+
+    private readonly clientSecret: string = process.env.NODE_ENV === "prdouction"
+        ? process.env.KAKAO_CLIENT_SECRET as string
+        : process.env.KAKAO_TEST_CLIENT_SECRET as string;
+        
     private readonly front_url: string = process.env.FRONT_END_API as string;
 
     public get_url(): string {

@@ -4,11 +4,11 @@ export class RedisService {
     private client: RedisClientType;
 
     constructor() {
-        const redisUrl = 
-        process.env.NODE_ENV === 'production'
-        ? process.env.REDIS_URL
-        : process.env.REDIS_LOCAL_URL
-        
+        const redisUrl =
+            process.env.NODE_NETWORK === 'remote'
+                ? process.env.REDIS_REMOTE_URL
+                : process.env.REDIS_LOCAL_URL;
+
         this.client = createClient({ url: redisUrl });
         this.client.on('error', (err) => console.log('Redis Client Error', err));
         this.client.connect();

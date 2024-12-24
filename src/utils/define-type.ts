@@ -15,3 +15,4 @@ export enum verifyResult {
     EXPIRED = "expired",
     INVALID = "invalid"
 };
+

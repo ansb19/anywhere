@@ -17,28 +17,39 @@ jobs:
       # 2. .env 파일 생성
       - name: Create .env file
         run: |
-          echo REDIS_URL=${{ secrets.REDIS_URL }} >> .env        
-          echo DB_TYPE=${{ secrets.DB_TYPE }} >> .env
+          echo NODE_ENV=${{ secrets.NODE_ENV }} >> .env
+          echo NODE_NETWORK=${{ secrets.NODE_NETWORK }} >> .env
+          echo PORT=${{ secrets.PORT }} >> .env
+          echo FRONT_END_API=${{ secrets.FRONT_END_API }} >> .env
+
           echo DB_HOST_NAME=${{ secrets.DB_HOST_NAME }} >> .env
-          echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           echo DB_USER_NAME=${{ secrets.DB_USER_NAME }} >> .env
           echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
           echo DB_DATABASE=${{ secrets.DB_DATABASE }} >> .env
-          echo PORT=${{ secrets.PORT }} >> .env
-          echo FRONT_END_API=${{ secrets.FRONT_END_API }} >> .env
-          echo NODE_ENV=${{ secrets.NODE_ENV }} >> .env
+          echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+
           echo KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }} >> .env
           echo KAKAO_JAVASCRIPT_KEY=${{ secrets.KAKAO_JAVASCRIPT_KEY }} >> .env
-          echo KAKAO_REDIRECT_URI_DEV=${{ secrets.KAKAO_REDIRECT_URI_DEV }} >> .env
-          echo KAKAO_REDIRECT_URI_PRO=${{ secrets.KAKAO_REDIRECT_URI_PRO }} >> .env
+          echo KAKAO_REDIRECT_URI_LOCAL=${{ secrets.KAKAO_REDIRECT_URI_LOCAL }} >> .env
+          echo KAKAO_REDIRECT_URI_REMOTE=${{ secrets.KAKAO_REDIRECT_URI_REMOTE }} >> .env
           echo KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }} >> .env
           
-          echo KAKAO_DEV_REST_API_KEY=${{ secrets.KAKAO_DEV_REST_API_KEY }} >> .env
-          echo KAKAO_DEV_JAVASCRIPT_KEY=${{ secrets.KAKAO_DEV_JAVASCRIPT_KEY }} >> .env
-          echo KAKAO_DEV_REDIRECT_URI_DEV=${{ secrets.KAKAO_DEV_REDIRECT_URI_DEV }} >> .env
-          echo KAKAO_DEV_REDIRECT_URI_PRO=${{ secrets.KAKAO_DEV_REDIRECT_URI_PRO }} >> .env
-          echo KAKAO_DEV_CLIENT_SECRET=${{ secrets.KAKAO_DEV_CLIENT_SECRET }} >> .env
+          echo KAKAO_TEST_REST_API_KEY=${{ secrets.KAKAO_TEST_REST_API_KEY }} >> .env
+          echo KAKAO_TEST_JAVASCRIPT_KEY=${{ secrets.KAKAO_TEST_JAVASCRIPT_KEY }} >> .env
+          echo KAKAO_TEST_REDIRECT_URI_LOCAL=${{ secrets.KAKAO_TEST_REDIRECT_URI_LOCAL }} >> .env
+          echo KAKAO_TEST_REDIRECT_URI_REMOTE=${{ secrets.KAKAO_TEST_REDIRECT_URI_REMOTE }} >> .env
+          echo KAKAO_TEST_CLIENT_SECRET=${{ secrets.KAKAO_TEST_CLIENT_SECRET }} >> .env
 
+          echo EMAIL_USER=${{ secrets.EMAIL_USER }} >> .env
+          echo EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }} >> .env
+          
+          echo SEND_SNS_API_KEY=${{ secrets.SEND_SNS_API_KEY }} >> .env
+          echo SEND_SNS_API_SECRET=${{ secrets.SEND_SNS_API_SECRET }} >> .env
+          echo SENDER_PHONE=${{ secrets.SENDER_PHONE }} >> .env
+
+          echo REDIS_REMOTE_URL=${{ secrets.REDIS_REMOTE_URL }} >> .env
+          echo REDIS_LOCAL_URL=${{ secrets.REDIS_LOCAL_URL }} >> .env 
+          
       # 2.2 .env 파일 전송
       - name: Upload .env to EC2
         uses: appleboy/scp-action@master
