@@ -75,7 +75,7 @@ export class UserSignupService {
     //카카오 소셜 가입
     public async signupKakaoUser(code: string): Promise<SocialUser> {
         const data = await this.kakaoService.request_token(code);
-        console.log(data)
+        console.log(data);
         const kakaoUserInfo = await this.kakaoService.request_user_info(data.access_token);
 
         const existkakaoUser: SocialUser | null =

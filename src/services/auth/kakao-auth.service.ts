@@ -30,12 +30,7 @@ export class KakaoService implements ISocialService {
             },
         });
         console.log(response.data);
-        return {
-            access_token: response.data.access_token,
-            refresh_token: response.data.refresh_token,
-            expires_in: response.data.expires_in,
-            refresh_token_expires_in: response.data.refresh_token_expires_in
-        } //액세스 토큰만 넘김.
+        return response.data; //액세스 토큰만 넘김.
         // {
         //     "token_type":"bearer",
         //     "access_token":"${ACCESS_TOKEN}",
