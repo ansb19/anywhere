@@ -6,8 +6,8 @@ import { Inject, Service } from "typedi";
 
 @Service()
 class KakaoController extends BaseController {
-    @Inject(() => KakaoClient) private kakaoClient: KakaoClient; // DIP 의존성 역전 원칙
-    constructor(kakaoClient: KakaoClient) {
+    private kakaoClient: KakaoClient; // DIP 의존성 역전 원칙
+    constructor(@Inject(() => KakaoClient) kakaoClient: KakaoClient) {
         super();
         this.kakaoClient = kakaoClient;
     }
@@ -28,7 +28,11 @@ class KakaoController extends BaseController {
             const code = req.query.code as string;
             console.log('Received code:', code);
             const data = await this.kakaoClient.request_token(code);
+            console.log(`Received data:`, data,);
+            console.log(`${typeof data.access_token}`);
 
+            const data2 = await this.kakaoClient.get_token_info(data.access_token);
+            console.log(data2);
             const userInfo = await this.kakaoClient.request_user_info(data.access_token);
 
             return {

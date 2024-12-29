@@ -8,6 +8,11 @@ export const globalErrorHandler = (
     res: Response,
     next: NextFunction
 ): void => {
+    // 이미 응답이 전송된 경우 처리 중단
+    if (res.headersSent) {
+        return next(err);
+    }
+
     console.error(`[Error]: ${err.message}`);
 
     if (err instanceof AppError) {

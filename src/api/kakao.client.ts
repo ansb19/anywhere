@@ -36,11 +36,15 @@ export class KakaoClient implements ISocialClient {
             : this.config.KAKAO_TEST_CLIENT_SECRET;
 
         this.front_url = this.config.FRONT_END_API;
+
+        console.log(`dqwqwdddddddddddddd:${typeof this.clientID}`);
+        console.log(`dqwqwdddddddddddddd:${typeof this.redirectUri}`);
+        console.log(`dqwqwdddddddddddddd:${typeof this.clientSecret}`);
     }
 
     public get_url(): string {
         const loginUrl =
-            `https://kauth.kakao.com/oauth/authorize?client_id=${this.clientID}&redirect_uri=${this.redirectUri}&response_type=code`;
+            `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${this.clientID}&redirect_uri=${this.redirectUri}`;
 
         return loginUrl;
     }
@@ -50,14 +54,17 @@ export class KakaoClient implements ISocialClient {
         try {
 
             const response = await axiosKauth.post('/oauth/token', {
-                params: {
-                    grant_type: 'authorization_code',
-                    client_id: this.clientID,
-                    redirect_uri: this.redirectUri,
-                    code: code,
-                    client_secret: this.clientSecret
-                },
-            });
+                grant_type: "authorization_code",
+                client_id: this.clientID,
+                redirect_uri: this.redirectUri,
+                code: code,
+                client_secret: this.clientSecret
+            },
+                {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    }
+                });
             return {
                 access_token: response.data.access_token,
                 refresh_token: response.data.refresh_token,
@@ -135,6 +142,7 @@ export class KakaoClient implements ISocialClient {
                 headers: {
                     "Authorization": `Bearer ${access_token}`,
                 }
+                
             })
             return response.data.id;
         } catch (error) {
@@ -175,13 +183,16 @@ export class KakaoClient implements ISocialClient {
     public async request_user_info(access_token: string): Promise<SoicalUser> {
         try {
             console.log("액세스 토큰: ", access_token);
-            const response = await axiosKauth.post('/v2/user/me', {
+            const response = await axiosKapi.get('/v2/user/me', {
                 headers: {
                     "Authorization": `Bearer ${access_token}`,
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                 }
+                
             })
-
+            console.log("dwqdqwdqdwqwd:", response)
             const kakaoAccount = response.data.kakao_account;
+
             return {
                 id: response.data.id,
                 email: kakaoAccount.email,
