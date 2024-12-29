@@ -1,4 +1,4 @@
-import { ValidationError } from "@/common/exceptions/app.errors";
+import { ValidationError } from "../../../../test/app.errors";
 import { EnvConfig } from "@/config/env-config";
 import bcrypt from "bcrypt";
 import { Inject, Service } from "typedi";

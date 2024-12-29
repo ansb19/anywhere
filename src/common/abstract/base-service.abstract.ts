@@ -2,7 +2,7 @@
 import { Database } from "@/config/database/Database";
 import { Inject } from "typedi";
 import { DeepPartial, EntityManager, ObjectLiteral, Repository } from "typeorm";
-import { DatabaseError, NotFoundError, ValidationError } from "../exceptions/app.errors";
+import { DatabaseError, NotFoundError, ValidationError } from "../../../test/app.errors";
 
 abstract class BaseService<T extends ObjectLiteral> {
     protected repository: Repository<T>;

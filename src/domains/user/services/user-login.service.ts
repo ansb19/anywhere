@@ -7,7 +7,7 @@ import RedisService from "@/common/services/redis.service";
 import { clientType, userType } from "@/common/utils/define-type";
 import { User } from "../entities/user.entity";
 import { SocialUser } from "../entities/social-user.entity";
-import { NotFoundError, ValidationError, UnauthorizedError } from "@/common/exceptions/app.errors";
+import { NotFoundError, ValidationError, UnauthorizedError } from "../../../../test/app.errors";
 import { EXPIRED_TIME } from "@/config/enum_control";
 
 @Service()

@@ -1,8 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
 
 import 'reflect-metadata';
+import 'tsconfig-paths/register';
 
 import { UserModule } from './domains/user/user.module';
 import { ReviewModule } from './domains/review/review.module';
@@ -14,10 +14,9 @@ import { postgres } from './config/database/db-options';
 import Container from 'typedi';
 import { EnvConfig } from './config/env-config';
 import { globalErrorHandler } from './common/exceptions/error-handler';
-import { NotFoundError } from './common/exceptions/app.errors';
+import { NotFoundError } from '../test/app.errors';
 
 
-dotenv.config(); // dotenv 설정값 불러오는 함수
 const env_config = Container.get(EnvConfig);
 
 const app = express(); // express 프레임워크 설정

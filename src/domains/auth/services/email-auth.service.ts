@@ -3,7 +3,7 @@ import RedisService from '../../../common/services/redis.service';
 import { Inject, Service } from 'typedi';
 import { generateVerificationCode } from '@/common/utils/verification-code';
 import { EnvConfig } from '@/config/env-config';
-import { ValidationError } from '@/common/exceptions/app.errors';
+import { ValidationError } from '../../../../test/app.errors';
 import { EXPIRED_TIME } from '@/config/enum_control';
 
 

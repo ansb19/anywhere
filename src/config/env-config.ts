@@ -1,6 +1,8 @@
-import { InvalidEnvironmentVariableError, MissingEnvironmentVariableError } from '@/common/exceptions/app.errors';
+import { InvalidEnvironmentVariableError, MissingEnvironmentVariableError } from '../../test/app.errors';
 import { Service } from 'typedi';
+import dotenv from 'dotenv';
 
+dotenv.config();
 @Service()
 export class EnvConfig {
     // 환경 변수 필드 정의
@@ -81,7 +83,7 @@ export class EnvConfig {
         // Email
         this.EMAIL_SERVICE = this.getEnvVariable('EMAIL_SERVICE');
         this.EMAIL_HOST = this.getEnvVariable('EMAIL_HOST');
-        this.EMAIL_PORT = this.getEnvVariableAsNumber('EMAIL_HOST', 465);
+        this.EMAIL_PORT = this.getEnvVariableAsNumber('EMAIL_PORT', 465);
         this.EMAIL_USER = this.getEnvVariable('EMAIL_USER');
         this.EMAIL_PASSWORD = this.getEnvVariable('EMAIL_PASSWORD');
 
@@ -117,3 +119,5 @@ export class EnvConfig {
     }
 
 }
+
+export default EnvConfig;

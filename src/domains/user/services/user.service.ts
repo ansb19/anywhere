@@ -3,7 +3,7 @@ import { Inject, Service } from "typedi";
 import { Database } from "@/config/database/Database";
 import BaseService from "@/common/abstract/base-service.abstract";
 import { DeepPartial } from "typeorm";
-import { DatabaseError } from "@/common/exceptions/app.errors";
+import { DatabaseError } from "../../../../test/app.errors";
 
 @Service()
 export class UserService extends BaseService<User> {

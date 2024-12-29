@@ -2,7 +2,7 @@ import { Inject, Service } from "typedi";
 import { axiosKapi, axiosKauth } from "./axios.client";
 import { ISocialClient, SoicalUser, Token } from "./i-social.client";
 import { EnvConfig } from "@/config/env-config";
-import { ExternalApiError } from "@/common/exceptions/app.errors";
+import { ExternalApiError } from "../../test/app.errors";
 
 
 
