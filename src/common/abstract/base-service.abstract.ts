@@ -1,16 +1,17 @@
 
 import { Database } from "@/config/database/Database";
-import { Inject } from "typedi";
+import { Inject, Service } from "typedi";
 import { DeepPartial, EntityManager, ObjectLiteral, Repository } from "typeorm";
 import { DatabaseError, NotFoundError, ValidationError } from "../exceptions/app.errors";
 
 
+@Service()
 abstract class BaseService<T extends ObjectLiteral> {
     protected repository: Repository<T>;
     protected manager: EntityManager;
 
-    constructor(@Inject(() => Database) private database: Database, entity: new () => T) {
-        const data_source = this.database.getDataSource(); //  DataSource 가져오기
+    constructor(private database: Database, entity: new () => T) {
+        const data_source = this.database.dataSource; //  DataSource 가져오기
         this.repository = data_source.getRepository(entity); // 단일 entity 관리 특화
         this.manager = data_source.manager; // 전체적 entity 관리
 

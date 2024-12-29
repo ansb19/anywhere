@@ -1,15 +1,16 @@
 import { DatabaseError } from "@/common/exceptions/app.errors";
-import { Service } from "typedi";
+import { Inject, Service } from "typedi";
 import { DataSource, DataSourceOptions } from "typeorm";
+import { DatabaseConfig } from "./db-options";
 
 
 
 @Service()
 export class Database {
-    private dataSource: DataSource;
+     readonly dataSource: DataSource;
 
-    constructor(private options: DataSourceOptions) {
-        this.dataSource = new DataSource(this.options);
+    constructor(@Inject(() => DatabaseConfig) private options: DatabaseConfig) {
+        this.dataSource = new DataSource(this.options.getOptions());
     }
 
     public async initialize(): Promise<void> {
@@ -23,13 +24,6 @@ export class Database {
             throw new DatabaseError("데이터베이스 초기화 실패", error as Error);
         }
 
-    }
-
-    public getDataSource(): DataSource {
-        if (!this.dataSource.isInitialized) {
-            throw new DatabaseError("데이터베이스가 초기화되지 않았습니다.");
-        }
-        return this.dataSource;
     }
 
     public async runMigrations(): Promise<void> {

@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+
 import cors from 'cors';
 
 import 'reflect-metadata';
@@ -10,14 +11,16 @@ import { PlaceModule } from './domains/place/place.module';
 import { FavoriteModule } from './domains/favorite/favorite.module';
 import { AuthModule } from './domains/auth/auth.module';
 import { Database } from './config/database/Database';
-import { postgres } from './config/database/db-options';
 import Container from 'typedi';
 import { EnvConfig } from './config/env-config';
 import { globalErrorHandler } from './common/exceptions/error-handler';
 import { NotFoundError } from './common/exceptions/app.errors';
+import { DatabaseConfig } from './config/database/db-options';
 
 
 const env_config = Container.get(EnvConfig);
+
+
 
 const app = express(); // express 프레임워크 설정
 const port: number = env_config.PORT; // env 포트 설정
@@ -36,9 +39,8 @@ app.use(express.json()); // json 요청 본문을 파싱
 // 데이터베이스 초기화 및 서버 시작 함수 정의
 async function startServer() {
     try {
-        const database = new Database(postgres);
-        Container.set(Database, database);
-
+        
+        const database = Container.get(Database);
         // 데이터베이스 연결 초기화
         await database.initialize();
         await database.runMigrations(); // 프로덕션 시 비활성화

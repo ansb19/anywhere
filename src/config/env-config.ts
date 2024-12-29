@@ -46,7 +46,7 @@ export class EnvConfig {
     readonly SENDER_PHONE: string;
 
     // Redis
-    readonly REDIS_URL: string;
+    readonly REDIS_REMOTE_URL: string;
     readonly REDIS_LOCAL_URL: string;
 
     // Bcrypt password
