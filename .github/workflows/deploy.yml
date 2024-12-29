@@ -22,6 +22,7 @@ jobs:
           echo PORT=${{ secrets.PORT }} >> .env
           echo FRONT_END_API=${{ secrets.FRONT_END_API }} >> .env
 
+          echo DB_TYPE=${{ secrets.DB_TYPE }} >> .env
           echo DB_HOST_NAME=${{ secrets.DB_HOST_NAME }} >> .env
           echo DB_USER_NAME=${{ secrets.DB_USER_NAME }} >> .env
           echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
@@ -40,11 +41,14 @@ jobs:
           echo KAKAO_TEST_REDIRECT_URI_REMOTE=${{ secrets.KAKAO_TEST_REDIRECT_URI_REMOTE }} >> .env
           echo KAKAO_TEST_CLIENT_SECRET=${{ secrets.KAKAO_TEST_CLIENT_SECRET }} >> .env
 
+          echo EMAIL_SERVICE=${{ secrets.EMAIL_SERVICE }} >> .env
+          echo EMAIL_HOST=${{ secrets.EMAIL_HOST }} >> .env
+          echo EMAIL_PORT=${{ secrets.EMAIL_PORT }} >> .env
           echo EMAIL_USER=${{ secrets.EMAIL_USER }} >> .env
           echo EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }} >> .env
           
-          echo SEND_SNS_API_KEY=${{ secrets.SEND_SNS_API_KEY }} >> .env
-          echo SEND_SNS_API_SECRET=${{ secrets.SEND_SNS_API_SECRET }} >> .env
+          echo SMS_API_KEY=${{ secrets.SMS_API_KEY }} >> .env
+          echo SMS_API_SECRET=${{ secrets.SMS_API_SECRET }} >> .env
           echo SENDER_PHONE=${{ secrets.SENDER_PHONE }} >> .env
 
           echo REDIS_REMOTE_URL=${{ secrets.REDIS_REMOTE_URL }} >> .env
