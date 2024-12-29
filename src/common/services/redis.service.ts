@@ -13,7 +13,7 @@ export class RedisService {
     ) {
         const redisUrl =
             this.config.NODE_ENV === 'production'
-                ? this.config.REDIS_URL
+                ? this.config.REDIS_REMOTE_URL
                 : this.config.REDIS_LOCAL_URL
 
         try {
