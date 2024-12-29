@@ -3,7 +3,8 @@ import { Inject, Service } from "typedi";
 import UserLoginService from "../services/user-login.service";
 import { NextFunction, Request, Response } from 'express';
 import { clientType } from "@/common/utils/define-type";
-import { NotFoundError } from "../../../../test/app.errors";
+import { NotFoundError } from "@/common/exceptions/app.errors";
+
 
 @Service()
 export class UserLoginController extends BaseController {

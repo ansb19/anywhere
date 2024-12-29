@@ -3,8 +3,9 @@ import RedisService from '../../../common/services/redis.service';
 import { Inject, Service } from 'typedi';
 import { generateVerificationCode } from '@/common/utils/verification-code';
 import { EnvConfig } from '@/config/env-config';
-import { ValidationError } from '../../../../test/app.errors';
+
 import { EXPIRED_TIME } from '@/config/enum_control';
+import { ValidationError } from '@/common/exceptions/app.errors';
 
 
 //작은 규모의 애플리케이션이나 단일 서버로 충분한 경우 createClient를 사용합니다.

@@ -1,7 +1,7 @@
-import { Container } from 'typedi';
+
 import userRoutes from '@/domains/user/routes';
 import { Router } from 'express';
-import { UserService } from './services/user.service';
+
 
 export class UserModule {
 

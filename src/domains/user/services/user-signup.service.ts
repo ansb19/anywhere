@@ -7,8 +7,9 @@ import { userType } from "@/common/utils/define-type";
 import RedisService from "@/common/services/redis.service";
 import { SocialUser } from "../entities/social-user.entity";
 import KakaoClient from "@/api/kakao.client";
-import { ValidationError, DatabaseError } from "../../../../test/app.errors";
+
 import { formatPhoneNumber } from "@/common/utils/formatter";
+import { DatabaseError, ValidationError } from "@/common/exceptions/app.errors";
 
 @Service()
 export class UserSignupService {

@@ -1,7 +1,8 @@
 import { EnvConfig } from "@/config/env-config";
 import { createClient, RedisClientType } from "redis";
 import { Inject, Service } from "typedi";
-import { DatabaseError, NotFoundError } from "../../../test/app.errors";
+import { DatabaseError, NotFoundError } from "../exceptions/app.errors";
+
 
 @Service()
 export class RedisService {

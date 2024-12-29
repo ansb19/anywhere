@@ -111,7 +111,7 @@
   },
   "include": [
     "src/**/*"
-, "test/app.errors.ts"  ],
+, "test/app.errorss.ts"  ],
   "exclude": [
     "node_modules", "**/*.test.ts"
   ]

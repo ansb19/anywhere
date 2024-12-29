@@ -3,10 +3,11 @@ import { userType } from "@/common/utils/define-type";
 import { SocialUserService } from "./social-user.service";
 import { UserService } from "./user.service"
 import { error } from "console";
-import { DatabaseError, NotFoundError, ValidationError } from "../../../../test/app.errors";
+
 import { Inject, Service } from "typedi";
 import KakaoClient from "@/api/kakao.client";
 import RedisService from "@/common/services/redis.service";
+import { DatabaseError, NotFoundError, ValidationError } from "@/common/exceptions/app.errors";
 
 
 @Service()

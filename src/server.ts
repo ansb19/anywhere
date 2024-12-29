@@ -14,7 +14,7 @@ import { postgres } from './config/database/db-options';
 import Container from 'typedi';
 import { EnvConfig } from './config/env-config';
 import { globalErrorHandler } from './common/exceptions/error-handler';
-import { NotFoundError } from '../test/app.errors';
+import { NotFoundError } from './common/exceptions/app.errors';
 
 
 const env_config = Container.get(EnvConfig);

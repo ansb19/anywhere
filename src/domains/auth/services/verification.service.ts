@@ -1,4 +1,5 @@
-import { ValidationError } from "../../../../test/app.errors";
+
+import { ValidationError } from "@/common/exceptions/app.errors";
 import RedisService from "@/common/services/redis.service";
 import { Inject, Service } from "typedi";
 

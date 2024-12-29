@@ -4,7 +4,8 @@ import { Inject, Service } from "typedi";
 import { EnvConfig } from "@/config/env-config";
 import { generateVerificationCode } from "@/common/utils/verification-code";
 import { EXPIRED_TIME } from "@/config/enum_control";
-import { ValidationError } from "../../../../test/app.errors";
+import { ValidationError } from "@/common/exceptions/app.errors";
+
 
 
 @Service()

@@ -2,8 +2,8 @@ import BaseService from "@/common/abstract/base-service.abstract";
 import { SocialUser } from "../entities/social-user.entity";
 import { Inject, Service } from "typedi";
 import { Database } from "@/config/database/Database";
-import { DatabaseError, NotFoundError } from "../../../../test/app.errors";
-import { User } from "../entities/user.entity";
+import { DatabaseError, NotFoundError } from "@/common/exceptions/app.errors";
+
 
 
 @Service()

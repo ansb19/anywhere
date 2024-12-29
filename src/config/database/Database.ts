@@ -1,4 +1,4 @@
-import { DatabaseError } from "../../../test/app.errors";
+import { DatabaseError } from "@/common/exceptions/app.errors";
 import { Service } from "typedi";
 import { DataSource, DataSourceOptions } from "typeorm";
 
