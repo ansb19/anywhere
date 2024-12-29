@@ -12,10 +12,10 @@ export class RedisService {
         @Inject(() => EnvConfig) private readonly config: EnvConfig,
     ) {
         const redisUrl =
-            this.config.NODE_ENV === 'remote'
+            this.config.NODE_NETWORK === "remote"
                 ? this.config.REDIS_REMOTE_URL
                 : this.config.REDIS_LOCAL_URL
-
+        console.log(redisUrl);
         try {
             this.client = createClient({ url: redisUrl });
             this.client.on('error', (err) => console.log('Redis Client Error', err));
