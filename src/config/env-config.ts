@@ -94,7 +94,7 @@ export class EnvConfig {
         this.SENDER_PHONE = this.getEnvVariable('SENDER_PHONE');
 
         // Redis
-        this.REDIS_URL = this.getEnvVariable('REDIS_URL');
+        this.REDIS_REMOTE_URL = this.getEnvVariable('REDIS_REMOTE_URL');
         this.REDIS_LOCAL_URL = this.getEnvVariable('REDIS_LOCAL_URL');
 
         this.SALT_ROUNDS = this.getEnvVariableAsNumber('SALT_ROUNDS', 10);
