@@ -11,7 +11,7 @@ const router = Router();
 
 //router.use('/manage', manageRoutes);
 router.use('/signup', signupRoutes);
-router.use('/withdraw', signupRoutes);
+router.use('/withdraw', withdrawRoutes);
 
 
 
