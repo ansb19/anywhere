@@ -1,8 +1,5 @@
 import { Router } from 'express';
 
-import UserSignupService from '../../services/user-signup.service';
-import { UserService } from '../../services/user.service';
-import { SocialUserService } from '../../services/social-user.service';
 import Container from 'typedi';
 import UserSignupController from '../../controllers/user-signup.controller';
 

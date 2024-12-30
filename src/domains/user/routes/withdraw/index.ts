@@ -5,7 +5,7 @@ import UserWithdrawaController from '../../controllers/user-withdraw.controller'
 
 
 
-//하위 라우터로써  라우터인 '/user/signup'
+
 const router = Router();
 
 // 필요한 서비스들을 인스턴스화
