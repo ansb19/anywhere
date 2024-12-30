@@ -8,6 +8,8 @@ import { Inject, Service } from "typedi";
 import KakaoClient from "@/api/kakao.client";
 import RedisService from "@/common/services/redis.service";
 import { DatabaseError, NotFoundError, ValidationError } from "@/common/exceptions/app.errors";
+import { SocialUser } from "../entities/social-user.entity";
+import { User } from "../entities/user.entity";
 
 
 @Service()
@@ -28,7 +30,7 @@ export class UserWithdrawService {
     public async withdraw(delete_type: userType, id: number): Promise<boolean> {
         try {
             const user = await this.useService.findUserByID(id);
-    
+
             switch (delete_type) {
                 case userType.ANYWHERE:
                     const deleted_anywhere_user = await this.useService.updateUserByID(id, {
@@ -37,17 +39,17 @@ export class UserWithdrawService {
                         deleted_at: new Date(),
                     });
                     return !!deleted_anywhere_user;
-    
+
                 case userType.GOOGLE:
                     throw new NotFoundError(`Google withdrawal not implemented yet`);
-    
+
                 case userType.KAKAO:
                     return await this.withdrawSocial(user.id, userType.KAKAO);
-    
+
                 case userType.All:
                     const deleted_all_user = await this.useService.deleteUserByID(id);
                     return !!deleted_all_user;
-    
+
                 default:
                     throw new ValidationError(`Invalid user type: ${delete_type}`);
             }
@@ -72,37 +74,38 @@ export class UserWithdrawService {
 
     public async withdrawSocial(user_id: number, usertype: userType): Promise<boolean> {
         try {
-            const social_user = await this.socialuserService.findSocialUserByUserID(user_id, usertype);
-            const user = await this.useService.findUserByID(user_id);
-    
+            const social_user: SocialUser | null = await this.socialuserService.findSocialUserByUserID(user_id, usertype).catch(() => null);
+            const user: User | null = await this.useService.findUserByID(user_id).catch(() => null);
+
             if (!social_user) {
                 throw new NotFoundError(`Social user with ID(${user_id}) not found for type: ${usertype}`);
             }
-    
+
             const deleted_social_user = await this.socialuserService.deleteSocialUserByID(social_user.id);
             const access_token = await this.get_access_token(social_user.id);
-    
+
             switch (usertype) {
                 case userType.KAKAO:
                     await this.kakaoClient.unlink(access_token);
                     break;
-    
+
                 case userType.GOOGLE:
                     throw new NotFoundError("Google unlink feature not implemented yet");
-    
+
                 default:
                     throw new ValidationError(`Unsupported user type: ${usertype}`);
             }
-    
-            const social_users = await this.socialuserService.findSocialUsersByUserID(user_id);
-    
-            if (social_users.length === 0 && !user.anywhere_id) {
-                const deleted_user = await this.useService.deleteUserByID(user_id);
+
+            const social_users: SocialUser[] | null = await this.socialuserService.findSocialUsersByUserID(user_id)
+                .catch(() => null);
+
+            if (!social_users && !user?.anywhere_id) {
+                const deleted_user = await this.useService.deleteUserByID(user_id).catch(() => null);
                 if (!deleted_user) {
                     throw new DatabaseError(`Failed to delete user with ID(${user_id}) after social account deletion`);
                 }
             }
-    
+
             return !!deleted_social_user;
         } catch (err) {
             console.error("Error in UserWithdrawService.withdrawSocial: ", err);
@@ -118,7 +121,7 @@ export class UserWithdrawService {
             if (!refresh_token) {
                 throw new NotFoundError(`Refresh token not found for SocialUserID: ${social_user_id}`);
             }
-    
+
             const data = await this.kakaoClient.refresh_token(refresh_token);
             return data.access_token;
         } catch (err) {
