@@ -167,7 +167,12 @@ export class KakaoClient implements ISocialClient {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
                 }
             })
-            return response.data;
+            return {
+                access_token: response.data.access_token,
+                refresh_token: response.data.refresh_token,
+                expires_in: response.data.expires_in,
+                refresh_token_expires_in: response.data.refresh_token_expires_in
+            };
         } catch (error) {
             console.error(`Error kakao.client refresh_token: ${error}`);
             throw new ExternalApiError("카카오 토큰 갱신 요청 중 오류 발생", error as Error);
