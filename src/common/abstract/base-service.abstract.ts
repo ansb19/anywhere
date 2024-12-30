@@ -1,7 +1,7 @@
 
 import { Database } from "@/config/database/Database";
 import { Inject, Service } from "typedi";
-import { DeepPartial, EntityManager, ObjectLiteral, Repository } from "typeorm";
+import { DeepPartial, EntityManager, ObjectLiteral, QueryRunner, Repository } from "typeorm";
 import { DatabaseError, NotFoundError, ValidationError } from "../exceptions/app.errors";
 
 
@@ -17,10 +17,17 @@ abstract class BaseService<T extends ObjectLiteral> {
 
     }
 
-    public async create(item: DeepPartial<T>): Promise<T> {
+    protected getRepository(queryRunner?: QueryRunner): Repository<T> {
+        return queryRunner
+            ? queryRunner.manager.getRepository<T>(this.repository.target)
+            : this.repository;
+    }
+
+    public async create(item: DeepPartial<T>, queryRunner?: QueryRunner): Promise<T> {
         try {
-            const entity = this.repository.create(item);
-            return await this.repository.save(entity);
+            const repo = this.getRepository(queryRunner);
+            const entity = repo.create(item);
+            return await repo.save(entity);
         }
         catch (err) {
             console.error("Error base-service create: ", err);
@@ -29,9 +36,10 @@ abstract class BaseService<T extends ObjectLiteral> {
     }
 
     //특정 조건을 통해 하나를 출력 // 두루마리 휴지 걸이도 없음.. //휴지=값 휴지걸이: 담는 주소 
-    public async findOne(condition: Partial<T>): Promise<T> {
+    public async findOne(condition: Partial<T>, queryRunner?: QueryRunner): Promise<T> {
         try {
-            const entity = await this.repository.findOneBy(condition);
+            const repo = this.getRepository(queryRunner);
+            const entity = await repo.findOneBy(condition);
             if (!entity) throw new NotFoundError();
             return entity;
         }
@@ -40,10 +48,10 @@ abstract class BaseService<T extends ObjectLiteral> {
             throw new DatabaseError(`데이터 특정 조건 검색하는 중 오류 발생`, err as Error);
         }
     }
-    public async findAll(): Promise<T[]> {
+    public async findAll(queryRunner?: QueryRunner): Promise<T[]> {
         try {
-            const entities = await this.repository.find();
-            if (!entities) throw new NotFoundError();
+            const repo = this.getRepository(queryRunner);
+            const entities = await repo.find();
             return entities;
         }
         catch (err) {
@@ -53,10 +61,11 @@ abstract class BaseService<T extends ObjectLiteral> {
     }
 
     //특정 조건을 통해 관계를 포함한 하나를 출력
-    public async findOneWithRelations(condition: Partial<T>, relations: string[] = [])
+    public async findOneWithRelations(condition: Partial<T>, relations: string[] = [], queryRunner?: QueryRunner)
         : Promise<T> {
         try {
-            const entity = await this.repository.findOne({
+            const repo = this.getRepository(queryRunner);
+            const entity = await repo.findOne({
                 where: condition,
                 relations: relations,
             })
@@ -70,23 +79,25 @@ abstract class BaseService<T extends ObjectLiteral> {
 
     }
 
-    public async update(condition: Partial<T>, item: DeepPartial<T>): Promise<T> { // 두루마리 휴지 걸이만 있음
+    public async update(condition: Partial<T>, item: DeepPartial<T>, queryRunner?: QueryRunner): Promise<T> { // 두루마리 휴지 걸이만 있음
         try {
-            const entity = await this.repository.findOneBy(condition);
+            const repo = this.getRepository(queryRunner);
+            const entity = await repo.findOneBy(condition);
             if (!entity) throw new NotFoundError(`조건 ${condition}에 해당하는 값을 찾지 못함`);
-            this.repository.merge(entity, item);
-            return await this.repository.save(entity);
+            repo.merge(entity, item);
+            return await repo.save(entity);
         } catch (error) {
             console.error("Error base-service update: ", error);
             throw new DatabaseError("데이터 수정 중 오류 발생", error as Error);
         }
     }
 
-    public async delete(condition: Partial<T>): Promise<T> {
+    public async delete(condition: Partial<T>, queryRunner?: QueryRunner): Promise<T> {
         try {
-            const entity = await this.repository.findOneBy(condition);
+            const repo = this.getRepository(queryRunner);
+            const entity = await repo.findOneBy(condition);
             if (!entity) throw new NotFoundError(`조건 ${condition}에 해당하는 값을 찾지 못함`);
-            const result = await this.repository.delete(condition);
+            const result = await repo.delete(condition);
             if (result.affected === 0) throw new DatabaseError("데이터 삭제 실패");
             return entity; // 0행은 삭제 x -> false 0행이 아니면 삭제 ㅇ -> true     
         } catch (error) {

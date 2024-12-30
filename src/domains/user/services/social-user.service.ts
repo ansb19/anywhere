@@ -3,6 +3,7 @@ import { SocialUser } from "../entities/social-user.entity";
 import { Inject, Service } from "typedi";
 import { Database } from "@/config/database/Database";
 import { DatabaseError, NotFoundError } from "@/common/exceptions/app.errors";
+import { QueryRunner } from "typeorm";
 
 
 
@@ -12,36 +13,36 @@ export class SocialUserService extends BaseService<SocialUser> {
         super(database, SocialUser);
     }
 
-    public async createSocialUser(socialuserData: Partial<SocialUser>): Promise<SocialUser> {
-            const newSocialUser = await this.create(socialuserData);
-            return newSocialUser;
+    public async createSocialUser(socialuserData: Partial<SocialUser>, queryRunner?: QueryRunner): Promise<SocialUser> {
+        const newSocialUser = await this.create(socialuserData, queryRunner);
+        return newSocialUser;
     }
 
-    public async findSocialUserByID(id: number): Promise<SocialUser> {
-            const find_social_user = await this.findOne({ id }); //조건 객체로 전달
-            return find_social_user;
+    public async findSocialUserByID(id: number, queryRunner?: QueryRunner): Promise<SocialUser> {
+        const find_social_user = await this.findOne({ id }, queryRunner); //조건 객체로 전달
+        return find_social_user;
     }
 
-    public async updateSocialUserByID(id: number, socialuserData: Partial<SocialUser>): Promise<SocialUser> {
-            const updated_social_user = await this.update({ id }, socialuserData);//조건 객체로 전달
-            return updated_social_user;
+    public async updateSocialUserByID(id: number, socialuserData: Partial<SocialUser>, queryRunner?: QueryRunner): Promise<SocialUser> {
+        const updated_social_user = await this.update({ id }, socialuserData, queryRunner);//조건 객체로 전달
+        return updated_social_user;
     }
 
-    public async deleteSocialUserByID(id: number): Promise<SocialUser> {
-            const deleted_social_user = await this.delete({ id });
-            return deleted_social_user;
+    public async deleteSocialUserByID(id: number, queryRunner?: QueryRunner): Promise<SocialUser> {
+        const deleted_social_user = await this.delete({ id }, queryRunner);
+        return deleted_social_user;
     }
 
     // 소셜 회사 및 id를 통한 조회
-    public async findSocialUserByProviderID(provider_user_id: string, provider_name: string): Promise<SocialUser> {
-            const social_user = await this.findOneWithRelations({ provider_user_id, provider_name }, ["user"]);
-            return social_user;
+    public async findSocialUserByProviderID(provider_user_id: string, provider_name: string, queryRunner?: QueryRunner): Promise<SocialUser> {
+        const social_user = await this.findOneWithRelations({ provider_user_id, provider_name }, ["user"], queryRunner);
+        return social_user;
     }
 
-    public async findSocialUserByUserID(user_id: number, provider_name: string): Promise<SocialUser> {
+    public async findSocialUserByUserID(user_id: number, provider_name: string, queryRunner?: QueryRunner): Promise<SocialUser> {
 
         try {
-            const social_user = await this.repository.findOne({
+            const social_user = await this.getRepository(queryRunner).findOne({
                 where: { user: { id: user_id }, provider_name },
                 relations: ["user"]
             });
@@ -58,9 +59,9 @@ export class SocialUserService extends BaseService<SocialUser> {
     }
 
     //user_id를 이용한 소셜 유저 조회
-    public async findSocialUsersByUserID(user_id: number): Promise<SocialUser[]> {
+    public async findSocialUsersByUserID(user_id: number, queryRunner: QueryRunner): Promise<SocialUser[]> {
         try {
-            const social_users = await this.repository.find({
+            const social_users = this.getRepository(queryRunner).find({
                 where: { user: { id: user_id } },
                 relations: ["user"],
             })

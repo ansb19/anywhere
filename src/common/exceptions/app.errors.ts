@@ -64,6 +64,11 @@ export class DatabaseError extends AppError {
 export class ExternalApiError extends AppError {
     constructor(message = "외부 api 호출 실패", cause?: Error) {
         super(message, 502, cause);
-    }
+    } 
 }
 
+export class TransactionError extends AppError {
+    constructor(message = "트랜젝션 에러 발생", cause?: Error) {
+        super(message, 500, cause);
+    }
+}
