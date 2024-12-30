@@ -117,13 +117,14 @@ export class UserWithdrawService {
 
     public async get_access_token(social_user_id: number): Promise<string> {
         try {
+            console.log("refresh_token_find");
             const refresh_token = await this.redis.getSession(`refresh_token:${social_user_id}`);
             if (!refresh_token) {
                 throw new NotFoundError(`Refresh token not found for SocialUserID: ${social_user_id}`);
             }
-
-            const data = await this.kakaoClient.refresh_token(refresh_token);
             console.log(`refresh_token: ${refresh_token}`);
+            const data = await this.kakaoClient.refresh_token(refresh_token);
+           
             console.log(`data.access_token: ${data.access_token}`);
             return data.access_token;
         } catch (err) {
