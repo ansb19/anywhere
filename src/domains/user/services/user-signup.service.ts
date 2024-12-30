@@ -19,7 +19,7 @@ export class UserSignupService {
         @Inject(() => SocialUserService) private socialUserService: SocialUserService,
         @Inject(() => RedisService) private redisService: RedisService,
         @Inject(() => KakaoClient) private kakaoClient: KakaoClient,
-    ) {}
+    ) { }
 
     // 자체 회원 가입
     public async signup(userData: Partial<User>): Promise<User> {
@@ -57,7 +57,7 @@ export class UserSignupService {
             const kakaoUserInfo = await this.kakaoClient.request_user_info(data.access_token);
 
             // 2. 기존 유저 확인
-            const existingKakaoUser = await this.socialUserService.findSocialUserByProviderID(kakaoUserInfo.id, userType.KAKAO);
+            const existingKakaoUser = await this.socialUserService.findSocialUserByProviderID(kakaoUserInfo.id, userType.KAKAO).catch(() => null);
             if (existingKakaoUser) {
                 console.log("Existing Kakao user found:", existingKakaoUser);
                 return existingKakaoUser;
