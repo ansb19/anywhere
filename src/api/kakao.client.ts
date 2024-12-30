@@ -37,9 +37,9 @@ export class KakaoClient implements ISocialClient {
 
         this.front_url = this.config.FRONT_END_API;
 
-        console.log(`dqwqwdddddddddddddd:${ this.clientID}`);
-        console.log(`dqwqwdddddddddddddd:${ this.redirectUri}`);
-        console.log(`dqwqwdddddddddddddd:${ this.clientSecret}`);
+        console.log(`dqwqwdddddddddddddd:${this.clientID}`);
+        console.log(`dqwqwdddddddddddddd:${this.redirectUri}`);
+        console.log(`dqwqwdddddddddddddd:${this.clientSecret}`);
     }
 
     public get_url(): string {
@@ -142,7 +142,7 @@ export class KakaoClient implements ISocialClient {
                 headers: {
                     "Authorization": `Bearer ${access_token}`,
                 }
-                
+
             })
             return response.data.id;
         } catch (error) {
@@ -160,6 +160,10 @@ export class KakaoClient implements ISocialClient {
                     client_id: this.clientID,
                     refresh_token: refresh_token,
                     client_secret: this.clientSecret,
+                }
+            }, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
                 }
             })
             return response.data;
@@ -188,7 +192,7 @@ export class KakaoClient implements ISocialClient {
                     "Authorization": `Bearer ${access_token}`,
                     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                 }
-                
+
             })
             console.log("dwqdqwdqdwqwd:", response)
             const kakaoAccount = response.data.kakao_account;
