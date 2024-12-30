@@ -7,7 +7,7 @@ import { Serializer } from "v8";
 
 @Service()
 export class DatabaseConfig {
-    constructor(@Inject(() => EnvConfig) private env_config: EnvConfig) {
+    constructor(@Inject(() => EnvConfig) private readonly env_config: EnvConfig) {
     }
     public getOptions(): DataSourceOptions {
         console.log(`${this.env_config.DB_TYPE} 설정 초기화 완료`);
@@ -24,13 +24,13 @@ export class DatabaseConfig {
             logging: true,
             entities: [
                 process.env.NODE_ENV === "production"
-                    ? "dist/entities/*.js"
-                    : "src/entities/*.ts"
+                    ? "dist/domains/*/entities/*.js" // 배포 환경
+                    : "src/domains/*/entities/*.ts" // 개발 환경
             ],
             migrations: [
                 process.env.NODE_ENV === "production"
-                    ? "dist/migration/*.js"
-                    : "src/migration/*.ts"
+                ? "dist/config/database/migration/*.js" // 배포 환경
+                : "src/config/database/migration/*.ts" // 개발 환경
             ],
             subscribers: [],
 
