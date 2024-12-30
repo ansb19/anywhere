@@ -37,9 +37,9 @@ export class KakaoClient implements ISocialClient {
 
         this.front_url = this.config.FRONT_END_API;
 
-        console.log(`dqwqwdddddddddddddd:${typeof this.clientID}`);
-        console.log(`dqwqwdddddddddddddd:${typeof this.redirectUri}`);
-        console.log(`dqwqwdddddddddddddd:${typeof this.clientSecret}`);
+        console.log(`dqwqwdddddddddddddd:${ this.clientID}`);
+        console.log(`dqwqwdddddddddddddd:${ this.redirectUri}`);
+        console.log(`dqwqwdddddddddddddd:${ this.clientSecret}`);
     }
 
     public get_url(): string {
