@@ -18,7 +18,7 @@ const userSignupController = Container.get(UserSignupController);
 
 router.post('/', userSignupController.signup);
 router.get('/kakao', userSignupController.signupKakaoUser);
-router.get('/kakao/url', userSignupController.signupKaKaoUrl);
+router.post('/kakao/url', userSignupController.signupKaKaoUrl);
 // router.post('/vertification/sms', userSignupController.sendCertSMS);
 // router.post('/vertification/email', userSignupController.sendCertEmail);
 router.post('/check_duplicate', userSignupController.checkDuplicate);
