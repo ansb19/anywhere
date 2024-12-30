@@ -54,7 +54,7 @@ export class UserSignupService {
         }
     }
 
-    public signuKakaopUrl(){ // 카카오 로그인 url..!
+    public signuKakaopUrl(): string{ // 카카오 로그인 url..!
         return this.kakaoClient.get_url();
     }
 
