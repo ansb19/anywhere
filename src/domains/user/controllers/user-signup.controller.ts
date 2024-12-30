@@ -22,6 +22,15 @@ export class UserSignupController extends BaseController {
         })
     }
 
+    public signupKaKaoUrl = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        this.execute(req, res, next, async () => {
+        return {
+            status: 200,
+            message: '카카오 로그인 URL 생성 성공',
+            data: this.userSignupService.signuKakaopUrl(),
+        }
+    })
+}
 
     public signupKakaoUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         this.execute(req, res, next, async () => {

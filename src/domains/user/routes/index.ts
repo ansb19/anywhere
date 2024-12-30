@@ -1,13 +1,8 @@
 import { Router } from 'express';
 // import manageRoutes from './manage';
 import signupRoutes from './signup';
-import UserService from '../services/user.service';
-import UserWithdrawalService from '../services/user-withdraw.service';
-import SocialUserService from '../services/social-user.service';
+import withdrawRoutes from './withdraw';
 
-
-//상위 라우터로써  라우터인 '/user/'
-;
 
 
 //상위 라우터로써  라우터인 '/user/'
@@ -16,6 +11,7 @@ const router = Router();
 
 //router.use('/manage', manageRoutes);
 router.use('/signup', signupRoutes);
+router.use('/withdraw', signupRoutes);
 
 
 

@@ -54,6 +54,11 @@ export class UserSignupService {
         }
     }
 
+    public signuKakaopUrl(){ // 카카오 로그인 url..!
+        return this.kakaoClient.get_url();
+    }
+
+
     // 카카오 소셜 가입
     public async signupKakaoUser(code: string): Promise<SocialUser> {
         try {

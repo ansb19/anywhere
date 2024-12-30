@@ -15,8 +15,8 @@ class UserWithdrawaController extends BaseController {
 
     public withdraw_user = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
             this.execute(req, res, next, async () => {
-            const user_type = req.params.user_type as userType;
-            const user_id = req.params.user_id;
+            const user_type = req.body.user_type as userType;
+            const user_id = req.body.user_id;
             const withdraw_user = await this.userwithdrawService.withdraw(user_type, parseInt(user_id));
 
             if (withdraw_user) {
