@@ -124,6 +124,7 @@ export class UserWithdrawService {
 
             const data = await this.kakaoClient.refresh_token(refresh_token);
             console.log(`refresh_token: ${refresh_token}`);
+            console.log(`data.access_token: ${data.access_token}`);
             return data.access_token;
         } catch (err) {
             console.error("Error in UserWithdrawService.get_access_token: ", err);
