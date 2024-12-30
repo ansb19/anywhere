@@ -13,7 +13,7 @@ const router = Router();
 const userWithdrawaController = Container.get(UserWithdrawaController);
 
 
-router.post('/', userWithdrawaController.withdraw_user);
+router.delete('/', userWithdrawaController.withdraw_user);
 
 
 export default router;
