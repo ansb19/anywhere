@@ -125,6 +125,7 @@ export class KakaoClient implements ISocialClient {
             const response = await axiosKapi.post('/v1/user/unlink', {
                 hearders: {
                     "Authorization": `Bearer ${access_token}`,
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
                 }
             })
             return response.data.id;
