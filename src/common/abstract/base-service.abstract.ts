@@ -105,6 +105,7 @@ abstract class BaseService<T extends ObjectLiteral> {
             throw new DatabaseError("데이터 삭제 중 오류 발생", error as Error);
         }
     }
+
 }
 
 

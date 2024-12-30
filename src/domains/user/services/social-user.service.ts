@@ -59,7 +59,7 @@ export class SocialUserService extends BaseService<SocialUser> {
     }
 
     //user_id를 이용한 소셜 유저 조회
-    public async findSocialUsersByUserID(user_id: number, queryRunner: QueryRunner): Promise<SocialUser[]> {
+    public async findSocialUsersByUserID(user_id: number, queryRunner?: QueryRunner): Promise<SocialUser[]> {
         try {
             const social_users = this.getRepository(queryRunner).find({
                 where: { user: { id: user_id } },
