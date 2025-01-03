@@ -4,8 +4,9 @@ import { Inject, Service } from 'typedi';
 import { generateVerificationCode } from '@/common/utils/verification-code';
 import { EnvConfig } from '@/config/env-config';
 
-import { EXPIRED_TIME } from '@/config/enum_control';
 import { ValidationError } from '@/common/exceptions/app.errors';
+import { SessionService } from '@/common/services/session.service';
+import { SESSION_TYPE } from '@/config/enum_control';
 
 
 //작은 규모의 애플리케이션이나 단일 서버로 충분한 경우 createClient를 사용합니다.
@@ -17,7 +18,7 @@ export class EmailAuthService extends AuthService {
 
     constructor(
         @Inject(() => EnvConfig) private readonly config: EnvConfig,
-        @Inject(() => RedisService) private redis: RedisService
+        @Inject(() => SessionService) private SessionService: SessionService,
     ) {
         super();
         try {
@@ -68,7 +69,7 @@ export class EmailAuthService extends AuthService {
         <p>를 10분 안에 입력해주세요.</p>
         `; // HTML version
 
-        await this.redis.setSession(email_address, cert_code, EXPIRED_TIME.EMAIL_SEC) //10분
+        await this.SessionService.setSession(email_address, cert_code, SESSION_TYPE.EMAIL) //10분
         console.log(`세션 저장: ${email_address} 인증번호: ${cert_code}`);
 
         return await this.sendMail(email_address, subject, text, html);
