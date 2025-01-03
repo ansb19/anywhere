@@ -104,8 +104,8 @@ export class UserSignupService {
                 // 2. 기존 유저 확인
                 const existingKakaoUser = await this.socialUserService.
                     findSocialUserByProviderID(kakaoUserInfo.id, userType.KAKAO, queryRunner).catch(() => null);
+                console.log(`existingKakaoUser:${existingKakaoUser}`);
                 if (existingKakaoUser) {
-
 
                     //if refresh_token이 만료면 data.refresh_token을 넣음
 
