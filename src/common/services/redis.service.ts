@@ -4,8 +4,9 @@ import { Inject, Service } from "typedi";
 import { DatabaseError, NotFoundError } from "../exceptions/app.errors";
 
 
+
 @Service()
-export class RedisService {
+export class Redis {
     private client: RedisClientType;
 
     constructor(
@@ -33,7 +34,7 @@ export class RedisService {
     }
 
     //세션 만들기
-    public async setSession(key: string, value: string, expireTime?: number): Promise<void> {
+    public async set(key: string, value: string, expireTime?: number): Promise<void> {
         try {
             const option = expireTime ? { EX: expireTime } : undefined;
             await this.client.set(key, value, option); //sec 단위
@@ -45,7 +46,7 @@ export class RedisService {
     }
 
     //세션 갱신
-    public async refreshSession(key: string, expireTime: number): Promise<void> {
+    public async refresh(key: string, expireTime: number): Promise<void> {
         try {
             const result = await this.client.expire(key, expireTime);
             if (!result) throw new NotFoundError(`키 ${key}를 찾을 수 없음`);
@@ -58,7 +59,7 @@ export class RedisService {
     }
 
     //세션 조회
-    public async getSession(key: string): Promise<string | null> {
+    public async get(key: string): Promise<string | null> {
         try {
             return await this.client.get(key); //없으면 자동 null 반환
         } catch (error) {
@@ -68,7 +69,7 @@ export class RedisService {
 
     }
     //세션 삭제
-    public async deleteSession(key: string): Promise<void> {
+    public async delete(key: string): Promise<void> {
         try {
             const result = await this.client.del(key);
             if (!result) throw new NotFoundError(`키 ${key}를 찾을 수 없음`);
@@ -81,6 +82,10 @@ export class RedisService {
         
     }
 
+    public getClient(): RedisClientType{
+        return this.client;
+    }
+
 }
 
-export default RedisService;
+export default Redis;

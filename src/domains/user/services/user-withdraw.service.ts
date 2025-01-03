@@ -27,7 +27,7 @@ export class UserWithdrawService {
     // • 통합 회원 탈퇴 시 user 테이블을 없앰
     // • 자체 회원 탈퇴 시 user_id password를 null로 바꾸고 deleted at을 시간 저장함
 
-    public async withdraw(delete_type: userType, id: number): Promise<boolean> {
+    public async withdraw(id: number, delete_type: userType): Promise<boolean> {
         try {
             const user = await this.useService.findUserByID(id);
 
@@ -82,11 +82,17 @@ export class UserWithdrawService {
             }
 
             const deleted_social_user = await this.socialuserService.deleteSocialUserByID(social_user.id);
-            const access_token = await this.get_access_token(social_user.id);
+            
+            console.log(`social_user 토큰: ${social_user.refresh_token}`);
+            const data = await this.kakaoClient.refresh_token(social_user.refresh_token);
+
+            console.log(`access_token 토큰: ${data.access_token}`);
+            const access_token = data.access_token;
 
             switch (usertype) {
                 case userType.KAKAO:
-                    await this.kakaoClient.unlink(access_token);
+                    const kakao_id = await this.kakaoClient.unlink(access_token);
+                    console.log(`카카오 사용자: ${kakao_id} 가 삭제되었습니다`);
                     break;
 
                 case userType.GOOGLE:
@@ -99,7 +105,9 @@ export class UserWithdrawService {
             const social_users: SocialUser[] | null = await this.socialuserService.findSocialUsersByUserID(user_id)
                 .catch(() => null);
 
-            if (!social_users && !user?.anywhere_id) {
+            console.log(`social_users: ${social_users}, ${social_users?.length}`);
+            console.log(`user.anywhere_id: ${user?.anywhere_id}`);
+            if (social_users?.length ===0 && !user?.anywhere_id) {
                 const deleted_user = await this.useService.deleteUserByID(user_id).catch(() => null);
                 if (!deleted_user) {
                     throw new DatabaseError(`Failed to delete user with ID(${user_id}) after social account deletion`);
@@ -115,23 +123,7 @@ export class UserWithdrawService {
         }
     }
 
-    public async get_access_token(social_user_id: number): Promise<string> {
-        try {
-            console.log("refresh_token_find");
-            const refresh_token = await this.redis.getSession(`refresh_token:${social_user_id}`);
-            if (!refresh_token) {
-                throw new NotFoundError(`Refresh token not found for SocialUserID: ${social_user_id}`);
-            }
-            console.log(`refresh_token: ${refresh_token}`);
-            const data = await this.kakaoClient.refresh_token(refresh_token);
-           
-            console.log(`data.access_token: ${data.access_token}`);
-            return data.access_token;
-        } catch (err) {
-            console.error("Error in UserWithdrawService.get_access_token: ", err);
-            throw new DatabaseError("Failed to retrieve access token", err as Error);
-        }
-    }
+    
 }
 
 export default UserWithdrawService;

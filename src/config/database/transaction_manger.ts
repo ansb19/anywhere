@@ -1,7 +1,7 @@
 import { Inject, Service } from "typedi";
 import { Database } from "./Database";
 import { DataSource, QueryRunner } from "typeorm";
-import { TransactionError } from "@/common/exceptions/app.errors";
+import { AppError, TransactionError } from "@/common/exceptions/app.errors";
 
 @Service()
 export class TransactionManager {
@@ -26,6 +26,8 @@ export class TransactionManager {
             return result;
         }
         catch (error) {
+            if(error instanceof AppError)
+                throw error;
             console.error("트랜잭션 실행 중 오류 발생:", error);
             await queryRunner.rollbackTransaction();
             throw new TransactionError();

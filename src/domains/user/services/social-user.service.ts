@@ -3,7 +3,7 @@ import { SocialUser } from "../entities/social-user.entity";
 import { Inject, Service } from "typedi";
 import { Database } from "@/config/database/Database";
 import { DatabaseError, NotFoundError } from "@/common/exceptions/app.errors";
-import { QueryRunner } from "typeorm";
+import { DeepPartial, QueryRunner } from "typeorm";
 
 
 
@@ -13,7 +13,7 @@ export class SocialUserService extends BaseService<SocialUser> {
         super(database, SocialUser);
     }
 
-    public async createSocialUser(socialuserData: Partial<SocialUser>, queryRunner?: QueryRunner): Promise<SocialUser> {
+    public async createSocialUser(socialuserData: DeepPartial<SocialUser>, queryRunner?: QueryRunner): Promise<SocialUser> {
         const newSocialUser = await this.create(socialuserData, queryRunner);
         return newSocialUser;
     }
@@ -23,7 +23,7 @@ export class SocialUserService extends BaseService<SocialUser> {
         return find_social_user;
     }
 
-    public async updateSocialUserByID(id: number, socialuserData: Partial<SocialUser>, queryRunner?: QueryRunner): Promise<SocialUser> {
+    public async updateSocialUserByID(id: number, socialuserData: DeepPartial<SocialUser>, queryRunner?: QueryRunner): Promise<SocialUser> {
         const updated_social_user = await this.update({ id }, socialuserData, queryRunner);//조건 객체로 전달
         return updated_social_user;
     }

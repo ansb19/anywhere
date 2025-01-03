@@ -51,7 +51,7 @@ export class SMSAuthService extends AuthService {
         let cert_code: string = generateVerificationCode(); // 인증 번호 생성
         const text: string = `anywhere 인증 번호가 도착하였습니다\n${cert_code}\n를 입력해주세요.`;
 
-        await this.redis.setSession(phone_number, cert_code, EXPIRED_TIME.SMS_SEC);
+        await this.redis.set(phone_number, cert_code, EXPIRED_TIME.SMS_SEC);
 
         console.log(`세션 저장: ${phone_number} 인증번호: ${cert_code}`);
         return await this.send_sms(phone_number, text);

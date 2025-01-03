@@ -49,4 +49,6 @@ export class Database {
             throw new DatabaseError("데이터베이스 연결 종료 실패", error as Error);
         }
     }
+
+
 }

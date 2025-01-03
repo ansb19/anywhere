@@ -122,10 +122,10 @@ export class KakaoClient implements ISocialClient {
     //연결 끊기
     public async unlink(access_token: string): Promise<string> {
         try {
-            const response = await axiosKapi.post('/v1/user/unlink', {
-                hearders: {
+            const response = await axiosKapi.post('/v1/user/unlink', null, {
+                headers: {
                     "Authorization": `Bearer ${access_token}`,
-                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                 }
             })
             return response.data.id;
@@ -156,22 +156,24 @@ export class KakaoClient implements ISocialClient {
     public async refresh_token(refresh_token: string): Promise<Token> {
         try {
             const response = await axiosKauth.post('/oauth/token', {
-                params: {
-                    grant_type: 'refresh_token',
-                    client_id: this.clientID,
-                    refresh_token: refresh_token,
-                    client_secret: this.clientSecret,
-                }
+                grant_type: 'refresh_token',
+                client_id: this.clientID,
+                refresh_token: refresh_token,
+                client_secret: this.clientSecret,
             }, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
                 }
-            })
+            });
             return {
                 access_token: response.data.access_token,
                 refresh_token: response.data.refresh_token,
-                expires_in: response.data.expires_in,
+                expires_in: response.data.expires_in
+                    ? response.data.expires_in
+                    : null,
                 refresh_token_expires_in: response.data.refresh_token_expires_in
+                    ? response.data.refresh_token_expires_in
+                    : null,
             };
         } catch (error) {
             console.error(`Error kakao.client refresh_token: ${error}`);

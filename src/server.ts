@@ -16,6 +16,8 @@ import { EnvConfig } from './config/env-config';
 import { globalErrorHandler } from './common/exceptions/error-handler';
 import { NotFoundError } from './common/exceptions/app.errors';
 import { DatabaseConfig } from './config/database/db-options';
+import cron from 'node-cron';
+import { RefreshTokenService } from './common/services/refresh_token.service';
 
 
 const env_config = Container.get(EnvConfig);
@@ -39,7 +41,7 @@ app.use(express.json()); // json 요청 본문을 파싱
 // 데이터베이스 초기화 및 서버 시작 함수 정의
 async function startServer() {
     try {
-        
+
         const database = Container.get(Database);
         // 데이터베이스 연결 초기화
         await database.initialize();
@@ -97,3 +99,9 @@ async function startServer() {
 }
 
 startServer();
+
+cron.schedule('0 0 * * *', async () => {
+    console.log('Starting token refresh job...');
+    const refresh =Container.get(RefreshTokenService);
+    await refresh.auto_refresh_token;
+})

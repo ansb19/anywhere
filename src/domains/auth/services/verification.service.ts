@@ -11,7 +11,7 @@ export class VerificaionService {
     }
 
     public async verifyCode(verification: string, submitted_code: string): Promise<boolean> {
-        const verified_code = await this.redis.getSession(verification);
+        const verified_code = await this.redis.get(verification);
         if (!verified_code)
             throw new ValidationError("인증번호가 만료되었거나 존재하지 않습니다.");
         else if (verified_code !== submitted_code)

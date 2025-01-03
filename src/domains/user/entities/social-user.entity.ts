@@ -16,6 +16,12 @@ export class SocialUser {
     @Column({ type: "varchar", length: 255 })
     provider_user_id!: string;  // 소셜 제공자가 부여한 고유 사용자 ID
 
+    @Column({ type: "varchar", length: 300 })
+    refresh_token!: string;
+
+    @Column({type: "timestamp without time zone", })
+    refresh_token_expires_at!: Date;
+
     @CreateDateColumn({ type: "timestamp without time zone", default: () => "CURRENT_TIMESTAMP" })
     created_at!: Date;
 

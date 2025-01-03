@@ -72,3 +72,9 @@ export class TransactionError extends AppError {
         super(message, 500, cause);
     }
 }
+
+export class DuplicationError extends AppError{
+    constructor(message= "이미 값이 존재 합니다", cause?:Error){
+        super(message, 303, cause);
+    }
+}

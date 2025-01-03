@@ -51,6 +51,8 @@ export class EnvConfig {
 
     // Bcrypt password
     readonly SALT_ROUNDS: number;
+    
+    readonly SESSION_SECRET: string;
 
     constructor() {
         // 필수 환경 변수 검증
@@ -98,6 +100,8 @@ export class EnvConfig {
         this.REDIS_LOCAL_URL = this.getEnvVariable('REDIS_LOCAL_URL');
 
         this.SALT_ROUNDS = this.getEnvVariableAsNumber('SALT_ROUNDS', 10);
+
+        this.SESSION_SECRET = this.getEnvVariable('SESSION_SECRET');
 
         console.log('EnvConfig 초기화 완료');
     }

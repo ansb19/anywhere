@@ -8,9 +8,8 @@ import RedisService from "@/common/services/redis.service";
 import { SocialUser } from "../entities/social-user.entity";
 import KakaoClient from "@/api/kakao.client";
 
-import { formatPhoneNumber } from "@/common/utils/formatter";
-import { DatabaseError, ValidationError } from "@/common/exceptions/app.errors";
-import { Database } from "@/config/database/Database";
+import { AddDate, formatPhoneNumber } from "@/common/utils/formatter";
+import { DatabaseError, DuplicationError, ValidationError } from "@/common/exceptions/app.errors";
 import { TransactionManager } from "@/config/database/transaction_manger";
 
 @Service()
@@ -26,7 +25,13 @@ export class UserSignupService {
 
     ) { }
 
-    // 자체 회원 가입
+    
+    /**
+     * // 자체 회원 가입
+     * @param userData email, nickname, profileimage(선택), created_at, phone,
+     * anywhere_id, password_hash
+     * @returns User의 전체 정보
+     */
     public async signup(userData: Partial<User>): Promise<User> {
         try {
             // 비밀번호 해시화
@@ -44,7 +49,12 @@ export class UserSignupService {
         }
     }
 
-    // 중복 확인 (아이디, 닉네임)
+    
+    /**
+     * 중복 확인 (아이디, 닉네임)
+     * @param verification anywhere_id, nickname
+     * @returns true -> 중복이므로 다른 아이디, false -> 중복 아니므로 해당 아이디 사용가능
+     */
     public async checkDuplicate(verification: Partial<User>): Promise<boolean> {
         try {
             return !!(await this.userService.checkDuplicate(verification));
@@ -54,12 +64,20 @@ export class UserSignupService {
         }
     }
 
-    public signuKakaopUrl(): string{ // 카카오 로그인 url..!
+    /**
+     * 카카오 로그인
+     * @returns 카카오 로그인 url (카카오 각종 값들 포함해서 전송)
+     */
+    public signuKakaopUrl(): string { 
         return this.kakaoClient.get_url();
     }
 
 
-    // 카카오 소셜 가입
+    /**
+     * 카카오 소셜 가입
+     * @param code 카카오에서 주는 코드 (카카오 url -> 코드 반환)
+     * @returns 소셜 유저 전체 정보 반환
+     */
     public async signupKakaoUser(code: string): Promise<SocialUser> {
         try {
 
@@ -72,8 +90,14 @@ export class UserSignupService {
                 const existingKakaoUser = await this.socialUserService.
                     findSocialUserByProviderID(kakaoUserInfo.id, userType.KAKAO, queryRunner).catch(() => null);
                 if (existingKakaoUser) {
-                    console.log("Existing Kakao user found:", existingKakaoUser);
-                    return existingKakaoUser;
+
+                    
+                    //if refresh_token이 만료면 data.refresh_token을 넣음음
+                    
+                    
+                    //else refresh_token 만료가 아니면
+                    throw new DuplicationError(
+                        `이미 아이디가 존재합니다. 로그인을 해주세요`);
                 }
 
                 // 3. 새로운 유저 생성
@@ -89,17 +113,16 @@ export class UserSignupService {
                     user: newUser,
                     provider_name: userType.KAKAO,
                     provider_user_id: kakaoUserInfo.id,
+                    refresh_token: data.refresh_token,
+                    refresh_token_expires_at: AddDate(new Date(), 0, 0,0,0, data.refresh_token_expires_in),
                 }, queryRunner);
 
-                // 5. Redis에 리프레시 토큰 저장
-                const refreshTokenKey = `refresh_token:${newKakaoUser.id}`;
-                await this.redisService.setSession(refreshTokenKey, data.refresh_token, data.refresh_token_expires_in);
-
+               
                 return newKakaoUser;
             });
         } catch (error) {
             console.error("Error during Kakao signup:", error);
-            if (error instanceof ValidationError) {
+            if (error instanceof ValidationError || DuplicationError ) {
                 throw error; // Validation 관련 에러는 그대로 전달
             }
             throw new DatabaseError("카카오 회원가입 중 오류 발생", error as Error);

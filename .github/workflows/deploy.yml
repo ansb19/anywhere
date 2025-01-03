@@ -53,6 +53,10 @@ jobs:
 
           echo REDIS_REMOTE_URL=${{ secrets.REDIS_REMOTE_URL }} >> .env
           echo REDIS_LOCAL_URL=${{ secrets.REDIS_LOCAL_URL }} >> .env 
+
+          echo SALT_ROUNDS=${{ secrets.SALT_ROUNDS }} >> .env 
+
+          echo SESSION_SECRET=${{ secrets.SESSION_SECRET }} >> .env 
           
       # 2.2 .env 파일 전송
       - name: Upload .env to EC2
