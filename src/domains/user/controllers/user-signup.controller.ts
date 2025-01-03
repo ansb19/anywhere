@@ -13,7 +13,9 @@ export class UserSignupController extends BaseController {
 
     public signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
             this.execute(req, res, next, async () => {
+                console.log(`user req.body: ${req.body}`);
             const newUser = await this.userSignupService.signup(req.body);
+            
             return {
                 status: 201,
                 message: '유저 자체 회원가입 성공',

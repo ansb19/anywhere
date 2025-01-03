@@ -18,40 +18,55 @@ export class UserSignupService {
         @Inject(() => PasswordService) private passwordService: PasswordService,
         @Inject(() => UserService) private userService: UserService,
         @Inject(() => SocialUserService) private socialUserService: SocialUserService,
-        @Inject(() => RedisService) private redisService: RedisService,
         @Inject(() => KakaoClient) private kakaoClient: KakaoClient,
         @Inject(() => TransactionManager) private transactionManager: TransactionManager,
 
-
     ) { }
 
-    
+
     /**
      * // 자체 회원 가입
-     * @param userData email, nickname, profileimage(선택), created_at, phone,
+     * @param userData email, nickname, profileimage(선택), phone,
      * anywhere_id, password_hash
      * @returns User의 전체 정보
      */
     public async signup(userData: Partial<User>): Promise<User> {
         try {
-            // 비밀번호 해시화
-            userData.password_hash = await this.passwordService.hashPassword(userData.password_hash || '');
+            console.log(`userData:${userData.email}`);
+            console.log(`userData:${userData.phone}`);
+            const exist_user: User | null = await this.userService.findOne({
+                phone: userData.phone,
+            }).catch(() => null);
 
-            // 유저 생성
-            const signedUser = await this.userService.createUser(userData);
-            return signedUser;
+            const exist_user2: User | null = await this.userService.findOne({
+                anywhere_id: userData.anywhere_id,
+            }).catch(() => null); 
+            
+            if (!exist_user && !exist_user2) {
+                // 비밀번호 해시화
+                userData.password_hash = await this.passwordService.hashPassword(userData.password_hash || '');
+
+                // 유저 생성
+                const new_user = await this.userService.createUser(userData);
+
+                console.log(`new_user: ${new_user}`);
+                return new_user;
+            }
+            else {
+                throw new DuplicationError("이미 존재하는 사용자입니다");
+            }
         } catch (error) {
             console.error("Error during user signup:", error);
-            if (error instanceof ValidationError) {
+            if (error instanceof ValidationError || DuplicationError) {
                 throw error; // Validation 관련 에러는 그대로 전달
             }
             throw new DatabaseError("사용자 가입 중 오류 발생", error as Error);
         }
     }
 
-    
+
     /**
-     * 중복 확인 (아이디, 닉네임)
+     * 중복 확인 (아이디, 휴대폰 번호)
      * @param verification anywhere_id, nickname
      * @returns true -> 중복이므로 다른 아이디, false -> 중복 아니므로 해당 아이디 사용가능
      */
@@ -68,7 +83,7 @@ export class UserSignupService {
      * 카카오 로그인
      * @returns 카카오 로그인 url (카카오 각종 값들 포함해서 전송)
      */
-    public signuKakaopUrl(): string { 
+    public signuKakaopUrl(): string {
         return this.kakaoClient.get_url();
     }
 
@@ -91,10 +106,10 @@ export class UserSignupService {
                     findSocialUserByProviderID(kakaoUserInfo.id, userType.KAKAO, queryRunner).catch(() => null);
                 if (existingKakaoUser) {
 
-                    
-                    //if refresh_token이 만료면 data.refresh_token을 넣음음
-                    
-                    
+
+                    //if refresh_token이 만료면 data.refresh_token을 넣음
+
+
                     //else refresh_token 만료가 아니면
                     throw new DuplicationError(
                         `이미 아이디가 존재합니다. 로그인을 해주세요`);
@@ -114,15 +129,15 @@ export class UserSignupService {
                     provider_name: userType.KAKAO,
                     provider_user_id: kakaoUserInfo.id,
                     refresh_token: data.refresh_token,
-                    refresh_token_expires_at: AddDate(new Date(), 0, 0,0,0, data.refresh_token_expires_in),
+                    refresh_token_expires_at: AddDate(new Date(), 0, 0, 0, 0, data.refresh_token_expires_in),
                 }, queryRunner);
 
-               
+
                 return newKakaoUser;
             });
         } catch (error) {
             console.error("Error during Kakao signup:", error);
-            if (error instanceof ValidationError || DuplicationError ) {
+            if (error instanceof ValidationError || DuplicationError) {
                 throw error; // Validation 관련 에러는 그대로 전달
             }
             throw new DatabaseError("카카오 회원가입 중 오류 발생", error as Error);

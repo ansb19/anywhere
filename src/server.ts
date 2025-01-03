@@ -102,6 +102,6 @@ startServer();
 
 cron.schedule('0 0 * * *', async () => {
     console.log('Starting token refresh job...');
-    const refresh =Container.get(RefreshTokenService);
-    await refresh.auto_refresh_token;
+    const refresh = Container.get(RefreshTokenService);
+    await refresh.auto_refresh_token();
 })

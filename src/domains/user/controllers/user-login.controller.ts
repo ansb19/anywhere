@@ -52,6 +52,11 @@ export class UserLoginController extends BaseController {
             }
 
             const isLogin = await this.userlogin_service.loginSocial(provider_user_id, provider_type, client_Type);
+            return {
+                status: 200,
+                message: "로그인 성공",
+                data: isLogin,
+            }
         })
     }
 }
