@@ -17,7 +17,7 @@ export class AuthController extends BaseController {
     public sendSMSAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         this.execute(req, res, next, async () => {
             const { phone } = req.body;
-
+            
             await this.SMSAuthService.sendVerification(phone);
 
             return {

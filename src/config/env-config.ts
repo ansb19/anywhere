@@ -91,7 +91,7 @@ export class EnvConfig {
         this.EMAIL_PASSWORD = this.getEnvVariable('EMAIL_PASSWORD');
 
         // SMS
-        this.SMS_API_KEY = this.getEnvVariable('SMS_API_SECRET');
+        this.SMS_API_KEY = this.getEnvVariable('SMS_API_KEY');
         this.SMS_API_SECRET = this.getEnvVariable('SMS_API_SECRET');
         this.SENDER_PHONE = this.getEnvVariable('SENDER_PHONE');
 

@@ -56,7 +56,7 @@ export class SMSAuthService extends AuthService {
 
         console.log(`세션 저장: ${phone_number} 인증번호: ${cert_code}`);
         await this.send_sms(phone_number, text);
-        console.log(`휴대폰폰: ${phone_number} 인증번호: ${cert_code} 전송`);
+        console.log(`휴대폰: ${phone_number} 인증번호: ${cert_code} 전송`);
     }
 
 }
