@@ -52,10 +52,11 @@ export class SMSAuthService extends AuthService {
         let cert_code: string = generateVerificationCode(); // 인증 번호 생성
         const text: string = `anywhere 인증 번호가 도착하였습니다\n${cert_code}\n를 입력해주세요.`;
 
-        await this.SessionService.setSession(phone_number, cert_code, SESSION_TYPE.EMAIL);
+        await this.SessionService.setSession(phone_number, cert_code, SESSION_TYPE.SMS);
 
         console.log(`세션 저장: ${phone_number} 인증번호: ${cert_code}`);
-        return await this.send_sms(phone_number, text);
+        await this.send_sms(phone_number, text);
+        console.log(`휴대폰폰: ${phone_number} 인증번호: ${cert_code} 전송`);
     }
 
 }

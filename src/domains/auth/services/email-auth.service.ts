@@ -72,8 +72,8 @@ export class EmailAuthService extends AuthService {
         await this.SessionService.setSession(email_address, cert_code, SESSION_TYPE.EMAIL) //10분
         console.log(`세션 저장: ${email_address} 인증번호: ${cert_code}`);
 
-        return await this.sendMail(email_address, subject, text, html);
-
+        await this.sendMail(email_address, subject, text, html);
+        console.log(`이메일: ${email_address} 인증번호: ${cert_code} 전송`);
 
     }
 }
