@@ -60,13 +60,13 @@ export class EmailAuthService extends AuthService {
     public async sendVerification(email_address: string): Promise<void> {
         const subject: string = 'anywhere 인증번호가 도착하였습니다.';
         let cert_code: string = generateVerificationCode();
-        const text: string =
-            `anywhere 인증 번호가 도착하였습니다\n<h3>${cert_code}</h3>\n를 10분 안에 입력해주세요.`;
+        const text: string = `anywhere 인증 번호가 도착하였습니다. 인증번호: ${cert_code} 를 10분 안에 입력해주세요.`;
         const html: string = `
-        <p>anywhere 인증 번호가 도착하였습니다</p>
-        <h3 style="font-size: 1.5em; font-weight: bold; color: #333;">${cert_code}</h3>
-        <p>를 10분 안에 입력해주세요.</p>
-        `; // HTML version
+    <p>anywhere 인증 번호가 도착하였습니다.</p>
+    <h3 style="font-size: 1.5em; font-weight: bold; color: #333;">${cert_code}</h3>
+    <p>를 10분 안에 입력해주세요.</p>
+`;
+
 
         await this.SessionService.setSession(email_address, cert_code, SESSION_TYPE.EMAIL) //10분
         console.log(`세션 저장: ${email_address} 인증번호: ${cert_code}`);
