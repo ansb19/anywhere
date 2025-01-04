@@ -2,7 +2,8 @@ import { Inject, Service } from "typedi";
 import Redis from "./redis.service";
 import EnvConfig from "@/config/env-config";
 import session from 'express-session';
-import connectRedis from 'connect-redis';
+import {RedisStore} from 'connect-redis';
+
 
 @Service()
 export class ExpressSessionService {
@@ -12,8 +13,7 @@ export class ExpressSessionService {
         @Inject(() => Redis) private redis: Redis,
         @Inject(() => EnvConfig) private config: EnvConfig
     ) {
-        const RedisStore = connectRedis(session);
-
+        
         this.sessionMiddleware = session({
             store: new RedisStore({ client: this.redis.getClient() }),
             secret: this.config.SESSION_SECRET,
