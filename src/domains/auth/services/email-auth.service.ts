@@ -1,5 +1,4 @@
 import nodemailer, { Transporter } from 'nodemailer';
-import RedisService from '../../../common/services/redis.service';
 import { Inject, Service } from 'typedi';
 import { generateVerificationCode } from '@/common/utils/verification-code';
 import { EnvConfig } from '@/config/env-config';
@@ -7,7 +6,7 @@ import { EnvConfig } from '@/config/env-config';
 import { ValidationError } from '@/common/exceptions/app.errors';
 import { SessionService } from '@/common/services/session.service';
 import { SESSION_TYPE } from '@/config/enum_control';
-
+import { AuthService } from '@/common/abstract/base.auth.service';
 
 //작은 규모의 애플리케이션이나 단일 서버로 충분한 경우 createClient를 사용합니다.
 //데이터가 많고 고가용성이 필요하며 수평적 확장이 필요한 경우 createCluster를 사용합니다

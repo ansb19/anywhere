@@ -1,11 +1,11 @@
 import CoolsmsMessageService from "coolsms-node-sdk";
-import RedisService from "../../../common/services/redis.service";
 import { Inject, Service } from "typedi";
 import { EnvConfig } from "@/config/env-config";
 import { generateVerificationCode } from "@/common/utils/verification-code";
 import { ValidationError } from "@/common/exceptions/app.errors";
 import { SessionService } from "@/common/services/session.service";
 import { SESSION_TYPE } from "@/config/enum_control";
+import { AuthService } from "@/common/abstract/base.auth.service";
 
 
 

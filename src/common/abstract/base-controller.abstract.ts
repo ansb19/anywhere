@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
+import { Service } from "typedi";
 
+@Service()
 abstract class BaseController { // try catch를 일일히 안하고 코드가 간결해짐
     protected async execute(req: Request, res: Response, next: NextFunction, action: Function ): Promise<void> {
         try {
