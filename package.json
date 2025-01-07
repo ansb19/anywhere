@@ -32,6 +32,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.1",
     "@types/nodemailer": "^6.4.17",
+    "cross-env": "^7.0.3",
     "jest": "^29.7.0",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
@@ -45,8 +46,8 @@
     "build": "npx tsc --build",
     "clean": "npx tsc --build --clean",
     "start": "node dist/server.js",
-    "dev-js": "concurrently \"npx tsc --watch\" \"nodemon -q dist/server.js\"",
-    "dev-ts": "npx nodemon --exec \"ts-node\" src/server.ts",
+    "dev-js": "concurrently \"cross-env TZ=Asia/Seoul npx tsc --watch\" \"cross-env TZ=Asia/Seoul nodemon -q dist/server.js\"",
+    "dev-ts": "cross-env TZ=Asia/Seoul npx nodemon --exec \"ts-node\" src/server.ts",
     "migration-run": "npx typeorm migration:run",
     "migration-revert": "npx typeorm migration:revert",
     "migration-show": "npx typeorm migration:show"

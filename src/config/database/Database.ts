@@ -2,50 +2,61 @@ import { DatabaseError } from "@/common/exceptions/app.errors";
 import { Inject, Service } from "typedi";
 import { DataSource, DataSourceOptions } from "typeorm";
 import { DatabaseConfig } from "./db-options";
+import { logger } from "@/common/utils/logger";
 
 
 
 @Service()
 export class Database {
-     readonly dataSource: DataSource;
+    readonly dataSource: DataSource;
 
     constructor(@Inject(() => DatabaseConfig) private options: DatabaseConfig) {
         this.dataSource = new DataSource(this.options.getOptions());
     }
 
+    /**
+     * 데이터베이스 초기화 메서드
+     */
     public async initialize(): Promise<void> {
         try {
             if (!this.dataSource.isInitialized) {
+                logger.info("Initializing database connection...");
                 await this.dataSource.initialize();
-                console.log("데이터 베이스 초기화 완료");
+                logger.info("Database initialized successfully.");
+            }
+            else {
+                logger.warn("Database connection is already initialized.");
             }
         } catch (error) {
-            console.error("데이터베이스 초기화 중 오류 발생:", error);
             throw new DatabaseError("데이터베이스 초기화 실패", error as Error);
         }
 
     }
-
+    /**
+     * 마이그레이션 실행 메서드
+     */
     public async runMigrations(): Promise<void> {
         try {
+            logger.info("Running database migrations...");
             await this.dataSource.runMigrations();
-            console.log("마이그레이션 완료");
+            logger.info("Database migrations completed successfully.");
         } catch (error) {
-            console.error("마이그레이션 실행 중 오류 발생:", error);
             throw new DatabaseError("마이그레이션 실행 실패", error as Error);
         }
     }
-
+    /**
+     * 데이터베이스 연결 종료 메서드
+     */
     public async close(): Promise<void> {
         try {
             if (this.dataSource.isInitialized) {
+                logger.info("Closing database connection...");
                 await this.dataSource.destroy();
-                console.log("데이터베이스 연결 종료");
+                logger.info("Database connection closed successfully.");
             } else {
-                console.warn("데이터베이스 연결이 이미 종료된 상태입니다.");
+                logger.warn("Database connection is already closed.");
             }
         } catch (error) {
-            console.error("데이터베이스 연결 종료 중 오류 발생:", error);
             throw new DatabaseError("데이터베이스 연결 종료 실패", error as Error);
         }
     }

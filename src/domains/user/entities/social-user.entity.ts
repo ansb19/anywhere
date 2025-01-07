@@ -19,10 +19,10 @@ export class SocialUser {
     @Column({ type: "varchar", length: 300 })
     refresh_token!: string;
 
-    @Column({type: "timestamp without time zone", })
+    @Column({ type: "timestamp" })
     refresh_token_expires_at!: Date;
 
-    @CreateDateColumn({ type: "timestamp without time zone", default: () => "CURRENT_TIMESTAMP" })
+    @CreateDateColumn({ type: "timestamp", default: () => "timezone('Asia/Seoul', now())" })
     created_at!: Date;
 
 }

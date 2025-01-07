@@ -10,19 +10,19 @@ import { Column, CreateDateColumn, DeleteDateColumn, Double, Entity, Index, Join
 @Entity('PLACE')
 export class Place {
     @PrimaryGeneratedColumn()
-    id: number = 0;
+    id: number = 0; 
 
     @Column({ type: 'varchar', length: 40 })
-    place_name: string = '';
+    place_name!: string ;
 
     @Column({ type: 'bigint' })
     user_id!: number;
 
     @Column({ type: 'double precision' })
-    lat: number = 0.0;
+    lat!: number ;
 
     @Column({ type: 'double precision' })
-    lon: number = 0.0;
+    lon!: number ;
 
     // @Column({ type: 'smallint' })
     // category_id: number = 0;
@@ -45,18 +45,18 @@ export class Place {
     end_date!: Date;
 
     @Column({ type: 'varchar', length: 500, array: true })
-    photo_s3_url: string = '';
+    photo_s3_url?: string;
 
     @Column({ type: 'varchar', length: 5, array: true })
-    week!: string;
+    day_of_the_week!: string;
     // @Column({ type: 'smallint', array: true })
     // charge_id: number = 0; 다대다 
 
     @Column({ type: 'varchar', length: 1000 })
-    comment: string = '';
+    comment?: string;
 
     @Column({ type: 'varchar', length: 30, array: true })
-    tag: string = '';
+    tag?: string;
 
     @Column({ type: 'int' })
     exist_count: number = 0;

@@ -3,9 +3,7 @@ import { axiosKapi, axiosKauth } from "./axios.client";
 import { ISocialClient, SoicalUser, Token } from "./i-social.client";
 import { EnvConfig } from "@/config/env-config";
 import { ExternalApiError } from "@/common/exceptions/app.errors";
-
-
-
+import { logger } from "@/common/utils/logger";
 
 // https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#kakaologin
 
@@ -37,22 +35,23 @@ export class KakaoClient implements ISocialClient {
 
         this.front_url = this.config.FRONT_END_API;
 
-        console.log(`dqwqwdddddddddddddd:${this.clientID}`);
-        console.log(`dqwqwdddddddddddddd:${this.redirectUri}`);
-        console.log(`dqwqwdddddddddddddd:${this.clientSecret}`);
+        logger.info("KakaoClient initialized successfully", {
+            clientID: this.clientID,
+            redirectUri: this.redirectUri,
+        });
     }
 
     public get_url(): string {
         const loginUrl =
             `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${this.clientID}&redirect_uri=${this.redirectUri}`;
-
+        logger.info(`Generated Kakao login URL: ${loginUrl}`);
         return loginUrl;
     }
 
     //토큰 요청
     public async request_token(code: string): Promise<Token> {
         try {
-
+            logger.info("Requesting Kakao token...");
             const response = await axiosKauth.post('/oauth/token', {
                 grant_type: "authorization_code",
                 client_id: this.clientID,
@@ -65,6 +64,7 @@ export class KakaoClient implements ISocialClient {
                         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
                     }
                 });
+            logger.info("Kakao token request successful.");
             return {
                 access_token: response.data.access_token,
                 refresh_token: response.data.refresh_token,
@@ -72,7 +72,6 @@ export class KakaoClient implements ISocialClient {
                 refresh_token_expires_in: response.data.refresh_token_expires_in
             };
         } catch (error) {
-            console.error(`Error kakao.client request_token: `, error);
             throw new ExternalApiError("카카오 토큰 요청 중 오류 발생", error as Error);
         }
 
@@ -90,22 +89,23 @@ export class KakaoClient implements ISocialClient {
     //사용자 액세스 토큰과 리프레시 토큰을 모두 만료
     public async logout(access_token: string): Promise<string> {
         try {
+            logger.info("Logging out user via Kakao...");
             const response = await axiosKapi.post('/v1/user/logout', null, {
                 headers: {
                     "Authorization": `Bearer ${access_token}`,
                     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
                 }
             });
-
+            logger.info("Kakao logout successful.");
             return response.data.id;
         } catch (error) {
-            console.error(`Error kakao.client logout: ${error}`);
             throw new ExternalApiError("카카오 로그아웃 요청 중 오류 발생", error as Error);
         }
     }
 
     //카카오계정과 함께 로그아웃
     public async logout_kakao_account(): Promise<void> {
+        logger.info("Logging out user via Kakao account...");
         try {
             const response = await axiosKauth.get('/oauth/logout', {
                 params: {
@@ -114,15 +114,15 @@ export class KakaoClient implements ISocialClient {
 
                 }
             })
-            console.log(response);
+            logger.info("Kakao account logout successful");
         } catch (error) {
-            console.error(`Error kakao.client logout_kakao_account: ${error}`);
             throw new ExternalApiError("카카오 계정 로그아웃 요청 중 오류 발생", error as Error);
         }
     }
 
     //연결 끊기
     public async unlink(access_token: string): Promise<string> {
+        logger.info("Unlinking user from Kakao...");
         try {
             const response = await axiosKapi.post('/v1/user/unlink', null, {
                 headers: {
@@ -130,9 +130,9 @@ export class KakaoClient implements ISocialClient {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                 }
             })
+            logger.info("Kakao unlink successful");
             return response.data.id;
         } catch (error) {
-            console.error(`Error kakao.client unlink: ${error}`);
             throw new ExternalApiError("카카오 연결 끊기 요청 중 오류 발생", error as Error);
         }
 
@@ -140,22 +140,23 @@ export class KakaoClient implements ISocialClient {
 
     //토큰 정보 보기
     public async get_token_info(access_token: string): Promise<string> {
+        logger.info("Fetching Kakao token info...");
         try {
             const response = await axiosKapi.get('/v1/user/access_token_info', {
                 headers: {
                     "Authorization": `Bearer ${access_token}`,
                 }
-
             })
+            logger.info("Kakao token info fetched successfully");
             return response.data.id;
         } catch (error) {
-            console.error(`Error kakao.client get_token_info: ${error}`);
             throw new ExternalApiError("카카오 토큰 정보 조회 중 오류 발생", error as Error);
         }
 
     }
     //토큰 갱신하기
     public async refresh_token(refresh_token: string): Promise<Token> {
+        logger.info("Refreshing Kakao token...");
         try {
             const response = await axiosKauth.post('/oauth/token', {
                 grant_type: 'refresh_token',
@@ -167,6 +168,7 @@ export class KakaoClient implements ISocialClient {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
                 }
             });
+            logger.info("Kakao token refreshed successfully");
             return {
                 access_token: response.data.access_token,
                 refresh_token: response.data.refresh_token,
@@ -178,7 +180,6 @@ export class KakaoClient implements ISocialClient {
                     : null,
             };
         } catch (error) {
-            console.error(`Error kakao.client refresh_token: ${error}`);
             throw new ExternalApiError("카카오 토큰 갱신 요청 중 오류 발생", error as Error);
         }
 
@@ -195,6 +196,7 @@ export class KakaoClient implements ISocialClient {
     // https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#req-user-info
 
     public async request_user_info(access_token: string): Promise<SoicalUser> {
+        logger.info("Requesting Kakao user info...");
         try {
             console.log("액세스 토큰: ", access_token);
             const response = await axiosKapi.get('/v2/user/me', {
@@ -204,7 +206,7 @@ export class KakaoClient implements ISocialClient {
                 }
 
             })
-            console.log("dwqdqwdqdwqwd:", response)
+            logger.info("Kakao user info request successful");
             const kakaoAccount = response.data.kakao_account;
 
             return {
@@ -215,7 +217,6 @@ export class KakaoClient implements ISocialClient {
                 phone: kakaoAccount.phone_number
             }
         } catch (error) {
-            console.error(`Error kakao.client request_user_info: ${error}`);
             throw new ExternalApiError("카카오 사용자 정보 요청 중 오류 발생", error as Error);
         }
 

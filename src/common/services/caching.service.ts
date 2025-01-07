@@ -1,6 +1,7 @@
 import { Inject, Service } from "typedi";
 import Redis from "./redis.service";
 import { DatabaseError } from "../exceptions/app.errors";
+import { logger } from "../utils/logger";
 
 @Service()
 export class CachingService {
@@ -19,11 +20,11 @@ export class CachingService {
         const cacheKey = `${prefix}:${key}`;
         try {
             const serializedValue = JSON.stringify(value);
+            logger.info(`Saving cache - Key: ${cacheKey}, TTL: ${ttl} seconds`);
             await this.redis.set(cacheKey, serializedValue, ttl);
-            console.log(`[CachingService] 캐시 저장 성공: ${cacheKey}`);
+            logger.info(`Cache saved successfully - Key: ${cacheKey}`);
         }
         catch (error) {
-            console.error(`[CachingService] 캐시 저장 실패: ${cacheKey}`, error);
             throw new DatabaseError("캐시 저장 중 오류 발생");
         }
     }
@@ -37,14 +38,15 @@ export class CachingService {
     public async get<T>(prefix: string, key: string): Promise<T | null> {
         const cacheKey = `${prefix}:${key}`;
         try {
+            logger.info(`Fetching cache - Key: ${cacheKey}`);
             const cachedValue = await this.redis.get(cacheKey);
             if (!cachedValue) {
-                console.log(`[CachingService] 캐시 조회 실패 (데이터 없음): ${cacheKey}`);
+                logger.warn(`Cache not found - Key: ${cacheKey}`);
                 return null;
             }
+            logger.info(`Cache found - Key: ${cacheKey}`);
             return JSON.parse(cachedValue) as T;
         } catch (error) {
-            console.error(`[CachingService] 캐시 조회 실패: ${cacheKey}`, error);
             throw new DatabaseError("캐시 조회 중 오류 발생");
         }
     }
@@ -57,10 +59,10 @@ export class CachingService {
     public async delete(prefix: string, key: string): Promise<void> {
         const cacheKey = `${prefix}:${key}`;
         try {
+            logger.info(`Deleting cache - Key: ${cacheKey}`);
             await this.redis.delete(cacheKey);
-            console.log(`[CachingService] 캐시 삭제 성공: ${cacheKey}`);
+            logger.info(`Cache deleted successfully - Key: ${cacheKey}`);
         } catch (error) {
-            console.error(`[CachingService] 캐시 삭제 실패: ${cacheKey}`, error);
             throw new DatabaseError("캐시 삭제 중 오류 발생");
         }
     }
@@ -71,9 +73,10 @@ export class CachingService {
      */
     public async clearNamespace(prefix: string): Promise<void> {
         try {
+            logger.info(`Clearing all cache in namespace - Prefix: ${prefix}`);
             const keys = await this.redis.getClient().keys(`${prefix}:*`);
             if (keys.length === 0) {
-                console.log(`[CachingService] 네임스페이스에 데이터 없음: ${prefix}`);
+                logger.warn(`No cache found in namespace - Prefix: ${prefix}`);
                 return;
             }
 
@@ -81,9 +84,8 @@ export class CachingService {
             keys.forEach((key) => pipeline.del(key));
             await pipeline.exec();
 
-            console.log(`[CachingService] 네임스페이스 데이터 삭제 성공: ${prefix}`);
+            logger.info(`Cache cleared successfully in namespace - Prefix: ${prefix}`);
         } catch (error) {
-            console.error(`[CachingService] 네임스페이스 데이터 삭제 실패: ${prefix}`, error);
             throw new DatabaseError("네임스페이스 데이터 삭제 중 오류 발생");
         }
     }

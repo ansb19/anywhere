@@ -41,14 +41,14 @@ export class User {
     @Column({ type: 'boolean', default: false })
     penalty_state!: boolean;
 
-    @CreateDateColumn({ type: 'timestamp without time zone', default: () => 'CURRENT_TIMESTAMP' })
+    @CreateDateColumn({ type: 'timestamp', default: () => "timezone('Asia/Seoul', now())" })
     created_at!: Date;
 
-    @UpdateDateColumn({ type: 'timestamp without time zone', default: () => 'CURRENT_TIMESTAMP' })
+    @UpdateDateColumn({ type: 'timestamp', default: () => "timezone('Asia/Seoul', now())" })
     //db에 없음
     updated_at!: Date;
 
-    @DeleteDateColumn({ type: 'timestamp without time zone', nullable: true })
+    @DeleteDateColumn({ type: 'timestamp', nullable: true })
     //db에 없음
     deleted_at?: Date | null;
 

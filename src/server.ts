@@ -15,12 +15,14 @@ import Container from 'typedi';
 import { EnvConfig } from './config/env-config';
 import { globalErrorHandler } from './common/exceptions/error-handler';
 import { NotFoundError } from './common/exceptions/app.errors';
-import { DatabaseConfig } from './config/database/db-options';
 import cron from 'node-cron';
 import { RefreshTokenService } from './common/services/refresh_token.service';
+import { loggerMiddleware } from './middleware/logger.midlleware';
+import { logger } from './common/utils/logger';
 
 
 const env_config = Container.get(EnvConfig);
+
 
 
 
@@ -41,12 +43,14 @@ app.use(express.json()); // json 요청 본문을 파싱
 // 데이터베이스 초기화 및 서버 시작 함수 정의
 async function startServer() {
     try {
-
+        logger.info('Initializing server...');
         const database = Container.get(Database);
         // 데이터베이스 연결 초기화
         await database.initialize();
-        await database.runMigrations(); // 프로덕션 시 비활성화
+        logger.info('Database connection initialized.');
 
+        await database.runMigrations(); // 프로덕션 시 비활성화
+        logger.info('Database migrations executed.');
 
         app.use('/user', UserModule.init());
         app.use('/place', PlaceModule.init());
@@ -55,27 +59,32 @@ async function startServer() {
         app.use('/auth', AuthModule.init());
 
         app.get('/', (req, res) => {
-            console.log("백엔드에 접속");
-            res.send("Welcome to the backend!");
+            const currentTime = new Date();
+            logger.info(`Current server time: ${currentTime}, 백엔드 접속`);
+            res.send(`Welcome to the backend! time: ${currentTime}`);
         })
 
         app.use((req: Request, res: Response, next: NextFunction) => {
+            logger.warn(`Invalid route accessed: ${req.originalUrl}`);
             const error = new NotFoundError("요청한 경로를 찾을 수 없습니다");
             next(error);
         }); //잘못된 라우터 요청시 응답
 
         app.use(globalErrorHandler);// 전역 에러 처리
 
+        // 로깅 미들웨어 적용
+        app.use(loggerMiddleware);
+
         // 서버 시작
         const server = app.listen(port, '0.0.0.0', () => {
-            console.log(`서버 구동 중... port: ${port}`);
+            logger.info(`Server is running on port: ${port}`);
         });
 
         // 서버 종료 처리 (SIGTERM, SIGINT)
         process.on('SIGTERM', async () => {
-            console.log('SIGTERM signal received: closing HTTP server');
+            logger.info('SIGTERM signal received: closing HTTP server...');
             server.close(async () => {
-                console.log('HTTP server closed');
+                logger.info('HTTP server closed.');
                 // 데이터베이스 연결 닫기
                 await database.close();
                 process.exit(0);
@@ -83,9 +92,9 @@ async function startServer() {
         });
 
         process.on('SIGINT', async () => {
-            console.log('SIGINT signal received: closing HTTP server');
+            logger.info('SIGINT signal received: closing HTTP server...');
             server.close(async () => {
-                console.log('HTTP server closed');
+                logger.info('HTTP server closed.');
                 // 데이터베이스 연결 닫기
                 await database.close();
                 process.exit(0);
@@ -93,7 +102,7 @@ async function startServer() {
         });
 
     } catch (err) {
-        console.error('서버 구동 에러 발생: ', err);
+        logger.error('Error during server initialization', err);
         process.exit(1); // 에러 발생 시 프로세스 종료
     }
 }
@@ -101,7 +110,8 @@ async function startServer() {
 startServer();
 
 cron.schedule('0 0 * * *', async () => {
-    console.log('Starting token refresh job...');
+    logger.info('Starting token refresh job...');
     const refresh = Container.get(RefreshTokenService);
     await refresh.auto_refresh_token();
+    logger.info('Token refresh job completed.');
 })

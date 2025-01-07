@@ -120,14 +120,14 @@ class FavoriteController extends BaseController {
             if (favorites) {
                 return {
                     status: 200,
-                    message: '닉네임을 통한 즐겨찾기들 조회 성공',
+                    message: '유저를 통한 즐겨찾기들 조회 성공',
                     data: favorites
                 }
             }
             else {
                 return {
                     status: 404,
-                    message: '닉네임을 통한 즐겨찾기들 조회 성공',
+                    message: '유저를 통한 즐겨찾기들 조회 성공',
                     data: null
                 }
             }

@@ -3,15 +3,15 @@ import { User } from "../entities/user.entity";
 import PasswordService from "@/domains/auth/services/password.service";
 import UserService from "./user.service";
 import SocialUserService from "./social-user.service";
-import RedisService from "@/common/services/redis.service";
 import { SocialUser } from "../entities/social-user.entity";
 import KakaoClient from "@/api/kakao.client";
 
 import { AddDate, formatPhoneNumber } from "@/common/utils/formatter";
-import { DatabaseError, DuplicationError, ValidationError } from "@/common/exceptions/app.errors";
+import { AppError, DatabaseError, DuplicationError } from "@/common/exceptions/app.errors";
 import { TransactionManager } from "@/config/database/transaction_manger";
 import { SESSION_TYPE, userType } from "@/config/enum_control";
 import UserLoginService from "./user-login.service";
+import { logger } from "@/common/utils/logger";
 
 @Service()
 export class UserSignupService {
@@ -33,42 +33,46 @@ export class UserSignupService {
      * @returns User의 전체 정보
      */
     public async signup(userData: Partial<User>): Promise<User> {
+        logger.info(`Starting signup process for email: ${userData.email}`);
+
         try {
-            console.log(`userData:${userData.email}`);
-            console.log(`userData:${userData.phone}`);
-            const is_exist_phone = await this.userService.findOne({
+            logger.debug(`Checking for existing user with phone: ${userData.phone}`);
+            const existingUser = await this.userService.findOne({
                 phone: userData.phone,
             }).catch(() => null);
+
+            logger.debug(`Checking for existing user with anywhere_id: ${userData.anywhere_id}`);
             const is_exist_anywhere_id = await this.userService.checkDuplicate({
                 anywhere_id: userData.anywhere_id,
             });
 
             userData.password_hash = await this.passwordService.hashPassword(userData.password_hash || '');
+            logger.debug(`Password hashed for user: ${userData.email}`);
 
-            // if (is_exist_phone)
-            //     throw new DuplicationError("이미 존재하는 사용자입니다");
 
-            // if (is_exist_anywhere_id)
-            //     throw new DuplicationError("이미 사용중인 ID 입니다");
-
-            if (is_exist_anywhere_id && is_exist_phone)
+            if (is_exist_anywhere_id && existingUser) {
+                logger.warn(`Duplicate user found for email: ${userData.email} and phone: ${userData.phone}`);
                 throw new DuplicationError("이미 존재하는 ID 및 유저입니다");
-            else if (is_exist_anywhere_id && !is_exist_phone)
+            }
+            else if (is_exist_anywhere_id && !existingUser) {
+                logger.warn(`Duplicate ID found for anywhere_id: ${userData.anywhere_id}`);
                 throw new DuplicationError("이미 사용중인 ID 입니다");
-            else if (!is_exist_anywhere_id && is_exist_phone) {
-                const intergrated_user = await this.userService.updateUserByID(is_exist_phone.id, userData);
-                console.log(`intergrated_user: ${intergrated_user}`);
-                return intergrated_user;
+            }
+            else if (!is_exist_anywhere_id && existingUser) {
+                logger.info(`Integrating existing user with phone: ${userData.phone}`);
+                const integrated_user = await this.userService.updateUserByID(existingUser.id, userData);
+                logger.info(`User integrated successfully: ${integrated_user.id}`);
+                return integrated_user;
             }
             else {
                 // 유저 생성
+                logger.info(`Creating new user for email: ${userData.email}`);
                 const new_user = await this.userService.createUser(userData);
-                console.log(`new_user: ${new_user}`);
+                logger.info(`User created successfully with ID: ${new_user.id}`);
                 return new_user;
             }
         } catch (error) {
-            console.error("Error during user signup:", error);
-            if (error instanceof ValidationError || DuplicationError) {
+            if (error instanceof DuplicationError) {
                 throw error; // Validation 관련 에러는 그대로 전달
             }
             throw new DatabaseError("사용자 가입 중 오류 발생", error as Error);
@@ -82,10 +86,12 @@ export class UserSignupService {
      * @returns true -> 중복이므로 다른 아이디, false -> 중복 아니므로 해당 아이디 사용가능
      */
     public async checkDuplicate(verification: Partial<User>): Promise<boolean> {
+        logger.info(`Checking for duplicate user with: ${JSON.stringify(verification)}`);
         try {
-            return !!(await this.userService.checkDuplicate(verification));
+            const result = await this.userService.checkDuplicate(verification);
+            logger.info(`Duplicate check result: ${result}`);
+            return !!(result);
         } catch (error) {
-            console.error("Error during duplicate check:", error);
             throw error; // 하위 에러 그대로 전달
         }
     }
@@ -95,7 +101,9 @@ export class UserSignupService {
      * @returns 카카오 로그인 url (카카오 각종 값들 포함해서 전송)
      */
     public signuKakaopUrl(): string {
-        return this.kakaoClient.get_url();
+        const url = this.kakaoClient.get_url();
+        logger.info(`Generated Kakao signup URL: ${url}`);
+        return url;
     }
 
 
@@ -104,28 +112,34 @@ export class UserSignupService {
      * @param code 카카오에서 주는 코드 (카카오 url -> 코드 반환)
      * @returns 소셜 유저 전체 정보 반환
      */
-    public async signupKakaoUser(code: string, client_type: SESSION_TYPE): Promise<SocialUser | string> {
+    public async signupKakaoUser(code: string, client_type: SESSION_TYPE): Promise<SocialUser> {
+        logger.info(`Starting Kakao signup process with code: ${code}`);
         try {
-
             // 1. 카카오 토큰 요청
             const data = await this.kakaoClient.request_token(code);
-            const kakaoUserInfo = await this.kakaoClient.request_user_info(data.access_token);
+            logger.debug(`Received Kakao token: ${JSON.stringify(data)}`);
 
-            return this.transactionManager.execute(async (queryRunner) => {
+            const kakaoUserInfo = await this.kakaoClient.request_user_info(data.access_token);
+            logger.debug(`Received Kakao user info: ${JSON.stringify(kakaoUserInfo)}`);
+
+            const result = await this.transactionManager.execute(async (queryRunner) => {
                 // 2. 기존 유저 확인
                 const existingKakaoUser = await this.socialUserService.
                     findSocialUserByProviderID(kakaoUserInfo.id, userType.KAKAO, queryRunner).catch(() => null);
-                console.log(`existingKakaoUser:${existingKakaoUser}`);
+
                 if (existingKakaoUser) {
+                    logger.info(`Existing Kakao user found: ${existingKakaoUser.id}`);
                     const updated_user = await this.socialUserService.updateSocialUserByID(existingKakaoUser.id, {
                         refresh_token: data.refresh_token,
                         refresh_token_expires_at: AddDate(new Date(), 0, 0, 0, 0, data.refresh_token_expires_in),
-                    })
-                    await this.UserLoginService.loginSocial(existingKakaoUser.provider_user_id, existingKakaoUser.provider_name as userType, client_type);
+                    });
+
+                    logger.info(`Kakao user updated and logged in: ${updated_user.id}`);
                     return updated_user;
                 }
-                else {
+                else { //유저가 없을 때
                     // 3. 새로운 유저 생성
+                    logger.info(`Creating new Kakao user`);
                     const newUser = await this.userService.createUser({
                         phone: kakaoUserInfo.phone ? formatPhoneNumber(kakaoUserInfo.phone) : null,
                         email: kakaoUserInfo.email,
@@ -142,16 +156,19 @@ export class UserSignupService {
                         refresh_token_expires_at: AddDate(new Date(), 0, 0, 0, 0, data.refresh_token_expires_in),
                     }, queryRunner);
 
-                    await this.UserLoginService.loginSocial(newKakaoUser.provider_user_id, newKakaoUser.provider_name as userType, client_type);
+                    logger.info(`New Kakao user created successfully: ${newKakaoUser.id}`);
                     return newKakaoUser;
                 }
 
-
-
             });
+            // 4. 트랜잭션 완료 후 로그인 처리
+            await this.UserLoginService.loginSocial(kakaoUserInfo.id, userType.KAKAO, client_type);
+
+            logger.info(`User logged in successfully after signup: ${kakaoUserInfo.id}`);
+            return result;
+
         } catch (error) {
-            console.error("Error during Kakao signup:", error);
-            if (error instanceof ValidationError || DuplicationError) {
+            if (error instanceof DuplicationError) {
                 throw error; // Validation 관련 에러는 그대로 전달
             }
             throw new DatabaseError("카카오 회원가입 중 오류 발생", error as Error);

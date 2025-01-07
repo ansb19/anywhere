@@ -6,3 +6,4 @@ tsconfig.tsbuildinfo
 /ormconfig.json
 /test
 /.git
+/logs

@@ -7,6 +7,7 @@ import { SessionService } from "@/common/services/session.service";
 import { SESSION_TYPE, userType } from "@/config/enum_control";
 import { AddDate } from "@/common/utils/formatter";
 import { RefreshTokenService } from "@/common/services/refresh_token.service";
+import { logger } from "@/common/utils/logger";
 
 @Service()
 export class UserLoginService {
@@ -27,19 +28,25 @@ export class UserLoginService {
      * @returns true
      */
     public async loginAnywhere(anywhere_id: string, password: string, client_type: SESSION_TYPE): Promise<boolean> {
+        logger.info(`Starting loginAnywhere process for anywhere_id: ${anywhere_id}`);
         try {
             const user = await this.userService.findOne({ anywhere_id });
 
             if (!user) {
+                logger.warn(`User not found for anywhere_id: ${anywhere_id}`);
                 throw new NotFoundError(`유저 아이디가 틀리거나 존재하지 않습니다.`);
             }
 
+            logger.debug(`Verifying password for anywhere_id: ${anywhere_id}`);
             const isPasswordValid = await this.passwordService.verifyPassword(password, user.password_hash!);
             if (!isPasswordValid) {
+                logger.warn(`Invalid password for anywhere_id: ${anywhere_id}`);
                 throw new UnauthorizedError("비밀번호를 확인해주세요.");
             }
-            if (client_type !== (SESSION_TYPE.APP || SESSION_TYPE.WEB))
+            if (client_type !== (SESSION_TYPE.APP || SESSION_TYPE.WEB)) {
+                logger.warn(`Invalid login type: ${client_type}`);
                 throw new ValidationError("Invalid login type");
+            }
 
             const sessionKey = `user:${user.id}:${client_type}`;
             const sessionData = JSON.stringify({
@@ -48,16 +55,21 @@ export class UserLoginService {
                 loginTime: new Date(),
             });
 
+            logger.debug(`Checking existing session for sessionKey: ${sessionKey}`);
             const existingSession = await this.session.getSession(sessionKey, client_type);
-            console.log(`existingSession:${existingSession}, client_type:${client_type}`);
-            if (existingSession)
-                await this.session.refreshSession(sessionKey, client_type);
-            else
-                await this.session.setSession(sessionKey, sessionData, client_type);
 
+            if (existingSession) {
+                logger.info(`Session found for sessionKey: ${sessionKey}, refreshing session.`);
+                await this.session.refreshSession(sessionKey, client_type);
+            }
+            else {
+                logger.info(`No session found for sessionKey: ${sessionKey}, creating new session.`);
+                await this.session.setSession(sessionKey, sessionData, client_type);
+            }
+            
+            logger.info(`LoginAnywhere process completed successfully for anywhere_id: ${anywhere_id}`);
             return isPasswordValid;
         } catch (err) {
-            console.error("Error UserLoginService loginAnywhere: ", err);
             throw err instanceof NotFoundError || err instanceof UnauthorizedError || err instanceof ValidationError
                 ? err
                 : new ValidationError("Login process failed", err as Error);
@@ -73,19 +85,29 @@ export class UserLoginService {
      * @returns true
      */
     public async loginSocial(provider_user_id: string, provider_type: userType, client_type: SESSION_TYPE): Promise<boolean> {
+        logger.info(`Starting loginSocial process for provider_user_id: ${provider_user_id}, provider_type: ${provider_type}`);
+
         try {
+            //소셜 유저 조회
+            logger.debug(`Finding social user by provider_user_id: ${provider_user_id} and provider_type: ${provider_type}`);
             const socialUser = await this.socialuserService.findSocialUserByProviderID(provider_user_id, provider_type).catch(() => null);
 
             if (!socialUser) {
+                logger.warn(`Social user not found for provider_user_id: ${provider_user_id} and provider_type: ${provider_type}`);
                 throw new NotFoundError(`해당 소셜 유저가 없습니다. 회원가입 해주세요.`);
             }
-            if (client_type !== SESSION_TYPE.WEB && client_type !== SESSION_TYPE.APP)
+            //로그인 타입 검증
+            if (client_type !== SESSION_TYPE.WEB && client_type !== SESSION_TYPE.APP){
+                logger.warn(`Invalid login type: ${client_type}`);
                 throw new ValidationError("Invalid login type");
+            }
 
+            //리프레쉬 토큰 관리 ( 1달 미만이면 갱신)
+            logger.debug(`Managing refresh token for socialUser ID: ${socialUser.id}`);
             const target_date = AddDate(new Date(), 1);
             const stored_date = socialUser.refresh_token_expires_at;
             await this.refreshTokenService.manual_refresh_token(target_date, stored_date, socialUser.refresh_token, socialUser.id);
-            // 리프레시 토큰 시간 체크 후 1달 미만 갱신
+            
 
             const sessionKey = `social_user:${socialUser.id}:${client_type}`;
             const sessionData = JSON.stringify({
@@ -95,19 +117,21 @@ export class UserLoginService {
                 loginTime: new Date(),
             });
 
+            logger.debug(`Checking existing session for sessionKey: ${sessionKey}`);
             const exist_session = await this.session.getSession(sessionKey, client_type);
-            console.log(`existingSession:${exist_session}, client_type:${client_type}`);
+
             if (exist_session) {
+                logger.info(`Session found for sessionKey: ${sessionKey}, refreshing session.`);
                 await this.session.refreshSession(sessionKey, client_type);
-                console.log(`sessionKey:${sessionKey}가 갱신되었습니다.`)
             }
             else {
+                logger.info(`No session found for sessionKey: ${sessionKey}, creating new session.`);
                 await this.session.setSession(sessionKey, sessionData, client_type);
-                console.log(`sessionKey:${sessionKey}가 생성되었습니다.`)
             }
+
+            logger.info(`LoginSocial process completed successfully for provider_user_id: ${provider_user_id}`);
             return !!socialUser;
         } catch (err) {
-            console.error("Error UserLoginService loginSocial: ", err);
             throw err instanceof NotFoundError || err instanceof ValidationError
                 ? err
                 : new ValidationError("Social login process failed", err as Error);
@@ -115,8 +139,5 @@ export class UserLoginService {
     }
 
 }
-
-
-
 
 export default UserLoginService;

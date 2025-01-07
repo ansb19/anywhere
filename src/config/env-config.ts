@@ -2,6 +2,7 @@
 import { Service } from 'typedi';
 import dotenv from 'dotenv';
 import { InvalidEnvironmentVariableError, MissingEnvironmentVariableError } from '@/common/exceptions/app.errors';
+import { logger } from '@/common/utils/logger';
 
 dotenv.config();
 @Service()
@@ -56,6 +57,8 @@ export class EnvConfig {
 
     constructor() {
         // 필수 환경 변수 검증
+        console.log('Initializing EnvConfig...');
+
         this.NODE_ENV = this.getEnvVariable('NODE_ENV', 'development');
         this.NODE_NETWORK = this.getEnvVariable('NODE_NETWORK', 'localhost');
         this.PORT = this.getEnvVariableAsNumber('PORT', 3000);
@@ -99,17 +102,23 @@ export class EnvConfig {
         this.REDIS_REMOTE_URL = this.getEnvVariable('REDIS_REMOTE_URL');
         this.REDIS_LOCAL_URL = this.getEnvVariable('REDIS_LOCAL_URL');
 
+        //password salt
         this.SALT_ROUNDS = this.getEnvVariableAsNumber('SALT_ROUNDS', 10);
 
+        //session secret
         this.SESSION_SECRET = this.getEnvVariable('SESSION_SECRET');
 
-        console.log('EnvConfig 초기화 완료');
+        console.log('EnvConfig initialization completed.');
     }
 
     private getEnvVariable(key: string, defaultValue?: string): string {
         const value = process.env[key];
         if (!value && defaultValue === undefined) {
+            console.error(`Missing required environment variable: ${key}`);
             throw new MissingEnvironmentVariableError(key);
+        }
+        if (!value) {
+            console.warn(`Environment variable ${key} not found. Using default value: ${defaultValue}`);
         }
         return value || defaultValue!;
     }
@@ -118,7 +127,11 @@ export class EnvConfig {
         const value = process.env[key];
         const parsedValue = value ? parseInt(value, 10) : defaultValue;
         if (isNaN(parsedValue!)) {
+            console.error(`Invalid environment variable: ${key} must be a number`);
             throw new InvalidEnvironmentVariableError(key, 'number');
+        }
+        if (!value) {
+            console.warn(`Environment variable ${key} not found. Using default value: ${defaultValue}`);
         }
         return parsedValue!;
     }

@@ -3,6 +3,7 @@ import { Inject, Service } from "typedi";
 import { Database } from "@/config/database/Database";
 import BaseService from "@/common/abstract/base-service.abstract";
 import { DeepPartial, QueryRunner } from "typeorm";
+import { logger } from "@/common/utils/logger";
 
 @Service()
 export class UserService extends BaseService<User> {
@@ -40,8 +41,16 @@ export class UserService extends BaseService<User> {
 
     //임의 특정 조건의 사용자 한 명 조회 ( 중복확인, 로그인 )
     public async checkDuplicate(condition: Partial<User>, queryRunner?: QueryRunner): Promise<boolean> {
+        logger.debug(`Checking for duplicate user with condition: ${JSON.stringify(condition)}`);
         const is_user_found = await this.findOne(condition, queryRunner).catch(() => null);
-        return !!is_user_found;
+
+        if(is_user_found){
+            logger.warn(`Duplicate user found for condition: ${JSON.stringify(condition)}`);
+            return !!is_user_found; //true
+        }
+
+        logger.info(`No duplicate user found for condition: ${JSON.stringify(condition)}`);
+        return !!is_user_found; // false
     }
 
 }

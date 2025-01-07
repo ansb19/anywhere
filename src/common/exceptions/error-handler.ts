@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "./app.errors";
+import { logger } from "../utils/logger";
 
 
 export const globalErrorHandler = (
@@ -13,10 +14,21 @@ export const globalErrorHandler = (
         return next(err);
     }
 
-    console.error(`[Error]: ${err.message}`);
+    // 요청 정보와 에러 메시지 로깅
+    logger.error(`[Error]: ${err.message}`, {
+        method: req.method,
+        url: req.originalUrl,
+        body: req.body,
+        params: req.params,
+        query: req.query,
+    });
 
+    // 사용자 정의 에러 처리
     if (err instanceof AppError) {
-        // 사용자 정의 에러 처리
+        logger.warn(`[AppError]: ${err.name} - ${err.message}`, {
+            cause: err.cause || "No cause provided",
+        });
+
         res.status(err.status_code).json({
             error: {
                 name: err.name,
@@ -24,9 +36,13 @@ export const globalErrorHandler = (
                 cause: err.cause || null,
             },
         });
+        return;
     }
 
     // 예상치 못한 에러 처리
+
+    logger.error("[InternalServerError]: Unexpected error occurred", err);
+    
     res.status(500).json({
         error: {
             name: "InternalServerError",

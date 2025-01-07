@@ -6,6 +6,7 @@ import { ValidationError } from "@/common/exceptions/app.errors";
 import { SessionService } from "@/common/services/session.service";
 import { SESSION_TYPE } from "@/config/enum_control";
 import { AuthService } from "@/common/abstract/base.auth.service";
+import { logger } from "@/common/utils/logger";
 
 
 
@@ -21,9 +22,8 @@ export class SMSAuthService extends AuthService {
             this.messageService = new CoolsmsMessageService(
                 this.config.SMS_API_KEY as string,
                 this.config.SMS_API_SECRET as string);
-            console.log("SMS 서비스 초기화 완료");
+            logger.info("SMS service initialized successfully.");
         } catch (error) {
-            console.error("Error initializing SMSAuthService: ", error);
             throw new ValidationError("SMS 서비스 초기화 중 오류 발생", error as Error);
         }
 
@@ -31,6 +31,7 @@ export class SMSAuthService extends AuthService {
 
     //기본
     async send_sms(phone: string, text: string): Promise<void> {
+        logger.info(`Sending SMS to ${phone} with text: ${text}`);
         try {
             const result = await this.messageService.sendOne({
                 to: `${phone}`, //수신자
@@ -39,9 +40,8 @@ export class SMSAuthService extends AuthService {
                 autoTypeDetect: false,
                 type: 'SMS'
             })
-            console.log(`SMS 전송 성공: ${JSON.stringify(result)}`);
+            logger.info(`SMS sent successfully to ${phone}: ${JSON.stringify(result)}`);
         } catch (error) {
-            console.error(`SMS 전송 실패: ${phone}`, error);
             throw new ValidationError("SMS 전송 중 오류 발생", error as Error);
         }
 
@@ -52,11 +52,16 @@ export class SMSAuthService extends AuthService {
         let cert_code: string = generateVerificationCode(); // 인증 번호 생성
         const text: string = `anywhere 인증 번호가 도착하였습니다\n${cert_code}\n를 입력해주세요.`;
 
-        await this.SessionService.setSession(phone_number, cert_code, SESSION_TYPE.SMS);
+        try {
+            logger.info(`Storing verification code session for ${phone_number}: ${cert_code}`);
+            await this.SessionService.setSession(phone_number, cert_code, SESSION_TYPE.SMS);
+            logger.info(`Session stored successfully for ${phone_number}`);
 
-        console.log(`세션 저장: ${phone_number} 인증번호: ${cert_code}`);
-        await this.send_sms(phone_number, text);
-        console.log(`휴대폰: ${phone_number} 인증번호: ${cert_code} 전송`);
+            await this.send_sms(phone_number, text);
+            logger.info(`Verification SMS sent to ${phone_number} with code: ${cert_code}`);
+        } catch (error) {
+            throw new ValidationError("SMS 인증 번호 전송 중 오류 발생", error as Error);
+        }
     }
 
 }

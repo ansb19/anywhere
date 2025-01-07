@@ -6,6 +6,8 @@
 // DatabaseError: 데이터베이스 관련 에러
 // ExternalApiError: 외부 API 호출 실패
 
+import { logger } from "../utils/logger";
+
 export class AppError extends Error {
     public status_code: number = 500;
     public cause?: Error;
@@ -15,6 +17,13 @@ export class AppError extends Error {
         this.name = this.constructor.name;
         this.status_code = status_code;
         this.cause = cause;
+
+        // 로깅 처리
+        logger.error(`[${this.name}] ${message}`, {
+            status_code: this.status_code,
+            cause: this.cause ? this.cause.message : "No cause provided",
+        });
+
         Error.captureStackTrace(this, this.constructor);
     }
 }
@@ -64,7 +73,7 @@ export class DatabaseError extends AppError {
 export class ExternalApiError extends AppError {
     constructor(message = "외부 api 호출 실패", cause?: Error) {
         super(message, 502, cause);
-    } 
+    }
 }
 
 export class TransactionError extends AppError {
@@ -73,8 +82,8 @@ export class TransactionError extends AppError {
     }
 }
 
-export class DuplicationError extends AppError{
-    constructor(message= "이미 값이 존재 합니다", cause?:Error){
+export class DuplicationError extends AppError {
+    constructor(message = "이미 값이 존재 합니다", cause?: Error) {
         super(message, 303, cause);
     }
 }

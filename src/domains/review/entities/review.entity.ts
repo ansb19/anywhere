@@ -1,6 +1,6 @@
 import { Place } from "@/domains/place/entities/place.entity";
 import { User } from "@/domains/user/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 
 @Entity('REVIEW')
@@ -19,6 +19,9 @@ export class Review {
 
     @CreateDateColumn({ type: 'timestamp without time zone', default: () => 'CURRENT_TIMESTAMP' })
     created_at!: Date;
+
+    @UpdateDateColumn({ type: 'timestamp without time zone', default: () => 'CURRENT_TIMESTAMP' })
+    updated_at!: Date;
 
     @ManyToOne(() => User, (user) => user.reviews)
     @JoinColumn({name: 'user_id'})

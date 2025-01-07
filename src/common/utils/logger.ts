@@ -17,14 +17,19 @@ const dailyRotateFileTransport = new DailyRotateFile({
     maxFiles: "14d"// 보관 기간 (최근 14일간의 로그 유지)
 })
 
+// 한국 시간 포맷 적용
+const koreanTimeFormat = format.combine(
+    format.timestamp({
+        format: () => new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })
+    }),
+    format.printf(({ timestamp, level, message }) => {
+        return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+    })
+);
+
 export const logger = createLogger({
     level: config.NODE_ENV === "production" ? "error" : "debug", // 로그 레벨 설정
-    format: format.combine(
-        format.timestamp(), // 타임스탬프 추가
-        format.printf(({ timestamp, level, message }) => {
-            return `${timestamp} [${level.toUpperCase()}]: ${message}`;
-        })
-    ),
+    format: koreanTimeFormat,
     transports: [
         new transports.Console(), // 콘솔에 출력
         dailyRotateFileTransport,
