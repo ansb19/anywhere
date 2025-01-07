@@ -1,5 +1,3 @@
-
-import { userType } from "@/common/utils/define-type";
 import { SocialUserService } from "./social-user.service";
 import { UserService } from "./user.service"
 import { error } from "console";
@@ -10,6 +8,8 @@ import RedisService from "@/common/services/redis.service";
 import { DatabaseError, NotFoundError, ValidationError } from "@/common/exceptions/app.errors";
 import { SocialUser } from "../entities/social-user.entity";
 import { User } from "../entities/user.entity";
+import { SESSION_TYPE, userType } from "@/config/enum_control";
+import { UserLogoutService } from "./user-logout.service";
 
 
 @Service()
@@ -18,7 +18,7 @@ export class UserWithdrawService {
         @Inject(() => UserService) private useService: UserService,
         @Inject(() => SocialUserService) private socialuserService: SocialUserService,
         @Inject(() => KakaoClient) private kakaoClient: KakaoClient,
-        @Inject(() => RedisService) private redis: RedisService
+        @Inject(() => UserLogoutService) private UserLogoutService: UserLogoutService,
     ) { }
 
     //자체 회원 탈퇴
@@ -29,15 +29,22 @@ export class UserWithdrawService {
 
     public async withdraw(id: number, delete_type: userType): Promise<boolean> {
         try {
-            const user = await this.useService.findUserByID(id);
+            const user = await this.useService.findUserByID(id).catch(() => null);
+            if (!user)
+                throw new NotFoundError("유저를 찾을 수 없습니다");
 
             switch (delete_type) {
                 case userType.ANYWHERE:
+                    if (user.anywhere_id) {
+                        await this.UserLogoutService.logoutAnywhere(user.anywhere_id, SESSION_TYPE.WEB);
+                        await this.UserLogoutService.logoutAnywhere(user.anywhere_id, SESSION_TYPE.APP);
+                    }
                     const deleted_anywhere_user = await this.useService.updateUserByID(id, {
                         anywhere_id: null,
                         password_hash: null,
                         deleted_at: new Date(),
                     });
+
                     return !!deleted_anywhere_user;
 
                 case userType.GOOGLE:
@@ -82,7 +89,7 @@ export class UserWithdrawService {
             }
 
             const deleted_social_user = await this.socialuserService.deleteSocialUserByID(social_user.id);
-            
+
             console.log(`social_user 토큰: ${social_user.refresh_token}`);
             const data = await this.kakaoClient.refresh_token(social_user.refresh_token);
 
@@ -107,7 +114,7 @@ export class UserWithdrawService {
 
             console.log(`social_users: ${social_users}, ${social_users?.length}`);
             console.log(`user.anywhere_id: ${user?.anywhere_id}`);
-            if (social_users?.length ===0 && !user?.anywhere_id) {
+            if (social_users?.length === 0 && !user?.anywhere_id) {
                 const deleted_user = await this.useService.deleteUserByID(user_id).catch(() => null);
                 if (!deleted_user) {
                     throw new DatabaseError(`Failed to delete user with ID(${user_id}) after social account deletion`);
@@ -123,7 +130,7 @@ export class UserWithdrawService {
         }
     }
 
-    
+
 }
 
 export default UserWithdrawService;

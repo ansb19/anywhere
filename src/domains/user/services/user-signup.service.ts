@@ -3,7 +3,6 @@ import { User } from "../entities/user.entity";
 import PasswordService from "@/domains/auth/services/password.service";
 import UserService from "./user.service";
 import SocialUserService from "./social-user.service";
-import { userType } from "@/common/utils/define-type";
 import RedisService from "@/common/services/redis.service";
 import { SocialUser } from "../entities/social-user.entity";
 import KakaoClient from "@/api/kakao.client";
@@ -11,6 +10,8 @@ import KakaoClient from "@/api/kakao.client";
 import { AddDate, formatPhoneNumber } from "@/common/utils/formatter";
 import { DatabaseError, DuplicationError, ValidationError } from "@/common/exceptions/app.errors";
 import { TransactionManager } from "@/config/database/transaction_manger";
+import { SESSION_TYPE, userType } from "@/config/enum_control";
+import UserLoginService from "./user-login.service";
 
 @Service()
 export class UserSignupService {
@@ -20,6 +21,7 @@ export class UserSignupService {
         @Inject(() => SocialUserService) private socialUserService: SocialUserService,
         @Inject(() => KakaoClient) private kakaoClient: KakaoClient,
         @Inject(() => TransactionManager) private transactionManager: TransactionManager,
+        @Inject(() => UserLoginService) private UserLoginService: UserLoginService,
 
     ) { }
 
@@ -34,26 +36,35 @@ export class UserSignupService {
         try {
             console.log(`userData:${userData.email}`);
             console.log(`userData:${userData.phone}`);
-            const exist_user: User | null = await this.userService.findOne({
+            const is_exist_phone = await this.userService.findOne({
                 phone: userData.phone,
             }).catch(() => null);
-
-            const exist_user2: User | null = await this.userService.findOne({
+            const is_exist_anywhere_id = await this.userService.checkDuplicate({
                 anywhere_id: userData.anywhere_id,
-            }).catch(() => null); 
-            
-            if (!exist_user && !exist_user2) {
-                // 비밀번호 해시화
-                userData.password_hash = await this.passwordService.hashPassword(userData.password_hash || '');
+            });
 
-                // 유저 생성
-                const new_user = await this.userService.createUser(userData);
+            userData.password_hash = await this.passwordService.hashPassword(userData.password_hash || '');
 
-                console.log(`new_user: ${new_user}`);
-                return new_user;
+            // if (is_exist_phone)
+            //     throw new DuplicationError("이미 존재하는 사용자입니다");
+
+            // if (is_exist_anywhere_id)
+            //     throw new DuplicationError("이미 사용중인 ID 입니다");
+
+            if (is_exist_anywhere_id && is_exist_phone)
+                throw new DuplicationError("이미 존재하는 ID 및 유저입니다");
+            else if (is_exist_anywhere_id && !is_exist_phone)
+                throw new DuplicationError("이미 사용중인 ID 입니다");
+            else if (!is_exist_anywhere_id && is_exist_phone) {
+                const intergrated_user = await this.userService.updateUserByID(is_exist_phone.id, userData);
+                console.log(`intergrated_user: ${intergrated_user}`);
+                return intergrated_user;
             }
             else {
-                throw new DuplicationError("이미 존재하는 사용자입니다");
+                // 유저 생성
+                const new_user = await this.userService.createUser(userData);
+                console.log(`new_user: ${new_user}`);
+                return new_user;
             }
         } catch (error) {
             console.error("Error during user signup:", error);
@@ -93,7 +104,7 @@ export class UserSignupService {
      * @param code 카카오에서 주는 코드 (카카오 url -> 코드 반환)
      * @returns 소셜 유저 전체 정보 반환
      */
-    public async signupKakaoUser(code: string): Promise<SocialUser> {
+    public async signupKakaoUser(code: string, client_type: SESSION_TYPE): Promise<SocialUser | string> {
         try {
 
             // 1. 카카오 토큰 요청
@@ -106,34 +117,37 @@ export class UserSignupService {
                     findSocialUserByProviderID(kakaoUserInfo.id, userType.KAKAO, queryRunner).catch(() => null);
                 console.log(`existingKakaoUser:${existingKakaoUser}`);
                 if (existingKakaoUser) {
+                    const updated_user = await this.socialUserService.updateSocialUserByID(existingKakaoUser.id, {
+                        refresh_token: data.refresh_token,
+                        refresh_token_expires_at: AddDate(new Date(), 0, 0, 0, 0, data.refresh_token_expires_in),
+                    })
+                    await this.UserLoginService.loginSocial(existingKakaoUser.provider_user_id, existingKakaoUser.provider_name as userType, client_type);
+                    return updated_user;
+                }
+                else {
+                    // 3. 새로운 유저 생성
+                    const newUser = await this.userService.createUser({
+                        phone: kakaoUserInfo.phone ? formatPhoneNumber(kakaoUserInfo.phone) : null,
+                        email: kakaoUserInfo.email,
+                        nickname: kakaoUserInfo.nickname,
+                        profileImage: kakaoUserInfo.profileImage,
+                    }, queryRunner);
 
-                    //if refresh_token이 만료면 data.refresh_token을 넣음
+                    // 4. 소셜 유저 생성
+                    const newKakaoUser = await this.socialUserService.createSocialUser({
+                        user: newUser,
+                        provider_name: userType.KAKAO,
+                        provider_user_id: kakaoUserInfo.id,
+                        refresh_token: data.refresh_token,
+                        refresh_token_expires_at: AddDate(new Date(), 0, 0, 0, 0, data.refresh_token_expires_in),
+                    }, queryRunner);
 
-
-                    //else refresh_token 만료가 아니면
-                    throw new DuplicationError(
-                        `이미 아이디가 존재합니다. 로그인을 해주세요`);
+                    await this.UserLoginService.loginSocial(newKakaoUser.provider_user_id, newKakaoUser.provider_name as userType, client_type);
+                    return newKakaoUser;
                 }
 
-                // 3. 새로운 유저 생성
-                const newUser = await this.userService.createUser({
-                    phone: kakaoUserInfo.phone ? formatPhoneNumber(kakaoUserInfo.phone) : null,
-                    email: kakaoUserInfo.email,
-                    nickname: kakaoUserInfo.nickname,
-                    profileImage: kakaoUserInfo.profileImage,
-                }, queryRunner);
-
-                // 4. 소셜 유저 생성
-                const newKakaoUser = await this.socialUserService.createSocialUser({
-                    user: newUser,
-                    provider_name: userType.KAKAO,
-                    provider_user_id: kakaoUserInfo.id,
-                    refresh_token: data.refresh_token,
-                    refresh_token_expires_at: AddDate(new Date(), 0, 0, 0, 0, data.refresh_token_expires_in),
-                }, queryRunner);
 
 
-                return newKakaoUser;
             });
         } catch (error) {
             console.error("Error during Kakao signup:", error);

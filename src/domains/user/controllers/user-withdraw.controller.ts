@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { Inject, Service } from 'typedi';
 import UserWithdrawService from '../services/user-withdraw.service';
 import BaseController from '@/common/abstract/base-controller.abstract';
-import { userType } from '@/common/utils/define-type';
+import { userType } from '@/config/enum_control';
 
 
 @Service()

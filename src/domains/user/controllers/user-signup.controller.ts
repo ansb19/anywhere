@@ -3,6 +3,8 @@ import BaseController from '@/common/abstract/base-controller.abstract';
 import { NextFunction, Request, Response } from 'express';
 import { Inject, Service } from 'typedi';
 import UserSignupService from '../services/user-signup.service';
+import { SESSION_TYPE } from '@/config/enum_control';
+import { NotFoundError } from '@/common/exceptions/app.errors';
 
 @Service()
 export class UserSignupController extends BaseController {
@@ -12,10 +14,10 @@ export class UserSignupController extends BaseController {
     }
 
     public signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-            this.execute(req, res, next, async () => {
-                console.log(`user req.body: ${req.body}`);
+        this.execute(req, res, next, async () => {
+            console.log(`user req.body: ${req.body}`);
             const newUser = await this.userSignupService.signup(req.body);
-            
+
             return {
                 status: 201,
                 message: '유저 자체 회원가입 성공',
@@ -26,18 +28,29 @@ export class UserSignupController extends BaseController {
 
     public signupKaKaoUrl = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         this.execute(req, res, next, async () => {
-        return {
-            status: 200,
-            message: '카카오 로그인 URL 생성 성공',
-            data: this.userSignupService.signuKakaopUrl(),
-        }
-    })
-}
+            return {
+                status: 200,
+                message: '카카오 로그인 URL 생성 성공',
+                data: this.userSignupService.signuKakaopUrl(),
+            }
+        })
+    }
 
     public signupKakaoUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         this.execute(req, res, next, async () => {
             const code = req.query.code as string;
-
+            const userAgent = req.headers['user-agent'] || '';
+            console.log(`userAgent:${userAgent}`);
+            let client_Type: SESSION_TYPE;
+            if (userAgent.includes('MyApp')) {
+                client_Type = SESSION_TYPE.APP;
+            }
+            else if (userAgent.includes('Mozilla')) {
+                client_Type = SESSION_TYPE.WEB;
+            }
+            else {
+                throw new NotFoundError(`소셜 회원가입 request userAgent에서 에러 발생 userAgent: ${userAgent}`);
+            }
             if (!code) {
                 return {
                     status: 400,
@@ -46,11 +59,11 @@ export class UserSignupController extends BaseController {
                 }
             }
 
-            const newKakaoUser = await this.userSignupService.signupKakaoUser(code);
+            const KakaoUser = await this.userSignupService.signupKakaoUser(code, client_Type);
             return {
                 status: 201,
                 message: '유저 카카오 회원가입/로그인 성공',
-                data: newKakaoUser
+                data: KakaoUser
             }
         })
     }

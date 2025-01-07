@@ -90,11 +90,13 @@ export class KakaoClient implements ISocialClient {
     //사용자 액세스 토큰과 리프레시 토큰을 모두 만료
     public async logout(access_token: string): Promise<string> {
         try {
-            const response = await axiosKapi.post('/v1/user/logout', {
+            const response = await axiosKapi.post('/v1/user/logout', null, {
                 headers: {
                     "Authorization": `Bearer ${access_token}`,
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
                 }
             });
+
             return response.data.id;
         } catch (error) {
             console.error(`Error kakao.client logout: ${error}`);
