@@ -12,6 +12,8 @@ import { TransactionManager } from "@/config/database/transaction_manger";
 import { SESSION_TYPE, userType } from "@/config/enum_control";
 import UserLoginService from "./user-login.service";
 import { logger } from "@/common/utils/logger";
+import { CreateUserDTO, ResponseUserDTO } from "../dtos/user.dto";
+import { Mapper } from "@/common/services/mapper";
 
 @Service()
 export class UserSignupService {
@@ -25,51 +27,57 @@ export class UserSignupService {
 
     ) { }
 
-
     /**
      * // 자체 회원 가입
      * @param userData email, nickname, profileimage(선택), phone,
      * anywhere_id, password_hash
      * @returns User의 전체 정보
      */
-    public async signup(userData: Partial<User>): Promise<User> {
-        logger.info(`Starting signup process for email: ${userData.email}`);
+    public async signup(createUserDTO: CreateUserDTO): Promise<User> {
+
+        logger.info(`Starting signup process for email: ${createUserDTO.email}`);
 
         try {
-            logger.debug(`Checking for existing user with phone: ${userData.phone}`);
+
+            // DTO를 Entity로 변환
+            const userEntity = Mapper.toEntity(createUserDTO,User);
+            
+
+            logger.debug(`Checking for existing user with phone: ${userEntity.phone}`);
             const existingUser = await this.userService.findOne({
-                phone: userData.phone,
+                phone: userEntity.phone,
             }).catch(() => null);
 
-            logger.debug(`Checking for existing user with anywhere_id: ${userData.anywhere_id}`);
+            logger.debug(`Checking for existing user with anywhere_id: ${userEntity.anywhere_id}`);
             const is_exist_anywhere_id = await this.userService.checkDuplicate({
-                anywhere_id: userData.anywhere_id,
+                anywhere_id: userEntity.anywhere_id,
             });
 
-            userData.password_hash = await this.passwordService.hashPassword(userData.password_hash || '');
-            logger.debug(`Password hashed for user: ${userData.email}`);
+            userEntity.password_hash = await this.passwordService.hashPassword(userEntity.password_hash || '');
+            logger.debug(`Password hashed for user: ${userEntity.email}`);
 
 
             if (is_exist_anywhere_id && existingUser) {
-                logger.warn(`Duplicate user found for email: ${userData.email} and phone: ${userData.phone}`);
+                logger.warn(`Duplicate user found for email: ${userEntity.email} and phone: ${userEntity.phone}`);
                 throw new DuplicationError("이미 존재하는 ID 및 유저입니다");
             }
             else if (is_exist_anywhere_id && !existingUser) {
-                logger.warn(`Duplicate ID found for anywhere_id: ${userData.anywhere_id}`);
+                logger.warn(`Duplicate ID found for anywhere_id: ${userEntity.anywhere_id}`);
                 throw new DuplicationError("이미 사용중인 ID 입니다");
             }
             else if (!is_exist_anywhere_id && existingUser) {
-                logger.info(`Integrating existing user with phone: ${userData.phone}`);
-                const integrated_user = await this.userService.updateUserByID(existingUser.id, userData);
+                logger.info(`Integrating existing user with phone: ${userEntity.phone}`);
+                const integrated_user = await this.userService.updateUserByID(existingUser.id, userEntity);
                 logger.info(`User integrated successfully: ${integrated_user.id}`);
                 return integrated_user;
             }
             else {
                 // 유저 생성
-                logger.info(`Creating new user for email: ${userData.email}`);
-                const new_user = await this.userService.createUser(userData);
+                logger.info(`Creating new user for email: ${userEntity.email}`);
+                const new_user = await this.userService.createUser(userEntity);
                 logger.info(`User created successfully with ID: ${new_user.id}`);
-                return new_user;
+
+               return new_user;
             }
         } catch (error) {
             if (error instanceof DuplicationError) {
@@ -141,7 +149,7 @@ export class UserSignupService {
                     // 3. 새로운 유저 생성
                     logger.info(`Creating new Kakao user`);
                     const newUser = await this.userService.createUser({
-                        phone: kakaoUserInfo.phone ? formatPhoneNumber(kakaoUserInfo.phone) : null,
+                        phone:formatPhoneNumber(kakaoUserInfo.phone),
                         email: kakaoUserInfo.email,
                         nickname: kakaoUserInfo.nickname,
                         profileImage: kakaoUserInfo.profileImage,

@@ -4,8 +4,11 @@ import { NextFunction, Request, Response } from 'express';
 import { Inject, Service } from 'typedi';
 import UserSignupService from '../services/user-signup.service';
 import { SESSION_TYPE } from '@/config/enum_control';
-import { NotFoundError } from '@/common/exceptions/app.errors';
+import { NotFoundError, ValidationError } from '@/common/exceptions/app.errors';
 import { logger } from '@/common/utils/logger';
+import { CreateUserDTO, ResponseUserDTO } from '../dtos/user.dto';
+import { validateOrReject } from 'class-validator';
+import { Mapper } from '@/common/services/mapper';
 
 @Service()
 export class UserSignupController extends BaseController {
@@ -13,19 +16,30 @@ export class UserSignupController extends BaseController {
     constructor(@Inject(() => UserSignupService) private userSignupService: UserSignupService) {
         super();
     }
-  // 자체 회원가입
+    // 자체 회원가입
     public signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         this.execute(req, res, next, async () => {
             logger.info('Received signup request');
             logger.debug(`Request body: ${JSON.stringify(req.body)}`);
-            
-            const newUser = await this.userSignupService.signup(req.body);
 
+            logger.info('req.body change CreateUserDTO');
+
+            const createUserDTO = new CreateUserDTO(req.body);
+
+            // DTO 유효성 검사
+            logger.info(`processing validate data check`);
+            await validateOrReject(createUserDTO)
+                .catch(() => { throw new ValidationError("요청 데이터가 유효하지 않습니다."); });
+
+            const new_user = await this.userSignupService.signup(createUserDTO);
+
+            const responseUserDTO = Mapper.toDTO(new_user,ResponseUserDTO)
+            //const responseUserDTO = new ResponseUserDTO(new_user);
             logger.info('User signup completed successfully');
             return {
                 status: 201,
                 message: '유저 자체 회원가입 성공',
-                data: newUser
+                data: responseUserDTO
             }
         })
     }
