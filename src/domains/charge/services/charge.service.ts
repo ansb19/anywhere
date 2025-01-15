@@ -4,6 +4,8 @@ import BaseService from "@/common/abstract/base-service.abstract";
 import { Charge } from "../entities/charge.entity";
 import { Inject, Service } from "typedi";
 import { Database } from "@/config/database/Database";
+import { QueryRunner } from "typeorm";
+import { logger } from "@/common/utils/logger";
 
 @Service()
 export class ChargeService extends BaseService<Charge> {
@@ -17,8 +19,18 @@ export class ChargeService extends BaseService<Charge> {
     }
 
     // 결제 방식 한 개를 아이디, 이름 조회
-    public async findChargebyChargeID(id: number): Promise<Charge> {
+    public async findChargebyID(id: number): Promise<Charge | null> {
         return await this.findOne({ id });
+    }
+
+    public async findAllCharge(queryRunner?: QueryRunner): Promise<Charge[]> {
+        logger.info(`Starting findAllCharge process`);
+
+        const find_charges = await this.findAll(queryRunner);
+
+        logger.info(`Charge found successfully: ${find_charges.length}`);
+
+        return find_charges;
     }
 
     //결제 방식 이름 변경

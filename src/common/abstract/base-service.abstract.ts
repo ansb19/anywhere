@@ -1,8 +1,8 @@
 
 import { Database } from "@/config/database/Database";
-import { Inject, Service } from "typedi";
+import { Service } from "typedi";
 import { DeepPartial, EntityManager, ObjectLiteral, QueryRunner, Repository } from "typeorm";
-import { DatabaseError, NotFoundError, ValidationError } from "../exceptions/app.errors";
+import { DatabaseError, NotFoundError } from "../exceptions/app.errors";
 import { logger } from "../utils/logger";
 
 
@@ -34,20 +34,19 @@ abstract class BaseService<T extends ObjectLiteral> {
             return save_entity;
         }
         catch (err) {
-            
-            throw new ValidationError(`데이터 생성 중 오류 발생 `, err as Error);
+            throw new DatabaseError(`데이터 생성 중 오류 발생 `, err as Error);
         }
     }
 
     //특정 조건을 통해 하나를 출력 // 두루마리 휴지 걸이도 없음.. //휴지=값 휴지걸이: 담는 주소 
-    public async findOne(condition: Partial<T>, queryRunner?: QueryRunner): Promise<T> {
+    public async findOne(condition: Partial<T>, queryRunner?: QueryRunner): Promise<T | null> {
         logger.debug(`BaseService - findOne with condition: ${JSON.stringify(condition)}`);
         try {
             const repo = this.getRepository(queryRunner);
             const entity = await repo.findOneBy(condition);
             if (!entity) {
                 logger.warn(`No entity found for condition: ${JSON.stringify(condition)}`);
-                throw new NotFoundError();
+                return null;
             }
             logger.info(`Entity found: ${JSON.stringify(entity)}`);
             return entity;
@@ -56,11 +55,12 @@ abstract class BaseService<T extends ObjectLiteral> {
             throw new DatabaseError(`데이터 특정 조건 검색하는 중 오류 발생`, err as Error);
         }
     }
-    public async findAll(queryRunner?: QueryRunner): Promise<T[]> {
+    public async findAll( queryRunner?: QueryRunner): Promise<T[]> {
         logger.debug("BaseService - findAll called");
         try {
             const repo = this.getRepository(queryRunner);
             const entities = await repo.find();
+
             logger.info(`Entities found: ${entities.length}`);
             return entities;
         }
@@ -70,8 +70,8 @@ abstract class BaseService<T extends ObjectLiteral> {
     }
 
     //특정 조건을 통해 관계를 포함한 하나를 출력
-    public async findOneWithRelations(condition: Partial<T>, relations: string[] = [], queryRunner?: QueryRunner)
-        : Promise<T> {
+    public async findOneWithRelations(condition: Partial<T>, relations?: string[], queryRunner?: QueryRunner)
+        : Promise<T | null> {
         logger.debug(`BaseService - findOneWithRelations with condition: ${JSON.stringify(condition)} and relations: ${relations}`);
         try {
             const repo = this.getRepository(queryRunner);
@@ -81,7 +81,7 @@ abstract class BaseService<T extends ObjectLiteral> {
             })
             if (!entity) {
                 logger.warn(`No entity found for condition: ${JSON.stringify(condition)}`);
-                throw new NotFoundError();
+                return null;
             }
             logger.info(`Entity with relations found: ${JSON.stringify(entity)}`);
             return entity;
@@ -98,8 +98,7 @@ abstract class BaseService<T extends ObjectLiteral> {
             const repo = this.getRepository(queryRunner);
             const entity = await repo.findOneBy(condition);
             if (!entity) {
-                logger.warn(`No entity found for condition: ${JSON.stringify(condition)}`);
-                throw new NotFoundError(`조건 ${condition}에 해당하는 값을 찾지 못함`);
+                throw new NotFoundError(`수정할 데이터를 찾을 수 없습니다: ${JSON.stringify(condition)}`);
             }
             repo.merge(entity, item);
             const updated_entity = await repo.save(entity);
@@ -116,13 +115,11 @@ abstract class BaseService<T extends ObjectLiteral> {
             const repo = this.getRepository(queryRunner);
             const entity = await repo.findOneBy(condition);
             if (!entity) {
-                logger.warn(`No entity found for condition: ${JSON.stringify(condition)}`);
-                throw new NotFoundError(`조건 ${condition}에 해당하는 값을 찾지 못함`);
+                throw new NotFoundError(`삭제할 데이터를 찾을 수 없습니다: ${JSON.stringify(condition)}`);
             }
             const result = await repo.delete(condition);
             if (result.affected === 0) {
-                logger.warn(`Delete operation failed for condition: ${JSON.stringify(condition)}`);
-                throw new DatabaseError("데이터 삭제 실패");
+                throw new DatabaseError("삭제 작업이 실패했습니다. 삭제할 데이터가 존재하지 않거나 조건이 잘못되었습니다.");
             }
             logger.info(`Entity deleted successfully: ${JSON.stringify(entity)}`);
             return entity; // 0행은 삭제 x -> false 0행이 아니면 삭제 ㅇ -> true     

@@ -9,23 +9,19 @@ export class FavoriteModule {
         //의존성 주입
         const favoriteController = Container.get(FavoriteController);
 
-
-        //즐겨찾기 추가
+        //즐겨찾기 생성 post
         router.post('/', favoriteController.createFavorite)
 
-        // 즐겨찾기 id를 통한 즐겨찾기 조회
-        router.get('/:favorite_id', favoriteController.findFavoritebyFavoriteID);
-
-        // 즐겨찾기 id를 통한 즐겨찾기 수정
-        router.put('/:favorite_id', favoriteController.updateFavoritebyFavoriteID);
+        // 즐겨찾기 id를 통한 즐겨찾기 한개 조회
+        router.get('/:id', favoriteController.findFavoritebyFavoriteID);
 
         // 즐겨찾기 id를 통한 즐겨찾기 삭제
-        router.delete('/:favorite_id', favoriteController.deleteFavoritebyFavoriteID);
+        router.delete('/:id', favoriteController.deleteFavoritebyFavoriteID);
 
-        //특정 장소 id를 통한 즐겨찾기들 조회
+        //장소 id를 통한 즐겨찾기들 조회
         router.get('/place/:place_id', favoriteController.findFavoritebyPlaceID);
 
-        //닉네임을 통한 즐겨찾기들 조회
+        //유저 id를 통한 즐겨찾기들 조회
         router.get('/user/:user_id', favoriteController.findFavoritebyUserID);
 
         return router;

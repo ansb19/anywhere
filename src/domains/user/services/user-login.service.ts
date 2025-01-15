@@ -1,7 +1,7 @@
 import { SocialUserService } from "./social-user.service";
 import { Inject, Service } from "typedi";
 import UserService from "./user.service";
-import PasswordService from "@/domains/auth/services/password.service";
+import PasswordService from "@/common/services/password.service";
 import { NotFoundError, UnauthorizedError, ValidationError } from "@/common/exceptions/app.errors";
 import { SessionService } from "@/common/services/session.service";
 import { SESSION_TYPE, userType } from "@/config/enum_control";

@@ -18,3 +18,23 @@ export enum userType {
     ANYWHERE = "anywhere",
     All = "all"
 };
+
+export enum LOCATION_ERROR_MARGIN {
+    LAT = 0.0001,
+    LON = 0.0001,
+}
+
+export enum PRINT_DISPLAY {
+    PLACE_NUMBER = 10,
+}
+
+export enum CONDITION_OWNER {
+    ALL = "all",
+    OWNER = "owner",
+    REPORTER = "reporter",
+}
+
+export enum CATEGORY_TYPE {
+    MAIN = "main",
+    SUB = "sub",
+}

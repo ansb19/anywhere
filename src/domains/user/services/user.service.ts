@@ -22,7 +22,7 @@ export class UserService extends BaseService<User> {
     }
 
     // id를 통한 사용자 한명 조회
-    public async findUserByID(id: number, queryRunner?: QueryRunner): Promise<User> {
+    public async findUserByID(id: number, queryRunner?: QueryRunner): Promise<User | null> {
         const find_user = await this.findOne({ id }, queryRunner); //조건 객체로 전달
         return find_user;
     }
@@ -37,20 +37,6 @@ export class UserService extends BaseService<User> {
     public async deleteUserByID(id: number, queryRunner?: QueryRunner): Promise<User> {
         const deleted_user = await this.delete({ id }, queryRunner);
         return deleted_user;
-    }
-
-    //임의 특정 조건의 사용자 한 명 조회 ( 중복확인, 로그인 )
-    public async checkDuplicate(condition: Partial<User>, queryRunner?: QueryRunner): Promise<boolean> {
-        logger.debug(`Checking for duplicate user with condition: ${JSON.stringify(condition)}`);
-        const is_user_found = await this.findOne(condition, queryRunner).catch(() => null);
-
-        if(is_user_found){
-            logger.warn(`Duplicate user found for condition: ${JSON.stringify(condition)}`);
-            return !!is_user_found; //true
-        }
-
-        logger.info(`No duplicate user found for condition: ${JSON.stringify(condition)}`);
-        return !!is_user_found; // false
     }
 
 }

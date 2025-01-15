@@ -5,11 +5,11 @@ import { Place } from "@/domains/place/entities/place.entity";
 @Entity('SUBCATEGORY')
 export class SubCategory {
     @PrimaryColumn({ type: 'smallint', unsigned: true })
-    id: number = 0;
+    id!: number;
 
     @Column({ type: 'varchar', length: 20, nullable: false })
-    name : string = '';
-    
+    name!: string;
+
     @ManyToOne(() => Category, (category) => category.subcategories)
     @JoinColumn({ name: 'category_id' })
     category!: Category;

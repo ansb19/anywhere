@@ -1,13 +1,18 @@
 import { Router } from "express";
-import authRoutes from '@/domains/auth/routes';
+import Container from "typedi";
+import { AuthController } from "./controllers/auth.controller";
 export class AuthModule {
 
     static init(): Router {
         const router = Router();
 
         //의존성
+        const authController = Container.get(AuthController);
 
-        router.use('/', authRoutes);
+        router.post('/email', authController.sendEmailAuth);
+        router.post('/sms', authController.sendSMSAuth);
+        router.post('/code', authController.verifyCode);
+
         return router;
     }
 }

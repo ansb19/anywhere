@@ -1,15 +1,25 @@
-// import { Router } from "express"
-// import categoryRoutes from '@/domains/category/routes';
+import { Router } from "express";
+import Container from "typedi";
+import { CategoryController } from "./controllers/category.controller";
 
-// export class CategoryModule {
+export class CategoryModule {
 
-//     static init(): Router {
-//         const router = Router();
+    static init(): Router {
+        const router = Router();
 
-//         //의존성
+        //의존성
+        const categoryController = Container.get(CategoryController);
 
-//         router.use('/', categoryRoutes);
+        // 세부 
+        router.post('/', categoryController.create_category);
 
-//         return router;
-//     }
-// }
+        router.put('/', categoryController.update_category);
+
+        router.get('/one/:type/:id', categoryController.find_one_category);
+        router.get('/all/:type', categoryController.find_all_category);
+
+        router.delete('/:type/:id', categoryController.delete_category);
+
+        return router;
+    }
+}

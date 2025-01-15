@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
 import { User } from "../entities/user.entity";
-import PasswordService from "@/domains/auth/services/password.service";
+import PasswordService from "@/common/services/password.service";
 import UserService from "./user.service";
 import SocialUserService from "./social-user.service";
 import { SocialUser } from "../entities/social-user.entity";
@@ -38,10 +38,9 @@ export class UserSignupService {
         logger.info(`Starting signup process for email: ${createUserDTO.email}`);
 
         try {
-
             // DTO를 Entity로 변환
-            const userEntity = Mapper.toEntity(createUserDTO,User);
-            
+            const userEntity = Mapper.toEntity(createUserDTO, User);
+
 
             logger.debug(`Checking for existing user with phone: ${userEntity.phone}`);
             const existingUser = await this.userService.findOne({
@@ -49,7 +48,7 @@ export class UserSignupService {
             }).catch(() => null);
 
             logger.debug(`Checking for existing user with anywhere_id: ${userEntity.anywhere_id}`);
-            const is_exist_anywhere_id = await this.userService.checkDuplicate({
+            const exist_anywhere_id = await this.userService.findOne({
                 anywhere_id: userEntity.anywhere_id,
             });
 
@@ -57,15 +56,15 @@ export class UserSignupService {
             logger.debug(`Password hashed for user: ${userEntity.email}`);
 
 
-            if (is_exist_anywhere_id && existingUser) {
+            if (exist_anywhere_id && existingUser) {
                 logger.warn(`Duplicate user found for email: ${userEntity.email} and phone: ${userEntity.phone}`);
                 throw new DuplicationError("이미 존재하는 ID 및 유저입니다");
             }
-            else if (is_exist_anywhere_id && !existingUser) {
+            else if (exist_anywhere_id && !existingUser) {
                 logger.warn(`Duplicate ID found for anywhere_id: ${userEntity.anywhere_id}`);
                 throw new DuplicationError("이미 사용중인 ID 입니다");
             }
-            else if (!is_exist_anywhere_id && existingUser) {
+            else if (!exist_anywhere_id && existingUser) {
                 logger.info(`Integrating existing user with phone: ${userEntity.phone}`);
                 const integrated_user = await this.userService.updateUserByID(existingUser.id, userEntity);
                 logger.info(`User integrated successfully: ${integrated_user.id}`);
@@ -77,7 +76,7 @@ export class UserSignupService {
                 const new_user = await this.userService.createUser(userEntity);
                 logger.info(`User created successfully with ID: ${new_user.id}`);
 
-               return new_user;
+                return new_user;
             }
         } catch (error) {
             if (error instanceof DuplicationError) {
@@ -96,7 +95,7 @@ export class UserSignupService {
     public async checkDuplicate(verification: Partial<User>): Promise<boolean> {
         logger.info(`Checking for duplicate user with: ${JSON.stringify(verification)}`);
         try {
-            const result = await this.userService.checkDuplicate(verification);
+            const result = await this.userService.findOne(verification);
             logger.info(`Duplicate check result: ${result}`);
             return !!(result);
         } catch (error) {
@@ -149,7 +148,7 @@ export class UserSignupService {
                     // 3. 새로운 유저 생성
                     logger.info(`Creating new Kakao user`);
                     const newUser = await this.userService.createUser({
-                        phone:formatPhoneNumber(kakaoUserInfo.phone),
+                        phone: formatPhoneNumber(kakaoUserInfo.phone),
                         email: kakaoUserInfo.email,
                         nickname: kakaoUserInfo.nickname,
                         profileImage: kakaoUserInfo.profileImage,

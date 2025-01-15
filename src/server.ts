@@ -19,6 +19,7 @@ import cron from 'node-cron';
 import { RefreshTokenService } from './common/services/refresh_token.service';
 import { loggerMiddleware } from './middleware/logger.midlleware';
 import { logger } from './common/utils/logger';
+import Redis from './common/services/redis.service';
 
 
 const env_config = Container.get(EnvConfig);
@@ -51,6 +52,9 @@ async function startServer() {
 
         await database.runMigrations(); // 프로덕션 시 비활성화
         logger.info('Database migrations executed.');
+
+        const redis = Container.get(Redis);
+        await redis.initialize();
 
         app.use('/user', UserModule.init());
         app.use('/place', PlaceModule.init());

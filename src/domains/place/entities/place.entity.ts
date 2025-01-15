@@ -12,20 +12,14 @@ export class Place {
     @PrimaryGeneratedColumn()
     id: number = 0; 
 
-    @Column({ type: 'varchar', length: 40 })
-    place_name!: string ;
-
-    @Column({ type: 'bigint' })
-    user_id!: number;
+    @Column({ type: 'varchar', length: 50 })
+    name!: string ;
 
     @Column({ type: 'double precision' })
     lat!: number ;
 
     @Column({ type: 'double precision' })
     lon!: number ;
-
-    // @Column({ type: 'smallint' })
-    // category_id: number = 0;
 
     @CreateDateColumn({ type: 'timestamp without time zone', default: () => 'CURRENT_TIMESTAMP' })
     created_at!: Date;
@@ -45,10 +39,10 @@ export class Place {
     end_date!: Date;
 
     @Column({ type: 'varchar', length: 500, array: true })
-    photo_s3_url?: string;
+    photo_s3_url?: string[];
 
     @Column({ type: 'varchar', length: 5, array: true })
-    day_of_the_week!: string;
+    day_of_the_week!: string[];
     // @Column({ type: 'smallint', array: true })
     // charge_id: number = 0; 다대다 
 
@@ -56,19 +50,19 @@ export class Place {
     comment?: string;
 
     @Column({ type: 'varchar', length: 30, array: true })
-    tag?: string;
+    tag?: string[];
 
-    @Column({ type: 'int' })
+    @Column({ type: 'int', default: 0, })
     exist_count: number = 0;
 
-    @Column({ type: 'int' })
+    @Column({ type: 'int', default: 0, })
     non_exist_count: number = 0;
 
     @Column({ type: 'boolean' })
     owner: boolean = false; // 제보자 false 작성자 true
 
     @ManyToOne(() => User, (user) => user.places)
-    @JoinColumn(({ name: 'user_id' }))
+    @JoinColumn({ name: 'user_id'})
     user!: User;
 
     @ManyToOne(() => Category, (category) => category.places)
@@ -86,8 +80,7 @@ export class Place {
     @OneToMany(() => Favorite, (favorite) => favorite.place)
     favorites!: Favorite[];
 
-    @OneToMany(() => Review, (review) => review.place)
+    @OneToMany(() => Review, (review) => review.place, {cascade: true, onDelete: "CASCADE"})
     reviews!: Review[];
-
 
 }

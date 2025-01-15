@@ -33,9 +33,6 @@ export class CreateUserDTO {
     })
     password!: string;
 
-    constructor(part: Partial<CreateUserDTO>) {
-        Object.assign(this, part);
-    }
 }
 
 export class UpdateUserDTO {
@@ -58,9 +55,10 @@ export class UpdateUserDTO {
 
     @IsOptional()
     @IsString()
-    @Length(8, 255)
+    @Length(8, 30)
     password?: string;
 
+    
 }
 
 export class AdminUpdateUserDTO {

@@ -17,7 +17,7 @@ export class ReviewService extends BaseService<Review> {
     }
 
     // 리뷰id를 통해 리뷰 1개를 조회
-    public async findReviewbyReviewID(id: number): Promise<Review> {
+    public async findReviewbyReviewID(id: number): Promise<Review | null> {
         return await this.findOne({ id });
     }
 

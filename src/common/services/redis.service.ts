@@ -19,19 +19,20 @@ export class Redis {
                 : this.config.REDIS_LOCAL_URL
 
         logger.info(`Initializing Redis client with URL: ${redisUrl}`);
-        try {
-            this.client = createClient({ url: redisUrl });
-            this.client.on('error', (err) => logger.error('Redis Client Error:', err));
-            this.client.connect()
-                .then(() => logger.info('Redis connection established successfully.'))
-                .catch((err) => {
-                    logger.error('Redis connection failed:', err);
-                    throw new DatabaseError("Redis 서버에 연결 실패")
-                })
-        } catch (error) {
-            throw new DatabaseError("Redis 클라이언트 초기화 중 오류 발생", error as Error);
-        }
 
+        this.client = createClient({ url: redisUrl });
+
+    }
+
+    public async initialize(): Promise<void> {
+        try {
+
+            this.client.on('error', (err) => logger.error('Redis Client Error:', err));
+            await this.client.connect();
+            logger.info('Redis connection established successfully.');
+        } catch (error) {
+            throw new DatabaseError("Redis 서버 연결 중 오류 발생", error as Error);
+        }
     }
 
     //세션 만들기

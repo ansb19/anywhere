@@ -9,6 +9,7 @@ import { logger } from '@/common/utils/logger';
 import { CreateUserDTO, ResponseUserDTO } from '../dtos/user.dto';
 import { validateOrReject } from 'class-validator';
 import { Mapper } from '@/common/services/mapper';
+import { ResponseSocialUserDTO } from '../dtos/social_user.dto';
 
 @Service()
 export class UserSignupController extends BaseController {
@@ -24,7 +25,7 @@ export class UserSignupController extends BaseController {
 
             logger.info('req.body change CreateUserDTO');
 
-            const createUserDTO = new CreateUserDTO(req.body);
+            const createUserDTO = Mapper.fromPlainToDTO(req.body, CreateUserDTO);
 
             // DTO 유효성 검사
             logger.info(`processing validate data check`);
@@ -33,7 +34,7 @@ export class UserSignupController extends BaseController {
 
             const new_user = await this.userSignupService.signup(createUserDTO);
 
-            const responseUserDTO = Mapper.toDTO(new_user,ResponseUserDTO)
+            const responseUserDTO = Mapper.toDTO(new_user, ResponseUserDTO)
             //const responseUserDTO = new ResponseUserDTO(new_user);
             logger.info('User signup completed successfully');
             return {
@@ -96,11 +97,12 @@ export class UserSignupController extends BaseController {
             logger.info('Processing Kakao user signup/login');
             const KakaoUser = await this.userSignupService.signupKakaoUser(code, client_Type);
 
+            const responseSocialUserDTO = Mapper.toDTO(KakaoUser, ResponseSocialUserDTO);
             logger.info('Kakao user signup/login completed successfully');
             return {
                 status: 201,
                 message: '유저 카카오 회원가입/로그인 성공',
-                data: KakaoUser
+                data: responseSocialUserDTO
             }
         })
     }

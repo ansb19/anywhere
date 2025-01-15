@@ -19,7 +19,7 @@ export class SocialUserService extends BaseService<SocialUser> {
         return newSocialUser;
     }
 
-    public async findSocialUserByID(id: number, queryRunner?: QueryRunner): Promise<SocialUser> {
+    public async findSocialUserByID(id: number, queryRunner?: QueryRunner): Promise<SocialUser | null> {
         const find_social_user = await this.findOne({ id }, queryRunner); //조건 객체로 전달
         return find_social_user;
     }
@@ -35,25 +35,25 @@ export class SocialUserService extends BaseService<SocialUser> {
     }
 
     // 소셜 회사 및 id를 통한 조회
-    public async findSocialUserByProviderID(provider_user_id: string, provider_name: string, queryRunner?: QueryRunner): Promise<SocialUser> {
+    public async findSocialUserByProviderID(provider_user_id: string, provider_name: string, queryRunner?: QueryRunner): Promise<SocialUser | null> {
         logger.info(`Finding social user by provider_user_id: ${provider_user_id} and provider_name: ${provider_name}`);
 
         try {
             const social_user = await this.findOneWithRelations({ provider_user_id, provider_name }, ["user"], queryRunner);
             if (!social_user) {
                 logger.warn(`No social user found for provider_user_id: ${provider_user_id} and provider_name: ${provider_name}`);
-                throw new NotFoundError(`해당 provider_user_id와 provider_name에 맞는 소셜 유저가 없음`);
+                return null;
             }
             logger.info(`Social user found with provider_user_id: ${provider_user_id} and provider_name: ${provider_name}`);
             return social_user;
         } catch (error) {
-            throw error;
+            throw new DatabaseError("소셜 유저 유저ID를 통한 조회 중 오류 발생");
         }
 
 
     }
 
-    public async findSocialUserByUserID(user_id: number, provider_name: string, queryRunner?: QueryRunner): Promise<SocialUser> {
+    public async findSocialUserByUserID(user_id: number, provider_name: string, queryRunner?: QueryRunner): Promise<SocialUser | null> {
         logger.info(`Finding social user by user_id: ${user_id} and provider_name: ${provider_name}`);
         try {
             const social_user = await this.getRepository(queryRunner).findOne({
@@ -62,14 +62,12 @@ export class SocialUserService extends BaseService<SocialUser> {
             });
             if (!social_user) {
                 logger.warn(`No social user found for user_id: ${user_id} and provider_name: ${provider_name}`);
-                throw new NotFoundError(`유저 아이디: ${user_id}와 ${provider_name} 맞는 값이 없음`);
+                return null;
             }
             logger.info(`Social user found with user_id: ${user_id} and provider_name: ${provider_name}`);
             return social_user;
-        } catch (error) {            
-            throw error instanceof NotFoundError
-                ? error
-                : new DatabaseError("소셜 유저 유저ID를 통한 조회 중 오류 발생");
+        } catch (error) {
+            throw new DatabaseError("소셜 유저 유저ID를 통한 조회 중 오류 발생");
         }
 
 
@@ -83,15 +81,11 @@ export class SocialUserService extends BaseService<SocialUser> {
                 where: { user: { id: user_id } },
                 relations: ["user"],
             });
-            if (!social_users.length) {
-                logger.warn(`No social users found for user_id: ${user_id}`);
-            }
+
             logger.info(`Found ${social_users.length} social users for user_id: ${user_id}`);
             return social_users;
         } catch (error) {
-            throw error instanceof NotFoundError
-                ? error
-                : new DatabaseError("소셜 유저들 유저ID를 통한 조회 중 오류 발생");
+            throw new DatabaseError("소셜 유저들 유저ID를 통한 조회 중 오류 발생");
         }
     }
 }
