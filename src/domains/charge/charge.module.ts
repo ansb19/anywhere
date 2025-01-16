@@ -12,7 +12,8 @@ export class ChargeModule {
 
         const chargeController = Container.get(ChargeController);
 
-        router.get('/:id', chargeController.find_all_charge);
+        // 전체 결제방식 조회
+        router.get('/', chargeController.find_all_charge);
 
         return router;
     }

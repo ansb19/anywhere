@@ -26,6 +26,12 @@ export class PlaceModule {
         //장소 id를 이용한 장소 삭제 params
         router.delete('/:id', placeController.deletePlacebyPlaceID)
 
+        //복합 검색 query
+        router.get('/search/complex', placeController.findPlacebyComplexCondition)
+
+        //간단 검색 query
+        router.get('/search/simple', placeController.findPlacebySimpleCondition)
+
 
         //해당 페이지의 장소들 출력 query
         router.get('/scroll/', placeController.findPlacebyScroll) // 10개씩 한번에 장소 출력
@@ -42,11 +48,7 @@ export class PlaceModule {
         //해당 유저의 장소들 출력 query
         router.get('/user/', placeController.findPlacebyUserID)
 
-        //간단 검색 query
-        router.get('/search/simple', placeController.findPlacebySimpleCondition)
 
-        //복합 검색 query
-        router.get('/search/complex',placeController.findPlacebyComplexCondition)
         return router;
     }
 }

@@ -49,9 +49,9 @@ class FavoriteController extends BaseController {
             logger.info('Received findFavoritebyFavoriteID request');
             logger.debug(`Request params: ${JSON.stringify(req.params)}`);
 
-            const { favorite_id } = req.params;
+            const { id } = req.params;
 
-            const find_favorite = await this.favortie_service.findFavoritebyFavoriteID(parseInt(favorite_id));
+            const find_favorite = await this.favortie_service.findFavoritebyFavoriteID(parseInt(id));
 
             const response_favorite_dto = find_favorite
                 ? Mapper.toDTO(find_favorite, ResponseFavoriteDTO)
@@ -94,9 +94,9 @@ class FavoriteController extends BaseController {
             logger.info('Received deleteFavoritebyFavoriteID request');
             logger.debug(`Request params: ${JSON.stringify(req.params)}`);
 
-            const { favorite_id } = req.params;
+            const { id } = req.params;
 
-            const deleted_favorite = await this.favortie_service.deleteFavoritebyFavoriteID(parseInt(favorite_id));
+            const deleted_favorite = await this.favortie_service.deleteFavoritebyFavoriteID(parseInt(id));
 
             const response_favorite_dto = Mapper.toDTO(deleted_favorite, ResponseFavoriteDTO);
             return {
@@ -119,8 +119,7 @@ class FavoriteController extends BaseController {
             const { place_id } = req.params;
             const find_favorites = await this.favortie_service.findFavoritebyPlaceID(parseInt(place_id));
 
-            const response_favorite_dtos = find_favorites.map((category) => Mapper.toDTO(category, ResponseFavoriteDTO));
-
+            const response_favorite_dtos = Mapper.toDTOList(find_favorites, ResponseFavoriteDTO);
             return {
                 status: 200,
                 message: '장소 id를 통한 즐겨찾기들 조회 성공',

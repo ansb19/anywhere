@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, IsString, MaxLength } from "class-validator";
+import { IsInt, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 
 
 export class CreateReviewDto {
@@ -10,21 +10,16 @@ export class CreateReviewDto {
 
     @IsString()
     @MaxLength(500)
+    @MinLength(10)
     content!: string;
 }
 
 export class UpdateReviewDto {
-    @IsOptional()
-    @IsInt()
-    user_id?: number;
-
-    @IsOptional()
-    @IsInt()
-    place_id?: number;
-
+    
     @IsOptional()
     @IsString()
     @MaxLength(500)
+    @MinLength(10)
     content?: string;
 }
 
@@ -42,7 +37,7 @@ export class ResponseReviewDto {
 
     place!: {
         id: number;
-        nickname: string;
+        name: string;
         lat: number;
         lon: number;
     }
