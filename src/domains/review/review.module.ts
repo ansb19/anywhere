@@ -12,18 +12,12 @@ export class ReviewModule {
         // 라우터인 '/review/'
 
         const reviewcontroller = Container.get(ReviewController);
-        
-        //리뷰 생성
-        router.post('/', reviewcontroller.createReview)
-        
-        //리뷰 id를 통한 리뷰 수정
-        router.put('/', reviewcontroller.updateReviewbyReviewID);
 
-        //리뷰 id를 통한 리뷰 조회
-        router.get('/:id', reviewcontroller.findReviewbyReviewID);
-
-        //리뷰 id를 통한 리뷰 삭제
-        router.delete('/:id', reviewcontroller.deleteReviewbyReviewID);
+        router.post('/', reviewcontroller.createReview)  //리뷰 생성 
+        router.get('/:review_id', reviewcontroller.findReviewbyReviewID); //리뷰 id를 통한 리뷰 조회
+        
+        router.put('/:review_id', reviewcontroller.updateReviewbyReviewID); //리뷰 id를 통한 리뷰 수정
+        router.delete('/:review_id', reviewcontroller.deleteReviewbyReviewID); //리뷰 id를 통한 리뷰 삭제
 
         //특정 장소 id를 통한 리뷰들 조회
         router.get('/place/:place_id', reviewcontroller.findReviewbyPlaceID)
@@ -32,7 +26,7 @@ export class ReviewModule {
         router.get('/user/:user_id', reviewcontroller.findReviewbyUserID)
 
 
-
+        
         return router;
     }
 }

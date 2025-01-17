@@ -2,7 +2,6 @@
 import { Service } from 'typedi';
 import dotenv from 'dotenv';
 import { InvalidEnvironmentVariableError, MissingEnvironmentVariableError } from '@/common/exceptions/app.errors';
-import { logger } from '@/common/utils/logger';
 
 dotenv.config();
 @Service()

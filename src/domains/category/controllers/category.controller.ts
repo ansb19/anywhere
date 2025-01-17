@@ -33,6 +33,7 @@ export class CategoryController extends BaseController {
 
                     const createCategoryDTO = Mapper.fromPlainToDTO(req.body, CreateCategoryDTO);
                     logger.info('req.body change CreateCategoryDTO');
+                    
                     // DTO 유효성 검사
                     logger.info(`processing validate data check`);
                     await validateOrReject(createCategoryDTO)
